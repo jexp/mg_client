@@ -86,8 +86,10 @@
 				collected += line + "\n";
 			}
 			if (line.match(end)) {
-				console.log(collected);
-				fun(collected);
+				if (collected != null && collected.length > 0) {
+					console.log(collected);
+					fun(collected);
+				}
 				collected = null;
 			}
 		}
@@ -103,14 +105,22 @@
 	}
 	
 	function setTabText(tab, text) {
+		if (text==null) return;
 		$("#"+tab).text(text); 
 		$("#info").tabs("select","#"+tab);
+//		var idx=$("#"+tab).index();
+//		console.log(tab+" "+idx);
+//		$("#info").tabs("select",idx);
+		
 	}
 	var history = Array()
 	var grab_info = collect(/- .+ -{3,}$/,/----------------------------------------------------------------------/,
 		function(text) { setTabText("p_info",text)});
 	var grab_inv = collect(/^(inv|inventory|i)\s*$/,/^\S*>\s*$/,
 			function(text) {setTabText("p_inventory",color_escapes(text))});
+
+	var grab_ort = collect(/^(schaue?|l|look|norden|nordosten|osten|suedosten|sueden|suedwesten|westen|nordwesten|oben|unten|raus|n|nw|no|o|s|w|sw|so|ob|u)\s*$/,/^\S*>\s*$/,
+					function(text) {setTabText("p_ort",text)});
 	
 	var grab_ausruestung = collect(/^(ar|ausruestung)\s*$/,/^\S*>\s*$/,
 					function(text) {setTabText("p_ausruestung",color_escapes(text))});
@@ -127,13 +137,26 @@
 		target.prop("scrollTop", target.prop("scrollHeight") - target.height() );
 	}
 	var grab_battle = grab_single(/(^  [^' ].+|.+ faellt tot zu Boden.$)/, function(text) { appendTo("p_fight",text); })
+	
+	/*
+	  Name        Gilde           LV GLV  LP (MLP)  KP (MKP) Vors. GR AR TR FR A V
+	* Mesirii     Chaos          113  11 226 (226) 169 (202)     0  1  1  1 -- - -
+	  Nurchak                     12   0  41 ( 41) 161 (161)     0  1  1  1 -- - -
+	*/
+	
+	var grab_team = collect(/^  Name        Gilde           LV GLV  LP (MLP)  KP (MKP) Vors. GR AR TR FR A V/,/^\S*>\s*$/,
+	function(text) {
+	   setTabText("p_team",text)	
+	});
     function enrich(line) {
+		grab_ort(line);
 		grab_info(line);
 		grab_inv(line);
 		grab_finger(line);
 		grab_ausruestung(line);
 		grab_kwer(line);
 		grab_battle(line);
+		grab_team(line);
 		trigger_update(/^Du bist jetzt (.+?) /,function(name) { $('#status').dialog("option", "title", name ); })(line);
 		trigger_update(/^Schoen, dass Du wieder da bist, (.+?)!/,function(name) { $('#status').dialog("option", "title", name ); })(line);
 
@@ -320,13 +343,32 @@
 		$("#toolbar").prepend("<button id=\"b_"+label+"\">"+label+"</button>");
 		$("#b_"+label).button({options: { label: label }}).click(function() { input(action); });
 	}
+	function addTab(name, label) {
+//		$("#info").tabs("add","#"+name,label);
+		$("#info ul").append("<li id=\"tab-"+name+"\"><a href=\"#"+name+"\">"+label+"</a></li>");
+		$("#info").append("<pre id=\""+name+"\"></pre>");
+	}
+	
+	Array.prototype.hasObject = (
+	  !Array.indexOf ? function (o) {
+	    var l = this.length + 1;
+	    while (l -= 1) {
+	        if (this[l - 1] === o) {
+	            return true;
+	        }
+	    }
+	    return false;
+	  } : function (o) {
+	    return (this.indexOf(o) !== -1);
+	  }
+	);
+	
 	$(document).ready(function(){
 		try {
 		$('#status').dialog({ title: "Status", position : ["right","top"], width : 150 });
 		update("kp",50,100);
 		update("lp",50,100);
 		$('#input').keydown(handle_keys);
-		$("#info").tabs({ width: 600 }).draggable().resizable();
 		$("#p_fight").dialog({ title: "Kampf", position : ["right","bottom"] , width : 500, height : 200, maxHeight: 100 });
 		add_button("Info","info");
 		add_button("Inventory","inv");
@@ -336,6 +378,14 @@
 		   input("grafik aus"); 
 		});
 		$( "#b_modus" ).buttonset();
+		addTab("p_kwer","Anwesende");
+		addTab("p_ort","Ort");
+		addTab("p_team","Team");
+		$("#info").tabs({ 
+			width: 600, 
+			add: function(event, ui) {
+		        console.log('#' + ui.panel.id);
+		    }}).draggable().resizable();
 		$('#input').focus();
 	} catch(e) {console.log(e);}
 	});
@@ -348,9 +398,9 @@
 	  <div class="nav-1">&nbsp;</div>
 
 	  <div class="nav-2">
-	 <a href="/doc/start.shtml" class="nav" id="nav_start" style="margin-top:0">Start</a>
+	 <a href="#" class="nav" id="nav_start" style="margin-top:0">Link</a>
 	  <span id="nav_sub_start" class="secnav">
-	  <a href="/information/ueber.shtml" id="nav_eingang">&Uuml;ber uns</a>
+	  <a href="#" id="nav_eingang">Link 2</a>
 	  </div>
 	  <div class="nav-3">&nbsp;</div>
 	</div>
@@ -394,13 +444,11 @@
 			<li><a href="#p_finger">Finger</a></li>
 			<li><a href="#p_inventory">Inventory</a></li>
 			<li><a href="#p_ausruestung">Ausr&uuml;stung</a></li>
-			<li><a href="#p_kwer">Anwesende</a></li>
 		</ul>
 			<pre id="p_info"></pre>
 			<pre id="p_finger"></pre>
 			<pre id="p_inventory"></pre>
 			<pre id="p_ausruestung"></pre>
-			<pre id="p_kwer"></pre>
 	</div>
 
 

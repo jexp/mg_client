@@ -30,7 +30,7 @@ server.on "connection", (conn) ->
   conn.on "message", (msg) -> 
     console.log msg
     return if msg.match /^telnet\|.+/ 
-    if msg.match /.+\n/
+    if msg.match /.*\n/
       telnet.send input + msg
       input = ""
     else
