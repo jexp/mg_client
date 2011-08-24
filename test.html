@@ -1,0 +1,190 @@
+<html>
+<head>
+	<link type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.14/themes/humanity/jquery-ui.css" rel="stylesheet"/>
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
+	<script type="text/javascript">
+
+	function connect(receive) {
+		var ws = new WebSocket("ws://localhost:8000/");
+		ws.onmessage = function(e) { 
+//			console.log(e.data.toString());
+			receive(e.data.toString());
+		};
+		ws.onclose = function() { ws.send("connect"); };
+		ws.onopen = function() {};
+		return ws;
+	}
+	
+	function input(text, dontSubmit) {
+		$('#input').val(text);
+		if (dontSubmit == null || dontSubmit==true) {
+			$('#form').submit();
+		}
+	}
+	function trigger_update(regexp, fun) {
+		return function(line) {
+		    var match=line.match(regexp);
+		    if (match!=null) {
+			  match.shift();
+			  return fun.apply(this,match);
+		    }
+		    return line;
+		}
+	}
+	
+	function update(suffix, val, max) {
+		$("#p_max_"+suffix).text(max);
+		$("#p_"+suffix).text(val);
+		$("#p_bar_"+suffix).progressbar({value: 100.0*parseInt(val)/parseInt(max)});
+	}
+	function collect(start,end, fun) {
+		var collected = null;
+		return function(line) {
+			if (line.match(start)) {
+				collected = "";
+			} 
+			if (collected != null) {
+				collected += line + "\n";
+			}
+			console.log(collected);
+			if (line.match(end)) {
+				fun(collected);
+				collected = null;
+			}
+		}
+	}
+	
+	var history = Array()
+	var grab_info = collect(/- .+ -{3,}$/,/----------------------------------------------------------------------/,
+		function(text) { $("#p_info").text(text);});
+	var grab_inv = collect(/- .+ -{3,}$/,/----------------------------------------------------------------------/,
+			function(text) { $("#p_info").text(text);});
+		
+    function enrich(line) {
+		grab_info(line);
+		trigger_update(/Du bist jetzt (.+?) /,function(name) { $("#p_name").text(name) })(line);
+		trigger_update(/Konzentration: 0 \|.+\|  (\d+) \((\d+)\)$/,function(val,max) { update("kp",val,max); })(line);
+		trigger_update(/Gesundheit:    0 \|.+\|  (\d+) \((\d+)\)$/,function(val,max) { update("lp",val,max); })(line);
+		trigger_update(/Konzentration: 0 \|.+\|  (\d+)$/,function(max) { update("kp",max,max); })(line);
+		trigger_update(/Gesundheit:    0 \|.+\|  (\d+)$/,function(max) { update("lp",max,max); })(line);
+		line = line.replace(/\b(norden|nordosten|osten|suedosten|sueden|suedwesten|westen|nordwesten|oben|unten|raus)\b/g,"<span style='color:red' onclick='input(\"$1\");'>$1</span>");
+		line = line.replace(/([A-Z][a-z]{2,})/g,"<span ondblclick='input(\"untersuche $1\");'>$1</span>");
+		return line;
+	}
+
+	function showText(text) {
+		var lines=text.split(/\r\n/);
+		lines.forEach(function(line) {
+		    var result = enrich(line);
+		    if (result!=null) {
+			  $('#out').append(result+"\n");
+			}
+		});
+		$("#frame").prop("scrollTop", $("#frame").prop("scrollHeight") - $('#frame').height() );
+	}
+
+	function sendInput() {
+	   var input=$('#input')
+	   var value=input.val() + "\n";
+	   if (value.match(/.+\n/)) {
+		 showText(value);
+		 history.unshift(value);
+		 histoffset = 0;
+	     server.send(value);
+		 input.focus();
+	     input.select();
+	   }
+	}
+	const KEYBOARD_LEFT = 37;
+	const KEYBOARD_RIGHT = 39;
+	const KEYBOARD_UP = 38;
+	const KEYBOARD_DOWN = 40;
+	const KEYBOARD_PAGE_UP = 33;
+	const KEYBOARD_PAGE_DOWN = 34;
+	const KEYBOARD_HOME = 36;
+	
+	function handle_keys(e) {
+		switch (e.keyCode) {
+		  case KEYBOARD_DOWN : 
+			input(history[histoffset],false);
+			histoffset -= 1;
+			if (histoffset < 0) histoffset = 0;
+			break;
+		  case KEYBOARD_UP : 
+			input(history[histoffset],false);
+			histoffset += 1;
+			if (histoffset >= history.length) histoffset = history.length - 1;
+			break;
+		  case KEYBOARD_PAGE_UP : 
+			$("#frame").prop("scrollTop", $("#frame").prop("scrollTop") - $('#frame').height() );
+			break;
+		  case KEYBOARD_PAGE_DOWN : 
+			$("#frame").prop("scrollTop", $("#frame").prop("scrollTop") + $('#frame').height() );
+			break;
+		}
+	}
+	
+	function add_button(label, action) {
+		$("#toolbar").prepend("<button id=\"b_"+label+"\">"+label+"</button>");
+		$("#b_"+label).button({options: { label: label }}).click(function() { input(action); });
+	}
+	$(document).ready(function(){
+		try {
+		$('#input').focus();
+		$('#status').draggable();
+		update("kp",50,100);
+		update("lp",50,100);
+		$('#input').keydown(handle_keys);
+		$("#info").tabs().draggable().resizable();
+		add_button("Info","info");
+		add_button("Inventory","inv");
+		add_button("nn","nn");
+		add_button("Ausruestung","ausruestung");
+		$( "#b_grafik" ).button().click(function() { 
+		   input("grafik aus"); 
+		});
+		$( "#b_modus" ).buttonset();
+	} catch(e) {console.log(e);}
+	});
+	var	server = connect(showText);
+	console.log(server);
+	</script>
+</head>
+<body style="font-size:12px;">
+<div id="frame" style="font-family:monospace;border:1px solid black;width:80%;height:80%;overflow:auto;">
+	<pre id="out">
+	</pre>
+</div>
+<span id="toolbar" class="ui-widget-header ui-corner-all">
+	<input type="checkbox" id="b_grafik" /><label for="b_grafik">Grafik aus</label>
+	
+	<span id="b_modus">
+		<input type="radio" id="b_lang" name="b_modus" onchange="input('lang');"/><label for="b_lang">Lang</label>
+		<input type="radio" id="b_kurz" name="b_modus"  onchange="input('kurz');" checked="checked" /><label for="b_kurz">Kurz</label>
+		<input type="radio" id="b_ultrakurz" name="b_modus"  onchange="input('ultrakurz');"/><label for="b_ultrakurz">Ultrakurz</label>
+	</span>
+</span>
+<form id="form" method="post" onsubmit="try {sendInput()} catch(e) { alert(e); };return false;">
+	<input type="text" id="input" size="80"/>
+</form>
+<div id="status" style="width:200px;height:50px;right:10px;top:10px;position:absolute;" class="ui-widget-content">
+	<div id="p_name">Mesirii</div>
+	<div id="p_bar_lp" style="height:1.5em;margin:3px;"><span style="position: absolute; width: 100%; text-align: center;">LP: <span id="p_lp">58</span>/<span id="p_max_lp">58</span></span></div>
+	<div id="p_bar_kp" style="height:1.5em;margin:3px;"><span style="position: absolute; width: 100%; text-align: center;">KP: <span id="p_kp">58</span>/<span id="p_max_kp">58</span></span></div>
+</div>
+
+<div id="info" style="position:absolute;top:30%;right:10px;width:500px;">
+	<ul>
+		<li><a href="#tabs-1">Info</a></li>
+		<li><a href="#tabs-2">Finger</a></li>
+	</ul>
+	<div id="tabs-1">
+		<pre id="p_info"></pre>
+	</div>
+	<div id="tabs-2">
+		<pre id="p_finger"></pre>
+	</div>
+</div>
+</body>
+</html>
