@@ -1,6 +1,26 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
+<link rel="stylesheet" type="text/css" href="http://mg.mud.de/doc/morgengrauen.css" media="screen">
+<link rel="stylesheet" type="text/css" href="http://telnet.morgengrauen.info/WebTelnet.css" media="screen">
+
+<link rel="shortcut icon" type="image/x-icon" href="http://mg.mud.de/img/favicon.ico" />
+<title>MorgenGrauen - mg.mud.de - das gr&ouml;&szlig;te deutsche textbasierte, kostenlose Online-Rollenspiel</title>
+
+<style type="text/css">
+  <!--
+  #nav #nav_sub_start { display:block;}
+  #nav #nav_start { color:#043341;}
+  -->
+</style>
+
+	<link rel="stylesheet" type="text/css" href="http://mg.mud.de/doc/startseite.css" media="screen">
 	<link type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.14/themes/humanity/jquery-ui.css" rel="stylesheet"/>
+	<style type="text/css">
+	.bg_green { background-color : green;}
+	.bg_yellow {  background-color : yellow;}
+	.bg_red { background-color : red;}
+	</style>
 	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
 	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
 	<script type="text/javascript">
@@ -36,7 +56,13 @@
 	function update(suffix, val, max) {
 		$("#p_max_"+suffix).text(max);
 		$("#p_"+suffix).text(val);
-		$("#p_bar_"+suffix).progressbar({value: 100.0*parseInt(val)/parseInt(max)});
+		var value = 100.0*parseInt(val)/parseInt(max);
+		$("#p_bar_"+suffix).progressbar({ value: value});
+		var bar=$("#p_bar_"+suffix+" > .ui-progressbar-value")
+		bar.removeClass("bg_red bg_yellow bg_green");
+		if (value > 75) { bar.addClass("bg_green") }
+		if (value <= 75 && value >= 30) { bar.addClass("bg_yellow") }
+		if (value < 30) { bar.addClass("bg_red") }
 	}
 	function collect(start,end, fun) {
 		var collected = null;
@@ -47,27 +73,55 @@
 			if (collected != null) {
 				collected += line + "\n";
 			}
-			console.log(collected);
 			if (line.match(end)) {
+				console.log(collected);
 				fun(collected);
 				collected = null;
 			}
 		}
 	}
+
+	function grab_single(regexp, fun) {
+		return function(line) {
+			if (line.match(regexp)) {
+				console.log(line);
+				fun(line + "\n");
+			}
+		}
+	}
 	
+	function setTabText(tab, text) {
+		$("#"+tab).text(text); 
+		$("#info").tabs("select","#"+tab);
+	}
 	var history = Array()
 	var grab_info = collect(/- .+ -{3,}$/,/----------------------------------------------------------------------/,
-		function(text) { $("#p_info").text(text);});
-	var grab_inv = collect(/- .+ -{3,}$/,/----------------------------------------------------------------------/,
-			function(text) { $("#p_info").text(text);});
+		function(text) { setTabText("p_info",text)});
+	var grab_inv = collect(/^(inv|inventory|i)\s*$/,/^\S*>\s*$/,
+			function(text) {setTabText("p_inventory",text)});
+	
+	var grab_finger = collect(/^.+ ist anwesend,$/,/^\S*>\s*$/,
+					function(text) { setTabText("p_finger",text)});
 		
+    function appendTo(id, text) {
+		var target = $("#"+id);
+		target.append(text);
+		target.prop("scrollTop", target.prop("scrollHeight") - target.height() );
+	}
+	var grab_battle = grab_single(/(^  [^' ].+|.+ faellt tot zu Boden.$)/, function(text) { appendTo("p_fight",text); })
     function enrich(line) {
 		grab_info(line);
-		trigger_update(/Du bist jetzt (.+?) /,function(name) { $("#p_name").text(name) })(line);
-		trigger_update(/Konzentration: 0 \|.+\|  (\d+) \((\d+)\)$/,function(val,max) { update("kp",val,max); })(line);
-		trigger_update(/Gesundheit:    0 \|.+\|  (\d+) \((\d+)\)$/,function(val,max) { update("lp",val,max); })(line);
-		trigger_update(/Konzentration: 0 \|.+\|  (\d+)$/,function(max) { update("kp",max,max); })(line);
-		trigger_update(/Gesundheit:    0 \|.+\|  (\d+)$/,function(max) { update("lp",max,max); })(line);
+		grab_inv(line);
+		grab_finger(line);
+		grab_battle(line);
+		trigger_update(/^Du bist jetzt (.+?) /,function(name) { $('#status').dialog("option", "title", name ); })(line);
+		trigger_update(/^Schoen, dass Du wieder da bist, (.+?)!/,function(name) { $('#status').dialog("option", "title", name ); })(line);
+		
+		trigger_update(/Konzentration: 0 \|.+\| +(\d+) \((\d+)\)$/,function(val,max) { update("kp",val,max); })(line);
+		trigger_update(/Gesundheit:    0 \|.+\| +(\d+) \((\d+)\)$/,function(val,max) { update("lp",val,max); })(line);
+		trigger_update(/Konzentration: 0 \|.+\| +(\d+)$/,function(max) { update("kp",max,max); })(line);
+		trigger_update(/Gesundheit:    0 \|.+\| +(\d+)$/,function(max) { update("lp",max,max); })(line);
+		line = color_escapes(line);
 		line = line.replace(/\b(norden|nordosten|osten|suedosten|sueden|suedwesten|westen|nordwesten|oben|unten|raus)\b/g,"<span style='color:red' onclick='input(\"$1\");'>$1</span>");
 		line = line.replace(/([A-Z][a-z]{2,})/g,"<span ondblclick='input(\"untersuche $1\");'>$1</span>");
 		return line;
@@ -81,20 +135,26 @@
 			  $('#out').append(result+"\n");
 			}
 		});
-		$("#frame").prop("scrollTop", $("#frame").prop("scrollHeight") - $('#frame').height() );
+		$("#mgbox").prop("scrollTop", $("#mgbox").prop("scrollHeight") - $('#mgbox').height() );
 	}
 
+	function addToHistory(text) {
+		var idx=history.indexOf(text);
+		if (idx>-1) {
+			history.splice(idx,1);
+		}
+		history.unshift(text);
+		histoffset = 0;
+	}
+	
 	function sendInput() {
 	   var input=$('#input')
 	   var value=input.val() + "\n";
-	   if (value.match(/.+\n/)) {
 		 showText(value);
-		 history.unshift(value);
-		 histoffset = 0;
+		 addToHistory(value);
 	     server.send(value);
 		 input.focus();
 	     input.select();
-	   }
 	}
 	const KEYBOARD_LEFT = 37;
 	const KEYBOARD_RIGHT = 39;
@@ -105,6 +165,7 @@
 	const KEYBOARD_HOME = 36;
 	
 	function handle_keys(e) {
+		var box=$("#mgbox");
 		switch (e.keyCode) {
 		  case KEYBOARD_DOWN : 
 			input(history[histoffset],false);
@@ -117,26 +178,123 @@
 			if (histoffset >= history.length) histoffset = history.length - 1;
 			break;
 		  case KEYBOARD_PAGE_UP : 
-			$("#frame").prop("scrollTop", $("#frame").prop("scrollTop") - $('#frame').height() );
+			box.prop("scrollTop", box.prop("scrollTop") - box.height() );
 			break;
 		  case KEYBOARD_PAGE_DOWN : 
-			$("#frame").prop("scrollTop", $("#frame").prop("scrollTop") + $('#frame').height() );
+			box.prop("scrollTop", box.prop("scrollTop") +  box.height() );
 			break;
 		}
 	}
 	
+	var esc_colors = {
+		30 : 'black',          	
+		31 : 'red',            	
+		32 : 'green',          	
+		33 : 'yellow',         	
+		34 : 'blue',           	
+		35 : 'magenta',        	
+		36 : 'cyan',           	
+		37 : 'white',          	
+
+		40 : 'bgblack',        	
+		41 : 'bgred',          	
+		42 : 'bggreen',        	
+		43 : 'bgyellow',       	
+		44 : 'bgblue',         	
+		45 : 'bgmagenta',      	
+		46 : 'bgcyan',         	
+		47 : 'bgwhite',        	
+
+		4 : 'underline',       	
+		1 : 'bright',            	
+		5 : 'blink',           		
+		8 : 'hidden',
+		7 : 'reverse',
+		2 : 'dim',
+		0 : 'mudtext'
+	};
+	
+	function esc_classes(match,color,background,flags) {
+		var codes=match.split(/;/);
+		for (i=0;i<codes.length;i++) {
+			var code = codes[i] % 10;
+			if (codes[i] == 0) {
+			    color=null;background=null;flags=Array();
+			}
+			else if (codes[i] == 7) {
+				if (background != null) color = background; else color = 0;
+				if (color!=null) background = color; else background = 7;
+			}
+			else if (codes[i] < 10) {
+			    var cmp="^"+codes[i]+"$";
+				var found = false;
+			    for (j = 0; j < flags.length;j++) {
+				   if (flags[i].match(cmp)) found=true;
+				}
+				if (!found) {
+					flags.push(codes[i]);
+				}
+			} else if (codes[i] < 40) {
+			    color = color | code;
+			} else {
+			    background = background | code;
+			}
+	    }
+		flags.sort();
+//		console.log('Codes: '+ codes.join(' '));
+		res = { color: color, background: background, flags: flags};
+//		console.log(' State: color '+color+" background "+background+" flags "+flags);
+		return res;
+	}
+
+	function color_escapes(text) {
+	  var color=null, background = null,flags = Array();
+	  var result="";
+	  var match;
+	  while (match = text.match(/^(.*?)\x1B\[([0-9<;]+)m(.*)$/)) {
+//		    console.log(match);
+			var tmp=flags.slice();
+			var res = esc_classes(match[2],color,background,tmp);;
+			var ncolor = res.color; nbackground = res.background; nflags = res.flags;
+//			console.log(' State: color '+color+" background "+background+" flags "+flags);
+//			console.log(' State: ncolor '+ncolor+" nbackground "+nbackground+" nflags "+nflags);
+			result += match[1];
+			if (color!=ncolor || nbackground != background || flags.join('') != nflags.join('')) {
+			    if (color!=null || background!=null || flags.length>0) {
+				  result+='</span>';
+			    }
+			    if (ncolor!=null || nbackground!=null || nflags.length>0) {
+     				result +='<span class="';
+					if (ncolor!=null) {
+     					result +=esc_colors[30+ncolor]+" ";
+					}
+					if (nbackground != null) {
+     					result +=esc_colors[40+nbackground]+" ";
+					}
+					for (i=0;i<nflags.length;i++) {
+     				    result += esc_colors[nflags[i]] + " ";
+					}
+     				result +='">';
+     			 }
+			}
+			color=ncolor; background=nbackground; flags=nflags;
+			text=match[3];
+	    }
+		result +=text;
+		return result;
+	}
 	function add_button(label, action) {
 		$("#toolbar").prepend("<button id=\"b_"+label+"\">"+label+"</button>");
 		$("#b_"+label).button({options: { label: label }}).click(function() { input(action); });
 	}
 	$(document).ready(function(){
 		try {
-		$('#input').focus();
-		$('#status').draggable();
+		$('#status').dialog({ title: "Status", position : ["right","top"], width : 150 });
 		update("kp",50,100);
 		update("lp",50,100);
 		$('#input').keydown(handle_keys);
-		$("#info").tabs().draggable().resizable();
+		$("#info").tabs({ width: 600 }).draggable().resizable();
+		$("#p_fight").dialog({ title: "Kampf", position : ["right","bottom"] , width : 500, height : 200, maxHeight: 100 });
 		add_button("Info","info");
 		add_button("Inventory","inv");
 		add_button("nn","nn");
@@ -145,46 +303,73 @@
 		   input("grafik aus"); 
 		});
 		$( "#b_modus" ).buttonset();
+		$('#input').focus();
 	} catch(e) {console.log(e);}
 	});
 	var	server = connect(showText);
 	console.log(server);
 	</script>
 </head>
-<body style="font-size:12px;">
-<div id="frame" style="font-family:monospace;border:1px solid black;width:80%;height:80%;overflow:auto;">
-	<pre id="out">
-	</pre>
-</div>
-<span id="toolbar" class="ui-widget-header ui-corner-all">
-	<input type="checkbox" id="b_grafik" /><label for="b_grafik">Grafik aus</label>
-	
-	<span id="b_modus">
-		<input type="radio" id="b_lang" name="b_modus" onchange="input('lang');"/><label for="b_lang">Lang</label>
-		<input type="radio" id="b_kurz" name="b_modus"  onchange="input('kurz');" checked="checked" /><label for="b_kurz">Kurz</label>
-		<input type="radio" id="b_ultrakurz" name="b_modus"  onchange="input('ultrakurz');"/><label for="b_ultrakurz">Ultrakurz</label>
-	</span>
-</span>
-<form id="form" method="post" onsubmit="try {sendInput()} catch(e) { alert(e); };return false;">
-	<input type="text" id="input" size="80"/>
-</form>
-<div id="status" style="width:200px;height:50px;right:10px;top:10px;position:absolute;" class="ui-widget-content">
-	<div id="p_name">Mesirii</div>
-	<div id="p_bar_lp" style="height:1.5em;margin:3px;"><span style="position: absolute; width: 100%; text-align: center;">LP: <span id="p_lp">58</span>/<span id="p_max_lp">58</span></span></div>
-	<div id="p_bar_kp" style="height:1.5em;margin:3px;"><span style="position: absolute; width: 100%; text-align: center;">KP: <span id="p_kp">58</span>/<span id="p_max_kp">58</span></span></div>
-</div>
+<body style="font-size:10px">
+	<div id="nav">
+	  <div class="nav-1">&nbsp;</div>
 
-<div id="info" style="position:absolute;top:30%;right:10px;width:500px;">
-	<ul>
-		<li><a href="#tabs-1">Info</a></li>
-		<li><a href="#tabs-2">Finger</a></li>
-	</ul>
-	<div id="tabs-1">
-		<pre id="p_info"></pre>
+	  <div class="nav-2">
+	 <a href="/doc/start.shtml" class="nav" id="nav_start" style="margin-top:0">Start</a>
+	  <span id="nav_sub_start" class="secnav">
+	  <a href="/information/ueber.shtml" id="nav_eingang">&Uuml;ber uns</a>
+	  </div>
+	  <div class="nav-3">&nbsp;</div>
 	</div>
-	<div id="tabs-2">
-		<pre id="p_finger"></pre>
+
+	<div id="mg-logo">&nbsp;</div>
+	<div id="mg-logo2">&nbsp;</div>
+
+	<div id="ie-hack">&nbsp;</div>
+	<div id="doc">
+	<div id="mgbox" style="overflow:auto;height:450px;" class="mudtext">
+		<pre id="out">
+		</pre>
 	</div>
-</div>
+
+	<div style="margin-left:5%;margin-top:5px;">
+	<span id="toolbar" class="ui-widget-header ui-corner-all">
+		<input type="checkbox" id="b_grafik" /><label for="b_grafik">Grafik aus</label>
+
+		<span id="b_modus">
+			<input type="radio" id="b_lang" name="b_modus" onchange="input('lang');"/><label for="b_lang">Lang</label>
+			<input type="radio" id="b_kurz" name="b_modus"  onchange="input('kurz');" checked="checked" /><label for="b_kurz">Kurz</label>
+			<input type="radio" id="b_ultrakurz" name="b_modus"  onchange="input('ultrakurz');"/><label for="b_ultrakurz">Ultrakurz</label>
+		</span>
+	</span>
+	<form id="form" method="post"  style="margin: 5px;" onsubmit="try {sendInput()} catch(e) { alert(e); };return false;">
+		<input type="text" id="input" style="width:95%;"/>
+	</form>
+    </div>
+	<pre id="p_fight" style="overflow-x:hidden;overflow-y:auto;">
+	</pre>
+
+	<div id="status">
+		<div id="p_bar_lp" style="height:1.5em;margin:3px;"><span style="position: absolute; width: 50%; text-align: center;">LP: <span id="p_lp">58</span>/<span id="p_max_lp">58</span></span></div>
+		<div id="p_bar_kp" style="height:1.5em;margin:3px;"><span style="position: absolute; width: 50%; text-align: center;">KP: <span id="p_kp">58</span>/<span id="p_max_kp">58</span></span></div>
+	</div>
+
+	<div id="info" style="position:absolute;top:30%;right:10px;width:500px;display: inline-block;">
+		<ul>
+			<li><a href="#p_info">Info</a></li>
+			<li><a href="#p_finger">Finger</a></li>
+			<li><a href="#p_inventory">Inventory</a></li>
+		</ul>
+			<pre id="p_info"></pre>
+			<pre id="p_finger"></pre>
+			<pre id="p_inventory"></pre>
+	</div>
+
+
+	<div class="ie-hack2">&nbsp;</div>
+	</div>
+
+	<div id="disclaimer"><span style="text-align:center;">&copy; MorgenGrauen. Alle Rechte vorbehalten.</span></div>
+
 </body>
 </html>
