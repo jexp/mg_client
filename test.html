@@ -53,16 +53,28 @@
 		}
 	}
 	
+	var status = {
+		lp : 0,
+		max_lp : 100,
+		kp : 0,
+		max_kp : 100
+	}
 	function update(suffix, val, max) {
+		if (max==null) { max = status["max_"+suffix]; }
+		if (val==null) { val = status[suffix]; }
 		$("#p_max_"+suffix).text(max);
 		$("#p_"+suffix).text(val);
 		var value = 100.0*parseInt(val)/parseInt(max);
 		$("#p_bar_"+suffix).progressbar({ value: value});
+	
 		var bar=$("#p_bar_"+suffix+" > .ui-progressbar-value")
 		bar.removeClass("bg_red bg_yellow bg_green");
 		if (value > 75) { bar.addClass("bg_green") }
 		if (value <= 75 && value >= 30) { bar.addClass("bg_yellow") }
 		if (value < 30) { bar.addClass("bg_red") }
+
+		status["max_"+suffix] = max;
+		status[suffix] = val; 
 	}
 	function collect(start,end, fun) {
 		var collected = null;
@@ -98,10 +110,16 @@
 	var grab_info = collect(/- .+ -{3,}$/,/----------------------------------------------------------------------/,
 		function(text) { setTabText("p_info",text)});
 	var grab_inv = collect(/^(inv|inventory|i)\s*$/,/^\S*>\s*$/,
-			function(text) {setTabText("p_inventory",text)});
+			function(text) {setTabText("p_inventory",color_escapes(text))});
+	
+	var grab_ausruestung = collect(/^(ar|ausruestung)\s*$/,/^\S*>\s*$/,
+					function(text) {setTabText("p_ausruestung",color_escapes(text))});
 	
 	var grab_finger = collect(/^.+ ist anwesend,$/,/^\S*>\s*$/,
 					function(text) { setTabText("p_finger",text)});
+	
+	var grab_kwer = collect(/^     Liste der Mitspieler vom/,/^\S*>\s*$/,
+									function(text) { setTabText("p_kwer",text)});
 		
     function appendTo(id, text) {
 		var target = $("#"+id);
@@ -113,9 +131,22 @@
 		grab_info(line);
 		grab_inv(line);
 		grab_finger(line);
+		grab_ausruestung(line);
+		grab_kwer(line);
 		grab_battle(line);
 		trigger_update(/^Du bist jetzt (.+?) /,function(name) { $('#status').dialog("option", "title", name ); })(line);
 		trigger_update(/^Schoen, dass Du wieder da bist, (.+?)!/,function(name) { $('#status').dialog("option", "title", name ); })(line);
+
+
+		trigger_update(/^Du hast jetzt (\d+) Lebenspunkte und (\d+) Konzentrationspunkte.$/,function(lp,kp) { 
+			update("lp",lp,null); 
+			update("kp",kp,null); 
+		})(line);
+
+		trigger_update(/^Vorsicht: (.+). Fluchtrichtung: (.+)$/,function(vorsicht,flucht) { 
+			$("#p_vorsicht").text(vorsicht);
+			$("#p_flucht").text(flucht);
+		})(line);
 		
 		trigger_update(/Konzentration: 0 \|.+\| +(\d+) \((\d+)\)$/,function(val,max) { update("kp",val,max); })(line);
 		trigger_update(/Gesundheit:    0 \|.+\| +(\d+) \((\d+)\)$/,function(val,max) { update("lp",val,max); })(line);
@@ -139,6 +170,7 @@
 	}
 
 	function addToHistory(text) {
+		if (text==null) return;
 		var idx=history.indexOf(text);
 		if (idx>-1) {
 			history.splice(idx,1);
@@ -248,6 +280,7 @@
 	}
 
 	function color_escapes(text) {
+      if (text == null) return text;
 	  var color=null, background = null,flags = Array();
 	  var result="";
 	  var match;
@@ -352,6 +385,7 @@
 	<div id="status">
 		<div id="p_bar_lp" style="height:1.5em;margin:3px;"><span style="position: absolute; width: 50%; text-align: center;">LP: <span id="p_lp">58</span>/<span id="p_max_lp">58</span></span></div>
 		<div id="p_bar_kp" style="height:1.5em;margin:3px;"><span style="position: absolute; width: 50%; text-align: center;">KP: <span id="p_kp">58</span>/<span id="p_max_kp">58</span></span></div>
+		<div>V: <span id="p_vorsicht"></span> FR: <span id="p_flucht"></span></div>
 	</div>
 
 	<div id="info" style="position:absolute;top:30%;right:10px;width:500px;display: inline-block;">
@@ -359,10 +393,14 @@
 			<li><a href="#p_info">Info</a></li>
 			<li><a href="#p_finger">Finger</a></li>
 			<li><a href="#p_inventory">Inventory</a></li>
+			<li><a href="#p_ausruestung">Ausr&uuml;stung</a></li>
+			<li><a href="#p_kwer">Anwesende</a></li>
 		</ul>
 			<pre id="p_info"></pre>
 			<pre id="p_finger"></pre>
 			<pre id="p_inventory"></pre>
+			<pre id="p_ausruestung"></pre>
+			<pre id="p_kwer"></pre>
 	</div>
 
 
