@@ -1,3 +1,16 @@
+function addTab(id, name, tab) {
+	$("#"+id).tabs("add","#"+name,tab["title"]);
+	if (tab["trigger"]) {
+		var fun = tab["fun"] || function(text) {setTabText(name,text)};
+		addTrigger(name,grab_single(tab["trigger"], fun));
+	}
+	if (tab["start"]) {
+		var end = tab["end"] ? tab["end"] : /^\S*>\s*$/;
+		var fun = tab["fun"] || function(text) {setTabText(name,text)};
+		addTrigger(name,collect(tab["start"],end, fun));
+	}
+	$("#"+name).css("overflow-y","auto").css("overflow-x","auto").css("max-height",300)
+}
 function addWindow(id,w) {
 	var div = $("<div></div>").attr("id",id).append("<ul>").appendTo("body").css("width","550px")
 	.css("right","100px").css("top",window_top_offset() + "px").css("position","absolute")
@@ -5,17 +18,7 @@ function addWindow(id,w) {
 	
 	for (name in w) {
 		var tab=w[name];
-		div.tabs("add","#"+name,tab["title"]);
-
-		if (w[name]["trigger"]) {
-			var fun = w[name]["fun"] || function(text) {setTabText(name,text)};
-			addTrigger(name,grab_single(w[name]["trigger"], fun));
-		}
-		if (w[name]["start"]) {
-			var end = w[name]["end"] ? w[name]["end"] : /^\S*>\s*$/;
-			var fun = w[name]["fun"] || function(text) {setTabText(name,text)};
-			addTrigger(name,collect(w[name]["start"],end, fun));
-		}
+        addTab(id, name, tab)
 	}
 	add_close_button(div)
 	var menue = $("<a>").appendTo($("#nav_sub_start"))

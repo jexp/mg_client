@@ -7,15 +7,16 @@
 <link rel="shortcut icon" type="image/x-icon" href="http://mg.mud.de/img/favicon.ico" />
 <title>MorgenGrauen - mg.mud.de - das gr&ouml;&szlig;te deutsche textbasierte, kostenlose Online-Rollenspiel</title>
 
-<style type="text/css">
-  <!--
-  #nav #nav_sub_start { display:block;}
-  #nav #nav_start { color:#043341;}
-  -->
-</style>
 
 	<link rel="stylesheet" type="text/css" href="http://mg.mud.de/doc/startseite.css" media="screen">
 	<link type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.14/themes/humanity/jquery-ui.css" rel="stylesheet"/>
+
+	<style type="text/css">
+	  <!--
+	  #nav .secnav { display: block;}
+	  #nav #nav_start { color:#043341;}
+	  -->
+	</style>
 
 	<style type="text/css">
 	.bg_green { background-color : green;}
@@ -32,6 +33,9 @@
 	<script type="text/javascript" src="mg_client_player.js"></script>
 	<script type="text/javascript" src="mg_client_history.js"></script>
 	<script type="text/javascript" src="mg_client_config.js"></script>
+	<script type="text/javascript" src="persist-min.js"></script>
+	<script type="text/javascript" src="mg_client_persist.js"></script>
+	<script language="javascript" type="text/javascript" src="edit_area_full.js"></script>
 	<script type="text/javascript">
 
     function enrich(line) {
@@ -52,11 +56,8 @@
 	}
 
 	$(document).ready(function(){
-		try {
+//		try {
 		$('#status').dialog({ title: "Status", position : [850,80], width : 300 });
-
-		update("kp",50,100);
-		update("lp",50,100);
 
 		$('#input').keydown(handle_keys);
 
@@ -72,7 +73,7 @@
 		   input("grafik aus"); 
 		});
 		$( "#b_modus" ).buttonset();
-
+		showPlayer();
 		addWindow("Spieler",
 				{ p_info: { 
 				title: "Info", start:/- .+ -{3,}$/,  
@@ -92,14 +93,32 @@
 			fun : function (text) { appendTabText("teilemit",text); } },
 			ebenen :   { title : "Ebenen", trigger : /^\[[A-Z]\w+/, fun : function (text) { appendTabText("ebenen",text); }}
 		})		
+		
+		editAreaLoader.init({
+			  id : "script_editor"
+			, syntax: "js"		
+			, start_highlight: false
+			, allow_toggle : false
+			, replace_tab_by_spaces : true
+			, word_wrap : false
+			, display: "onload"
+			, toolbar : "new_document, load, save , | , search, go_to_line, |, undo, redo"
+			, save_callback : "scriptDialog"
+		});
+		$("#script_editor").dialog({autoOpen : false ,width : $("#script_editor").width() });
+		
 		console.log(highlight({ 
 			trigger: /Test/, 
 			style : { color:"red" }, 
 			click: function(text) { return "input(\""+text+"\")";}
 			})("Das ist ein Test"));
 			
+		runScript("startup");
+
+//		addScript("startup", function(x) { alert("test "+x)});
+//		editScript("startup");
 		$('#input').focus();
-	} catch(e) {console.log(e);}
+//	} catch(e) {console.log(e);throw e;}
 	});
 	var	server = connect(showText);
 	console.log(server);
@@ -114,7 +133,16 @@
 	  <span id="nav_sub_start" class="secnav">
 	  <a href="#" id="nav_eingang" onclick="$('#status').dialog('open'); return false;">Status</a>
 	</span>
+
+  	<a href="#" class="nav" id="nav_neues">Makros</a>
+  	<span class="secnav">
+    	<a href="#" class="nav" onclick="scriptDialog('edit'); return false;">Edit</a>
+    	<a href="#" class="nav" onclick="editScript('startup'); return false;">Startup</a>
+    	<a href="#" class="nav" onclick="editScript('connect'); return false;">Connect</a>
+  	</span>
+
 	  </div>
+
 	  <div class="nav-3">&nbsp;</div>
 	</div>
 
@@ -146,7 +174,7 @@
 
 	<div id="status" style="width:200">
 		<div style="float:left">
-			<img src="dwarf.jpg"/>
+			<img id="avatar" src="dwarf.jpg"/>
 		</div>
 		<div style="margin-left:40%">
 		<div id="p_bar_lp" style="height:1.5em;margin:3px;"><span style="position: absolute; width: 50%; text-align: center;">LP: <span id="p_lp">58</span>/<span id="p_max_lp">58</span></span></div>
@@ -159,8 +187,14 @@
 
 	<div class="ie-hack2">&nbsp;</div>
 	</div>
-
+    <textarea id="script_editor" rows="10" cols="80">&nbsp;
+	</textarea>
 	<div id="disclaimer"><span style="text-align:center;">&copy; MorgenGrauen. Alle Rechte vorbehalten.</span></div>
-
+    <form id="script_dialog" onsubmit="scriptDialogSubmit();return false;" style="display:none">
+		<input type="text" name="new_script_name"/><br/>
+		<select name="script_name" size="10">
+		</select><br/>
+		<input type="submit" value="Save">
+	</form>
 </body>
 </html>

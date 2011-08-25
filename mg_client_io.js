@@ -11,7 +11,9 @@
 //			console.log(e.data.toString());
 			receive(e.data.toString());
 		};
-		ws.onclose = function() { ws.send("connect"); };
+		ws.onclose = function() { 
+			ws.send("connect"); 
+		};
 		ws.onopen = function() {};
 		return ws;
 	}
