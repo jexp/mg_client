@@ -20,13 +20,24 @@
 	.bg_green { background-color : green;}
 	.bg_yellow {  background-color : yellow;}
 	.bg_red { background-color : red;}
+	
 	</style>
 	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
 	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
 	<script type="text/javascript">
 
+const HOST="localhost";
+const PORT=8000;
+
 	function connect(receive) {
-		var ws = new WebSocket("ws://localhost:8000/");
+		var url = "ws://"+HOST+":"+PORT+"/";
+		var ws;
+		if ("MozWebSocket" in window) {
+			ws = new MozWebSocket(url);
+		} else if ("WebSocket" in window) {
+			ws = new WebSocket(url);
+		}
+		console.log("ws "+ws+" url "+url+" "+typeof(MozWebSocket));
 		ws.onmessage = function(e) { 
 //			console.log(e.data.toString());
 			receive(e.data.toString());
@@ -104,32 +115,51 @@
 		}
 	}
 	
-	function setTabText(tab, text) {
-		if (text==null) return;
-		$("#"+tab).text(text); 
-		$("#info").tabs("select","#"+tab);
-//		var idx=$("#"+tab).index();
-//		console.log(tab+" "+idx);
-//		$("#info").tabs("select",idx);
+	function add_close_button(d) {
+		var id="#"+d.attr("id") + "_close";
+		d.tabs("add",id,"X");
+		var tab=d.find("ul li a[href="+id+"]");
+		tab.click(function() { d.toggle() });
+		tab.parent().removeClass("ui-state-default ui-corner-top");
+	}
+	
+	var triggers = {};
+	
+	function addWindow(id,w) {
+		var window_count = $("#nav_sub_start").children().size()
+		var div = $("<div></div>").attr("id",id).append("<ul>").appendTo("body").css("width","600px")
+		.css("right","0px").css("top",(window_count*100) + "px").css("position","absolute")
+		div.tabs({ panelTemplate : "<pre></pre>" }).draggable().resizable();
 		
+		for (name in w) {
+			var tab=w[name];
+			div.tabs("add","#"+name,tab["title"]);
+
+			if (w[name]["trigger"]) {
+				var fun = w[name]["fun"] || function(text) {setTabText(name,text)};
+				triggers[name]=grab_single(w[name]["trigger"], fun);
+			}
+			if (w[name]["start"]) {
+				var end = w[name]["end"] ? w[name]["end"] : /^\S*>\s*$/;
+				var fun = w[name]["fun"] || function(text) {setTabText(name,text)};
+				triggers[name]=collect(w[name]["start"],end, fun);
+			}
+		}
+		add_close_button(div)
+		var menue = $("<a>").appendTo($("#nav_sub_start"))
+		menue.click(function() { $('#'+id).toggle(); return false; }).text(id).attr("href","#");
+		console.log(menue)
+		console.log($("#nav_sub_start"))
+	}
+	
+	function setTabText(id, text) {
+		if (text==null) return;
+		var tab = $("#"+id)
+		tab.empty().append(text); 
+		tab.parent().tabs("select","#"+id);
 	}
 	var history = Array()
-	var grab_info = collect(/- .+ -{3,}$/,/----------------------------------------------------------------------/,
-		function(text) { setTabText("p_info",text)});
-	var grab_inv = collect(/^(inv|inventory|i)\s*$/,/^\S*>\s*$/,
-			function(text) {setTabText("p_inventory",color_escapes(text))});
-
-	var grab_ort = collect(/^(schaue?|l|look|norden|nordosten|osten|suedosten|sueden|suedwesten|westen|nordwesten|oben|unten|raus|n|nw|no|o|s|w|sw|so|ob|u)\s*$/,/^\S*>\s*$/,
-					function(text) {setTabText("p_ort",text)});
 	
-	var grab_ausruestung = collect(/^(ar|ausruestung)\s*$/,/^\S*>\s*$/,
-					function(text) {setTabText("p_ausruestung",color_escapes(text))});
-	
-	var grab_finger = collect(/^.+ ist anwesend,$/,/^\S*>\s*$/,
-					function(text) { setTabText("p_finger",text)});
-	
-	var grab_kwer = collect(/^     Liste der Mitspieler vom/,/^\S*>\s*$/,
-									function(text) { setTabText("p_kwer",text)});
 		
     function appendTo(id, text) {
 		var target = $("#"+id);
@@ -143,20 +173,12 @@
 	* Mesirii     Chaos          113  11 226 (226) 169 (202)     0  1  1  1 -- - -
 	  Nurchak                     12   0  41 ( 41) 161 (161)     0  1  1  1 -- - -
 	*/
-	
-	var grab_team = collect(/^  Name        Gilde           LV GLV  LP (MLP)  KP (MKP) Vors. GR AR TR FR A V/,/^\S*>\s*$/,
-	function(text) {
-	   setTabText("p_team",text)	
-	});
+
+	function escapeHTML(text) {
+		return text.replace(/&/g, "&amp;").replace(/</g, "&lt;"); // .replace(/>/g, "&gt;")
+	}
     function enrich(line) {
-		grab_ort(line);
-		grab_info(line);
-		grab_inv(line);
-		grab_finger(line);
-		grab_ausruestung(line);
-		grab_kwer(line);
 		grab_battle(line);
-		grab_team(line);
 		trigger_update(/^Du bist jetzt (.+?) /,function(name) { $('#status').dialog("option", "title", name ); })(line);
 		trigger_update(/^Schoen, dass Du wieder da bist, (.+?)!/,function(name) { $('#status').dialog("option", "title", name ); })(line);
 
@@ -175,12 +197,24 @@
 		trigger_update(/Gesundheit:    0 \|.+\| +(\d+) \((\d+)\)$/,function(val,max) { update("lp",val,max); })(line);
 		trigger_update(/Konzentration: 0 \|.+\| +(\d+)$/,function(max) { update("kp",max,max); })(line);
 		trigger_update(/Gesundheit:    0 \|.+\| +(\d+)$/,function(max) { update("lp",max,max); })(line);
+		
+		for (name in triggers) {
+			triggers[name](line);
+		}
+		line = escapeHTML(line);
 		line = color_escapes(line);
+//		grab_ausruestung(line);
 		line = line.replace(/\b(norden|nordosten|osten|suedosten|sueden|suedwesten|westen|nordwesten|oben|unten|raus)\b/g,"<span style='color:red' onclick='input(\"$1\");'>$1</span>");
 		line = line.replace(/([A-Z][a-z]{2,})/g,"<span ondblclick='input(\"untersuche $1\");'>$1</span>");
+		$("#source").text($("#source").text()+line+"\n");
+		scrollBottom("source");
 		return line;
 	}
 
+	function scrollBottom(name) {
+	   var box = $("#"+name);
+	   box.prop("scrollTop", box.prop("scrollHeight") - box.height() );	
+	}
 	function showText(text) {
 		var lines=text.split(/\r\n/);
 		lines.forEach(function(line) {
@@ -189,7 +223,7 @@
 			  $('#out').append(result+"\n");
 			}
 		});
-		$("#mgbox").prop("scrollTop", $("#mgbox").prop("scrollHeight") - $('#mgbox').height() );
+		scrollBottom("mgbox");
 	}
 
 	function addToHistory(text) {
@@ -307,7 +341,7 @@
 	  var color=null, background = null,flags = Array();
 	  var result="";
 	  var match;
-	  while (match = text.match(/^(.*?)\x1B\[([0-9<;]+)m(.*)$/)) {
+	  while (match = text.match(/^(.*?)\x1B\[([0-9<;]+)m/m)) {
 //		    console.log(match);
 			var tmp=flags.slice();
 			var res = esc_classes(match[2],color,background,tmp);;
@@ -334,7 +368,7 @@
      			 }
 			}
 			color=ncolor; background=nbackground; flags=nflags;
-			text=match[3];
+			text=text.substring(match[0].length);
 	    }
 		result +=text;
 		return result;
@@ -342,11 +376,6 @@
 	function add_button(label, action) {
 		$("#toolbar").prepend("<button id=\"b_"+label+"\">"+label+"</button>");
 		$("#b_"+label).button({options: { label: label }}).click(function() { input(action); });
-	}
-	function addTab(name, label) {
-//		$("#info").tabs("add","#"+name,label);
-		$("#info ul").append("<li id=\"tab-"+name+"\"><a href=\"#"+name+"\">"+label+"</a></li>");
-		$("#info").append("<pre id=\""+name+"\"></pre>");
 	}
 	
 	Array.prototype.hasObject = (
@@ -369,7 +398,8 @@
 		update("kp",50,100);
 		update("lp",50,100);
 		$('#input').keydown(handle_keys);
-		$("#p_fight").dialog({ title: "Kampf", position : ["right","bottom"] , width : 500, height : 200, maxHeight: 100 });
+		$("#p_fight").dialog({ title: "Kampf", position : ["right","bottom"] , width : 500, height : 200, maxHeight: 100, autoOpen: false });
+		$("#source").dialog({ title: "Source", position : ["left","bottom"] , width : 500, height : 200, autoOpen: false });
 		add_button("Info","info");
 		add_button("Inventory","inv");
 		add_button("nn","nn");
@@ -378,14 +408,24 @@
 		   input("grafik aus"); 
 		});
 		$( "#b_modus" ).buttonset();
-		addTab("p_kwer","Anwesende");
-		addTab("p_ort","Ort");
-		addTab("p_team","Team");
-		$("#info").tabs({ 
-			width: 600, 
-			add: function(event, ui) {
-		        console.log('#' + ui.panel.id);
-		    }}).draggable().resizable();
+		addWindow("Spieler",
+				{ p_info: { 
+				title: "Info", start:/- .+ -{3,}$/,  
+				end: /----------------------------------------------------------------------/ },
+				  p_inventory : { title: "Inventory", start : /^(inv|inventory|i)\s*$/ },
+				  p_ausruestung : { title: "Ausr&uuml;stung", start : /^(ar|ausruestung)\s*$/ ,
+					fun : function(text) { setTabText("p_ausruestung",color_escapes(escapeHTML(text))) }
+				 }
+				});
+		addWindow("Mud", {
+			p_ort : { title: "Ort", 	start : /^(schaue?|l|look|norden|nordosten|osten|suedosten|sueden|suedwesten|westen|nordwesten|oben|unten|raus|n|nw|no|o|s|w|sw|so|ob|u)\s*$/},
+			p_finger : { title: "Finger", start : /^.+ ist anwesend,$/ },
+			p_kwer : { title : "Anwesende", start: /^     Liste der Mitspieler vom/ },
+			p_team : { title : "Team" , start: /^  Name        Gilde           LV GLV  LP (MLP)  KP (MKP) Vors. GR AR TR FR A V/ }});
+		addWindow("Kommunikation", {
+			teilemit : { title : "Mitteilungen", trigger : /^(Du teilst .+ mit|.+ teilt Dir mit):/ },
+			ebenen :   { title : "Ebenen", trigger : /^\[[A-Z]\w+/ }
+		})		
 		$('#input').focus();
 	} catch(e) {console.log(e);}
 	});
@@ -397,10 +437,13 @@
 	<div id="nav">
 	  <div class="nav-1">&nbsp;</div>
 
-	  <div class="nav-2">
-	 <a href="#" class="nav" id="nav_start" style="margin-top:0">Link</a>
+	  <div class="nav-2" style="font-size:12px;">
+	 <a href="#" class="nav" id="nav_start" style="margin-top:0;">Fenster</a>
 	  <span id="nav_sub_start" class="secnav">
-	  <a href="#" id="nav_eingang">Link 2</a>
+	  <a href="#" id="nav_eingang" onclick="$('#source').dialog('open'); return false;">Source</a>
+	  <a href="#" id="nav_eingang" onclick="$('#p_fight').dialog('open'); return false;">Kampf</a>
+	  <a href="#" id="nav_eingang" onclick="$('#status').dialog('open'); return false;">Status</a>
+	</span>
 	  </div>
 	  <div class="nav-3">&nbsp;</div>
 	</div>
@@ -410,7 +453,7 @@
 
 	<div id="ie-hack">&nbsp;</div>
 	<div id="doc">
-	<div id="mgbox" style="overflow:auto;height:450px;" class="mudtext">
+	<div id="mgbox" style="overflow:auto;height:450px;line-height:1.2em;" class="mudtext">
 		<pre id="out">
 		</pre>
 	</div>
@@ -432,25 +475,14 @@
 	<pre id="p_fight" style="overflow-x:hidden;overflow-y:auto;">
 	</pre>
 
+	<pre id="source" style="overflow-x:hidden;overflow-y:auto;">
+	</pre>
+
 	<div id="status">
 		<div id="p_bar_lp" style="height:1.5em;margin:3px;"><span style="position: absolute; width: 50%; text-align: center;">LP: <span id="p_lp">58</span>/<span id="p_max_lp">58</span></span></div>
 		<div id="p_bar_kp" style="height:1.5em;margin:3px;"><span style="position: absolute; width: 50%; text-align: center;">KP: <span id="p_kp">58</span>/<span id="p_max_kp">58</span></span></div>
 		<div>V: <span id="p_vorsicht"></span> FR: <span id="p_flucht"></span></div>
 	</div>
-
-	<div id="info" style="position:absolute;top:30%;right:10px;width:500px;display: inline-block;">
-		<ul>
-			<li><a href="#p_info">Info</a></li>
-			<li><a href="#p_finger">Finger</a></li>
-			<li><a href="#p_inventory">Inventory</a></li>
-			<li><a href="#p_ausruestung">Ausr&uuml;stung</a></li>
-		</ul>
-			<pre id="p_info"></pre>
-			<pre id="p_finger"></pre>
-			<pre id="p_inventory"></pre>
-			<pre id="p_ausruestung"></pre>
-	</div>
-
 
 	<div class="ie-hack2">&nbsp;</div>
 	</div>
