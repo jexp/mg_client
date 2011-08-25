@@ -152,16 +152,25 @@ const PORT=8000;
 		console.log($("#nav_sub_start"))
 	}
 	
-	function setTabText(id, text) {
+	function setTabText(id, text, append) {
 		if (text==null) return;
 		var tab = $("#"+id)
-		tab.empty().append(text); 
+		if (append) {
+			appendTo(id,text);
+		} else {
+			tab.empty().append(text); 
+		}
 		tab.parent().tabs("select","#"+id);
+	}
+	
+	function appendTabText(id, text) {
+		setTabText(id,text,true);
 	}
 	var history = Array()
 	
 		
     function appendTo(id, text) {
+		if (text==null) return;
 		var target = $("#"+id);
 		target.append(text);
 		target.prop("scrollTop", target.prop("scrollHeight") - target.height() );
@@ -423,8 +432,9 @@ const PORT=8000;
 			p_kwer : { title : "Anwesende", start: /^     Liste der Mitspieler vom/ },
 			p_team : { title : "Team" , start: /^  Name        Gilde           LV GLV  LP (MLP)  KP (MKP) Vors. GR AR TR FR A V/ }});
 		addWindow("Kommunikation", {
-			teilemit : { title : "Mitteilungen", trigger : /^(Du teilst .+ mit|.+ teilt Dir mit):/ },
-			ebenen :   { title : "Ebenen", trigger : /^\[[A-Z]\w+/ }
+			teilemit : { title : "Mitteilungen", trigger : /^(Du teilst .+ mit|.+ teilt Dir mit):/ , 
+			fun : function (text) { appendTabText("teilemit",text); } },
+			ebenen :   { title : "Ebenen", trigger : /^\[[A-Z]\w+/, fun : function (text) { appendTabText("ebenen",text); }}
 		})		
 		$('#input').focus();
 	} catch(e) {console.log(e);}
