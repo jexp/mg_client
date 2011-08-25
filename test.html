@@ -444,7 +444,7 @@ const PORT=8000;
 	</script>
 </head>
 <body style="font-size:10px">
-	<div id="nav">
+	<div id="nav" style="left: 900px; top: 75px; position: absolute;">
 	  <div class="nav-1">&nbsp;</div>
 
 	  <div class="nav-2" style="font-size:12px;">
@@ -458,17 +458,16 @@ const PORT=8000;
 	  <div class="nav-3">&nbsp;</div>
 	</div>
 
-	<div id="mg-logo">&nbsp;</div>
-	<div id="mg-logo2">&nbsp;</div>
+	<!--div id="mg-logo2">&nbsp;</div-->
 
 	<div id="ie-hack">&nbsp;</div>
 	<div id="doc">
-	<div id="mgbox" style="overflow:auto;height:450px;line-height:1.2em;" class="mudtext">
-		<pre id="out">
-		</pre>
+	<div id="mgbox" style="overflow-x:hidden;overflow-y:auto;height:450px;width:60em;line-height:1.2em;margin-top:-40px;margin-left:-100px;" class="mudtext">
+		<div id="mg-logo" style="margin-top:-12px;margin-right:10px;">&nbsp;</div>
+		<pre id="out"></pre>
 	</div>
 
-	<div style="margin-left:5%;margin-top:5px;">
+	<div style="margin-left:-100px;margin-top:5px;">
 	<span id="toolbar" class="ui-widget-header ui-corner-all">
 		<input type="checkbox" id="b_grafik" /><label for="b_grafik">Grafik aus</label>
 
@@ -479,7 +478,7 @@ const PORT=8000;
 		</span>
 	</span>
 	<form id="form" method="post"  style="margin: 5px;" onsubmit="try {sendInput()} catch(e) { alert(e); };return false;">
-		<input type="text" id="input" style="width:95%;"/>
+		<input type="text" id="input" style="width:60em;font-family:monospace;font-size:13px;"/>
 	</form>
     </div>
 	<pre id="p_fight" style="overflow-x:hidden;overflow-y:auto;">
