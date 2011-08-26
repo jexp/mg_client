@@ -1,0 +1,332 @@
+/* ------------------ Layout ------------------ */
+
+body { 
+    font-size: 1em;
+    background-color: #000000;
+/* schwarzer Hintergrund mit MUD-Screenshot */ 
+    background-image: url(../img/bg-basic.gif);
+    margin: 10px;
+    color: #000000;
+    font-family: 'Arial','Helvetica',sans-serif;
+    padding: 0;
+}
+
+#mg-logo {  /* Drache rechts oben */
+    width: 372px; 
+    height: 103px;
+    position: absolute; top:10px; left:50%;
+    margin-left:-186px;
+    z-index: 2;
+    background-image: url(../img/mg-logo.gif); background-repeat:no-repeat;
+}
+
+#mg-logo2 {  /* Drache rechts oben */
+    width: 100px; 
+    height: 94px;
+    position: absolute; top:110px; right:90px;
+    z-index: 2;
+    background-image: url(../img/mgdrache_logo_small.gif); background-repeat:no-repeat;
+}
+
+#disclaimer { /* der kleine Abschnitt unten rechts */
+    width: 216px; 
+    height: 43px;
+    margin: -38px 27px 0 auto;
+    background-image: url(../img/bg-disclaimer.gif); background-repeat:no-repeat;
+    font-size: 9px;
+    padding: 24px 0 0 14px;
+}
+
+#doc { /* Hauptfenster fuer Text */
+    margin: 62px 50px 0 60px;
+    padding: 50px 30px 30px 10em;
+    background-color:#D4C1A0;
+    /* Hintergrund fuer den Fliesstextbereich: */
+    background-image: url(../img/bg-doc.gif);
+    border: ridge; border-width: 3px; border-color: #714B32;
+    min-height: 480px;
+    height: auto;
+    font-size: 0.95em;
+}
+
+
+* html #doc {  /* Hack nur fuer Internet Explorer  ... ich hasse Winzigweich! */
+    height: 480px;
+}
+
+#ie-hack { /* Workaround fuer IE und seine Unfaehigkeit, min-height zu 
+interpretieren .. bzw margin-top und height gleichzeitig %&%%&!!! */
+    margin-bottom: -22px;
+}
+
+* html .ie-hack2 { /* Workararound fuer IE, damit dieser moechtegern-html-
+interpreter auch etwas padding macht */
+    height: 5px;
+}
+
+
+
+/* ----------- Fliesstext-Formatierung ------------ */
+
+div {
+//  font-size: 1em;
+}
+
+p {
+    font-size: .95em;
+    line-height: 1.3em;
+//  font-stretch: wider;
+}
+
+ul {
+    list-style:none;
+}
+h1 {
+    font-size: 1.1em; 
+    margin-top: 30px;
+}
+
+h2 {
+    font-size: 1em; 
+    margin-top: 25px;
+}
+
+h3 {
+    font-size: 0.95em;
+}
+
+h4 {
+    font-size: 0.95em;
+    font-style: italic;
+}
+
+pre {
+    font-size: 1em;
+}
+
+img {
+    border:none;
+}
+/*
+code {
+    font-weight: bold;
+    font-family:'Arial','Helvetica',sans-serif; font-size:12px;
+}
+*/
+
+code {
+    font-family: courier, 'courier new', 'lucida console', monospace;
+    font-size: 1.1em;
+}
+
+code .input {
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+code:before { content:"  "; }
+code:after { content:" "; }
+
+/* kein Abstand nach oben/unten (z.B. um kleine Tabellen lueckenlos in Fliesstext 
+einzufuegen */
+
+.nixoben {
+    margin-top: 0;
+}
+
+.nixunten {
+    margin-bottom: 0;
+}
+
+
+/* ------------ Links im Fliesstext ------------ */
+
+a:link { 
+    color: #034659;
+    text-decoration: none; 
+    font-weight: bold; 
+}
+
+a:visited { 
+    color: #04637E;
+    color: #246f79;
+    text-decoration: none; 
+    font-weight: bold; 
+}
+
+a:hover { 
+    color: #0695BE; 
+    text-decoration: underline; 
+    font-weight: bold; 
+}
+
+/* a:active { color: #FFFF66; font-weight: bold; } */
+/* a:focus { color: #00AA00; background-color: #FFFF77; font-weight: bold; } */
+
+
+
+/* ----------------- Navigation ------------------- */
+
+#nav {
+    font-size: 0.85em;
+    position: absolute; top: 110px; left: 30px;
+    z-index:2;
+}
+
+#nav .nav-1 { /* kleiner oberer Navigationsabschluss */
+    width: 125px; 
+    height: 36px;
+    background-image: url(../img/bg-nav-1.gif); background-repeat: no-repeat;
+}
+
+#nav .nav-2 { /* Navigationsbereich mit Links */
+    width: 115px;
+    background-image: url(../img/bg-nav-2.gif); background-repeat:repeat-y;
+    padding-left: 10px; 
+    color:#000000;
+    line-height: 1em;
+    background-color: #C4B190;
+}
+
+#nav .nav-3 { /* kleiner unterer Navigationsabschluss */
+    width: 125px; 
+    height:35px;
+    background-image: url(../img/bg-nav-3.gif); background-repeat: no-repeat;
+    margin-bottom: 10px;
+}
+
+#nav .secnav { /* Aufklappbare Untermenues */
+    display: none;
+	 margin-left: 0.5em;
+}
+
+
+
+/* ------------------ Navigations-Links ------------------- */
+
+#nav a { font-size: 1em; }
+
+a.nav:link { 
+    display: block;
+    margin: 1.2em 0 0 0;
+    color: #000000; 
+    text-decoration: none; 
+    font-weight: bold; 
+}
+
+a.nav:visited {
+    display: block;
+    margin: 1.2em 0 0 0;
+    color: #000000; 
+    text-decoration: none; 
+    font-weight: bold; 
+}
+
+a.nav:hover {
+    display: block;
+    margin: 1.2em 0 0 0;
+    color: #034659; 
+    text-decoration: underline; 
+    font-weight: bold; 
+}
+
+//#nav .secnav a:link { color: #000000;  text-decoration: none;}
+//#nav .secnav a:visited { color: #000000; text-decoration: none;}
+
+#nav .secnav a:visited, #nav .secnav a:link, #nav .wikilink a:link, #nav .wikilink a:visited {
+/* Arial hat in dieser Groesse bei Fettschrift unschoene Grossbuchstaben */
+    display: block;
+    margin: 0;
+    font-family: tahoma, helvetica, sans-serif;
+    color: #000000; 
+    font-weight: 600;
+    font-size: 0.85em;
+    text-decoration: none;
+}
+
+#nav .secnav a:hover, #nav .wikilink a:hover {
+    display: block;
+    margin: 0;
+    font-family: tahoma, helvetica, sans-serif; 
+    font-weight: 600;
+    font-size: 0.85em; 
+    color: #034659; 
+    text-decoration: underline;
+}
+
+
+
+/* --------------------- Tabellen --------------------- */
+
+.tabelle {
+    border-left: 1px solid #000000;
+    border-top: 1px solid #000000;
+    border-collapse: collapse;
+    border-spacing: 0px;
+    margin-bottom: 10px;
+    background-image: url(../img/bg-table.gif);
+}
+
+.tabelle td {
+    border-right: 1px solid #000000;
+    border-bottom: 1px solid #000000;
+    padding: 2px 5px 2px 5px;
+    vertical-align: top;
+}
+
+.tabelle th {
+    border-right: 1px solid #000000;
+    border-bottom: 1px solid #000000;
+    padding: 2px 5px 2px 5px;
+    vertical-align: top;
+    background-image: url(../img/bg-th.gif);
+}
+
+.tab2 {
+    font-size: 11px;
+}
+
+.tab2 td {
+    padding: 3px;
+}
+
+/* fuer Firefox, der align-Angaben in <col> nicht akzeptiert. Nach Bedarf 
+ergaenzen: */
+
+/* information/abenteuer.shtml */
+#quests td:first-child + td, #quests td:first-child + td + td { text-align: center; }
+/* gilden/zauberer/tabellen.shmtl */
+#zspells td:first-child + td, #zspells td:first-child + td + td { text-align: center; }
+/* gilden/zauberer/gqs.shtml */
+#zquests td:first-child + td { text-align: center; }
+/* gilden/zauberer/spells.shtml, gilden/zauberer/zauberstab.shtml -
+kleinere rahmenlose Definitions-Tabellen im Fliesstext */
+.tdef td:first-child, .tdef td:first-child + td, .tdef td:first-child + td + td { vertical-align: top; }
+
+/* breite Tabelle, die mit normal grossem Text zu breit fuer schmalere Fenster
+waere (wie die Zauberer-Spruchtabelle in spells.shtml) */
+
+#btabelle td { font-size: 85%; }
+#btabelle th { font-size: 90%; }
+
+
+
+/* ------------------- Einzelne Seiten ------------------- */
+
+/* Formatierung News-Seite */
+
+.news { margin-top: 2em; }
+.news dt { font-weight: bold; }
+.news dd { margin-bottom: 1em; margin-left: 2em; }
+.news code { text-weight: normal; }
+
+/* Formatierung MPA-Artikel bei Suche */
+
+.mpa_artikel {} /* darin: h4, strong, pre */
+
+/* Formatierung Lebenszeitanzeige des Muds */
+
+#offline { color: #AA3333; }
+#lifetime { display: block; }
+#uptime { color: #33AA33; }
+

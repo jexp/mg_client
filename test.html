@@ -1,15 +1,15 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
 <html>
 <head>
-<link rel="stylesheet" type="text/css" href="http://mg.mud.de/doc/morgengrauen.css" media="screen">
-<link rel="stylesheet" type="text/css" href="http://telnet.morgengrauen.info/WebTelnet.css" media="screen">
+<link rel="stylesheet" type="text/css" href="css/morgengrauen.css" media="screen">
+<link rel="stylesheet" type="text/css" href="css/WebTelnet.css" media="screen">
 
-<link rel="shortcut icon" type="image/x-icon" href="http://mg.mud.de/img/favicon.ico" />
+<link rel="shortcut icon" type="image/x-icon" href="images/favicon.ico" />
 <title>MorgenGrauen - mg.mud.de - das gr&ouml;&szlig;te deutsche textbasierte, kostenlose Online-Rollenspiel</title>
 
 
-	<link rel="stylesheet" type="text/css" href="http://mg.mud.de/doc/startseite.css" media="screen">
-	<link type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.14/themes/humanity/jquery-ui.css" rel="stylesheet"/>
+	<link rel="stylesheet" type="text/css" href="css/startseite.css" media="screen">
+	<link type="text/css" href="css/jquery-ui.css" rel="stylesheet"/>
 
 	<style type="text/css">
 	  <!--
@@ -24,18 +24,18 @@
 	.bg_red { background-color : red;}
 	
 	</style>
-	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
-	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
-	<script type="text/javascript" src="ansi.js"></script>
-	<script type="text/javascript" src="mg_client_ui.js"></script>
-	<script type="text/javascript" src="mg_client.js"></script>
-	<script type="text/javascript" src="mg_client_io.js"></script>
-	<script type="text/javascript" src="mg_client_player.js"></script>
-	<script type="text/javascript" src="mg_client_history.js"></script>
-	<script type="text/javascript" src="mg_client_config.js"></script>
-	<script type="text/javascript" src="persist-min.js"></script>
-	<script type="text/javascript" src="mg_client_persist.js"></script>
-	<script language="javascript" type="text/javascript" src="edit_area_full.js"></script>
+	<script type="text/javascript" src="js/jquery/jquery.min.js"></script>
+	<script type="text/javascript" src="js/jquery/jquery-ui.min.js"></script>
+	<script type="text/javascript" src="js/mg_client/ansi.js"></script>
+	<script type="text/javascript" src="js/mg_client/mg_client_ui.js"></script>
+	<script type="text/javascript" src="js/mg_client/mg_client.js"></script>
+	<script type="text/javascript" src="js/mg_client/mg_client_io.js"></script>
+	<script type="text/javascript" src="js/mg_client/mg_client_player.js"></script>
+	<script type="text/javascript" src="js/mg_client/mg_client_history.js"></script>
+	<script type="text/javascript" src="js/mg_client/mg_client_config.js"></script>
+	<script type="text/javascript" src="js/persist/persist-min.js"></script>
+	<script type="text/javascript" src="js/mg_client/mg_client_persist.js"></script>
+	<script language="javascript" type="text/javascript" src="js/edit_area/edit_area_full.js"></script>
 	<script type="text/javascript">
 
     function enrich(line) {
@@ -57,8 +57,11 @@
 
 	$(document).ready(function(){
 //		try {
+		loadAllScripts();
+
 		$('#status').dialog({ title: "Status", position : [850,80], width : 300 });
 
+		
 		$('#input').keydown(handle_keys);
 
 		addBox("p_fight","Kampf");
@@ -100,7 +103,7 @@
 			, start_highlight: false
 			, allow_toggle : false
 			, replace_tab_by_spaces : true
-			, word_wrap : false
+			, word_wrap : true
 			, display: "onload"
 			, toolbar : "new_document, load, save , | , search, go_to_line, |, undo, redo"
 			, save_callback : "scriptDialog"
@@ -112,6 +115,8 @@
 			style : { color:"red" }, 
 			click: function(text) { return "input(\""+text+"\")";}
 			})("Das ist ein Test"));
+		
+		runScript("xxx");
 			
 		runScript("startup");
 
@@ -174,7 +179,7 @@
 
 	<div id="status" style="width:200">
 		<div style="float:left">
-			<img id="avatar" src="dwarf.jpg"/>
+			<img id="avatar" src="img/drache.gif" width="100"/>
 		</div>
 		<div style="margin-left:40%">
 		<div id="p_bar_lp" style="height:1.5em;margin:3px;"><span style="position: absolute; width: 50%; text-align: center;">LP: <span id="p_lp">58</span>/<span id="p_max_lp">58</span></span></div>
@@ -187,12 +192,11 @@
 
 	<div class="ie-hack2">&nbsp;</div>
 	</div>
-    <textarea id="script_editor" rows="10" cols="80">&nbsp;
-	</textarea>
+    <textarea id="script_editor" cols="80" style="display:none"></textarea>
 	<div id="disclaimer"><span style="text-align:center;">&copy; MorgenGrauen. Alle Rechte vorbehalten.</span></div>
     <form id="script_dialog" onsubmit="scriptDialogSubmit();return false;" style="display:none">
-		<input type="text" name="new_script_name"/><br/>
-		<select name="script_name" size="10">
+		<input type="text" name="new_script_name" style="width:100px;"/><br/>
+		<select name="script_name" size="10" style="width:100px;">
 		</select><br/>
 		<input type="submit" value="Save">
 	</form>

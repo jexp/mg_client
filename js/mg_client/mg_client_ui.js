@@ -79,12 +79,15 @@ function showText(text) {
 
 function sendInput() {
    var input=$('#input')
-   var value=input.val() + "\n";
-	 showText(value);
-	 addToHistory(value);
-     server.send(value);
-	 input.focus();
-     input.select();
+   var value=input.val();
+   var toSend = runHooks(value);
+   showText(value + "\n");
+   addToHistory(value);
+   if (toSend!=null) {
+     server.send(toSend + "\n");
+   }
+   input.focus();
+   input.select();
 }
 const KEYBOARD_LEFT = 37;
 const KEYBOARD_RIGHT = 39;

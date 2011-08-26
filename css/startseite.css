@@ -1,0 +1,39 @@
+#doc { 
+    padding-left: 110px; 
+}
+
+#mudbox {
+    margin: 0 auto;
+    border: #788 4px solid;
+    width: 88%;
+    padding: 0;
+    padding: 12px; 
+}
+
+.mudtext {
+    color: #000;
+    background-color: #efe5c5;
+    background-color: #ffffff;
+    line-height: 1.3em; 
+    font-size: 13px;
+    font-family: 'courier', 'courier new', 'lucida console', monaco, monospace;
+    text-align: left; 
+}
+/*
+.mgbox #box { 
+    margin: 0 auto; 
+}
+*/
+.prompt {
+    color:#058;
+    color:#c00;
+}
+
+.mittig { 
+    text-align: center; 
+    padding: 0 0 10px 0;
+    margin:  30px 0 0 -50px;
+    font-weight:bold;
+    font-size:18px;
+}
+

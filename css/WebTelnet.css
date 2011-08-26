@@ -1,0 +1,56 @@
+.default {
+	color:white;
+	background:black;
+	font-family:monospace;	
+}
+
+#eingabe {
+	width:90%;
+}
+
+.ausgaenge {
+	color:green;
+}
+.anfaenger {
+	color:blue;
+}
+.ebenen {
+	color:lightblue;
+}
+.sag {
+	color:yellow;font-weight:bold;
+}
+.teilemit {
+	color:yellow;font-weight:bold;
+}
+
+.black { color:black; }
+.red { color:red; }
+.green { color:green; }
+.yellow { color:yellow; }
+.blue { color:blue; }
+.magenta { color:magenta; }
+.cyan { color:cyan; }
+.white { color:white; }
+
+.bgblack { background:black; }
+.bgred { background:red; }
+.bggreen { background:green; }
+.bgyellow { background:yellow; }
+.bgblue { background:blue; }
+.bgmagenta { background:magenta; }
+.bgcyan { background:cyan; }
+.bgwhite { background:white; }
+
+.underline { text-decoration:underline; }
+.bright { font-weight:bold; }
+.dim { font-weight:lighter; }
+.blink { text-decoration:blink; }
+.hidden { display:hidden; }
+.reverse { color:white;background:black }
+
+.important {
+	font-weight: bold;
+	font-size: 150%;
+	color:red;
+}

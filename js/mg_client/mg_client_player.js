@@ -28,7 +28,7 @@ var Player = {
 	age : null,
 	guild : null,
 	race : null,
-	avatar : "dwarf.jpg"
+	avatar : "img/drache.gif"
 }
 
 function updatePoints(suffix, val, max) {

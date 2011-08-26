@@ -50,6 +50,58 @@ function grab_single(regexp, fun) {
 		return line;
 	}
 }
+var hooks = { script : hookScript, multiCommands : multiCommands }
+
+function multiCommands(input) {
+	if (input.match(/;/)) {
+		var commands = input.split(/;/);
+		console.log("commands")
+		for (i=0;i<commands.length;i++) {
+			server.send(commands[i]+"\n");
+		}
+		return null;
+	}
+	return input;
+}
+function addHook(name, hook) {
+	hooks[name]=hook;
+}
+
+function removeHook(name) {
+	hooks[name]=null;
+}
+// todo rather a separate alias list?
+function addExpandHook(name, match, expand) {
+	addHook(name, function(input) {
+		if (input.match(match)) return expand; // todo parameter substitution
+	})
+}
+
+function hookScript(input) {
+	var match = input.match(/^\/(\w+)\s*/)
+	console.log(match)
+	if (match) {
+		if (hasScript(match[1])) {
+			input = input.substring(1);
+			args = input.split("\s+");
+			console.log("hookScript apply "+args)
+			return runScript.apply(this,args)
+		}
+		return null; // scripts not sent to server
+	}
+	return input;
+}
+
+function runHooks(input) {
+	for (name in hooks) {
+		if (hooks[name]) {
+			console.log("running hook "+name+" with "+input);
+			input = hooks[name](input)
+			if (!input) return null; // todo handle fallthrough etc
+		}
+	}
+	return input;
+}
 
 var scripts = {}
 
@@ -58,16 +110,40 @@ function addScript(name, script) {
 	storeData(name, "(function() { return "+script+ "; })");
 }
 
+function loadScript(name) {
+	getScript(name, function(name, script) { 
+		if (script!=null) {
+			console.log("loaded "+name)
+		}
+	})
+}
+
+function hasScript(name) {
+	return scripts[name] != null;
+}
+
+function loadAllScripts() {
+	getIndex(function(index) {
+		for (i=0;i<index.length;i++) {
+			loadScript(index[i])
+		}
+	})
+}
+
 function removeScript(name) {
 	scripts[name] = null;
 	removeData(name);
 }
 
 function editScript(name) {
-	getScript(name, function(script) {
-		console.log("edit-script "+script);
+	getScript(name, function(name, script) {
+		console.log("edit-script "+name + " content "+script);
 		edit_name = name;
-		$("#script_editor").text(script.toString()).dialog("open");
+		$("#script_editor").dialog("open");
+		if (!script) {
+			script = function() {}
+		}
+		editAreaLoader.setValue("script_editor", script.toString() )
 	});
 }
 
@@ -95,26 +171,26 @@ function getScript(name, fun) {
 		loadData(name, function(data) {
 			console.log("get-script "+data);
 			if (data==null) {
-				fun(function() {});
+				fun(name,null);
 				return;
 			}
 			try {
 				scripts[name]=eval(data)();
-				fun(scripts[name]);
+				fun(name, scripts[name]);
 			} catch(e) {
 				console.log("Error loading stored script "+name+" "+data);
-				scripts[name]=function() {}
-				fun(scripts[name]);
+				fun(name,null);
 			}
 		})
 	} else {
-		fun(scripts[name]);
+		fun(name, scripts[name]);
 	}
 }
 function runScript() { // name, params = Array ?
 	var args = Array.prototype.slice.call(arguments);
 	var name = args.shift();
-	getScript(name, function(script) {
+	getScript(name, function(name, script) {
+		if (script==null) return;
 		try {
 			script.apply(this,args);
 		} catch(e) {
