@@ -18,7 +18,7 @@ function trigger_update(regexp, fun) {
 	    var match=line.match(regexp);
 	    if (match!=null) {
 		  match.shift(); // remove first match
-		  return fun.apply(this,match);
+		  fun.apply(this,match);
 	    }
 	    return line;
 	}

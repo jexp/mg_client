@@ -53,11 +53,15 @@ function connectPlayer(name) {
 	loadData("player_"+name.toLowerCase(), function(data) {
 		console.log("player "+name +" typ "+typeof(data) + " content "+data);
 		if (data) {
-			Player = JSON.parse(data);
-			runScript(Player.race)
-			runScript(Player.guild)
-			runScript(Player.subguild)
-			runScript(Player.name)
+			try {
+				Player = JSON.parse(data);
+				runScript(Player.race)
+				runScript(Player.guild)
+				runScript(Player.subguild)
+				runScript(Player.name)
+			} catch(e) {
+				console.log(e)
+			}
 		}
 	})
 	add_player_triggers();
@@ -81,8 +85,8 @@ var grab_source = grab_single(/.*/, function(text) { appendTo("source",text); })
   Nurchak                     12   0  41 ( 41) 161 (161)     0  1  1  1 -- - -
 */
 
-function add_player_triggers() {
-    addTrigger("connect_gast",
+function add_player_connect_triggers() {
+	addTrigger("connect_gast",
 	trigger_update(/^Du bist jetzt (.+?) /,function(name) { 
 		connectPlayer(name);
 	}));
@@ -90,6 +94,9 @@ function add_player_triggers() {
 	trigger_update(/^Schoen, dass Du wieder da bist, (.+?)!/,function(name) { 
 		connectPlayer(name)
 	}));
+}
+function add_player_triggers() {
+	console.log("add_player_triggers")
 
 	addTrigger("teddy",
 	trigger_update(/^Du hast jetzt (\d+) Lebenspunkte und (\d+) Konzentrationspunkte.$/,function(lp,kp) { 
@@ -119,4 +126,14 @@ function add_player_triggers() {
 	trigger_update(/Konzentration: 0 \|.+\| +(\d+)$/,function(max) { Player.kp = max; Player.max_kp = max; }));
 	addTrigger("kurzinfo_lp_max",
 	trigger_update(/Gesundheit:    0 \|.+\| +(\d+)$/,function(max) { Player.lp = max; Player.max_lp = max; }));
+}
+
+var playerBackup = null;
+function createPlayerBackup() {
+	playerBackup = clone(Player);
+}
+
+function showPlayerIfChanged() {
+	if (objectEquals(Player,playerBackup)) return;
+	showPlayer();
 }

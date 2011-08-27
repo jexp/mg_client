@@ -62,6 +62,15 @@ function input(text, dontSubmit) {
 	}
 }
 
+
+
+
+function beforeLine() {
+   createPlayerBackup();	
+}
+function afterLine() {
+   showPlayerIfChanged();
+}
 function scrollBottom(name) {
    var box = $("#"+name);
    box.prop("scrollTop", box.prop("scrollHeight") - box.height() );	
