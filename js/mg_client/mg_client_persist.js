@@ -2,8 +2,10 @@ var store = new Persist.Store('MG-Client');
 // store trigger, window(s), button basisobjekte ?
 // separat liste der gespeicherten dinge
 // scripte -> id -> fun
-function storeData(id, data) {
-	addToIndex(id)
+function storeData(id, data, doIndex) {
+	if (doIndex) {
+		addToIndex(id)
+	}
 	store.set(id, data);
 	return data;
 }

@@ -12,6 +12,7 @@ function runTriggers(line) {
 	}
 	return line;
 }
+
 function trigger_update(regexp, fun) {
 	return function(line) {
 	    var match=line.match(regexp);
@@ -50,7 +51,7 @@ function grab_single(regexp, fun) {
 		return line;
 	}
 }
-var hooks = { script : hookScript, multiCommands : multiCommands }
+var hooks = { script : hookScript, multi_commands : multiCommands }
 
 function multiCommands(input) {
 	if (input.match(/;/)) {
@@ -64,11 +65,11 @@ function multiCommands(input) {
 	return input;
 }
 function addHook(name, hook) {
-	hooks[name]=hook;
+	hooks[name.toLowerCase()]=hook;
 }
 
 function removeHook(name) {
-	hooks[name]=null;
+	hooks[name.toLowerCase()]=null;
 }
 // todo rather a separate alias list?
 function addExpandHook(name, match, expand) {
@@ -106,11 +107,15 @@ function runHooks(input) {
 var scripts = {}
 
 function addScript(name, script) {
+	if (!name) return;
+	name = name.toLowerCase()
 	scripts[name] = script;
-	storeData(name, "(function() { return "+script+ "; })");
+	storeData(name, "(function() { return "+script+ "; })", true);
 }
 
 function loadScript(name) {
+	if (!name) return;
+	name = name.toLowerCase()
 	getScript(name, function(name, script) { 
 		if (script!=null) {
 			console.log("loaded "+name)
@@ -119,6 +124,8 @@ function loadScript(name) {
 }
 
 function hasScript(name) {
+	if (!name) return false;
+	name = name.toLowerCase()
 	return scripts[name] != null;
 }
 
@@ -131,11 +138,14 @@ function loadAllScripts() {
 }
 
 function removeScript(name) {
+	if (!name) return;
+	name = name.toLowerCase()
 	scripts[name] = null;
 	removeData(name);
 }
 
 function editScript(name) {
+	name = name.toLowerCase()
 	getScript(name, function(name, script) {
 		console.log("edit-script "+name + " content "+script);
 		edit_name = name;
@@ -148,16 +158,17 @@ function editScript(name) {
 }
 
 function scriptDialog(id,content) {
+	var isSave = content != null
 	var select = $("#script_dialog select")
-	$("#script_dialog input[type=text]").val(edit_name)
-	$("#script_dialog input[type=submit]").val(id == "edit" ? "Edit" : "Save")
+	$("#script_dialog input[type=text]").val(isSave ? edit_name : null)
+	$("#script_dialog input[type=submit]").val(isSave ? "Save" : "Edit" )
 	select.empty()
 	getIndex(function(index) {
 		$.each(index, function(idx,value) {   
 	       var option = $('<option>', { value : value }).appendTo(select).text(value); 
 		   if (value == edit_name) { option.attr("selected","selected") }
 		})});
-	if (id != "edit") {
+	if (isSave) {
 		edit_content = content;
 	} else {
 		edit_content = null;
@@ -167,6 +178,8 @@ function scriptDialog(id,content) {
 }
 
 function getScript(name, fun) {
+	if (!name) return;
+	name = name.toLowerCase()
 	if (!scripts[name]) {
 		loadData(name, function(data) {
 			console.log("get-script "+data);
@@ -189,6 +202,9 @@ function getScript(name, fun) {
 function runScript() { // name, params = Array ?
 	var args = Array.prototype.slice.call(arguments);
 	var name = args.shift();
+	if (!name) return;
+	name = name.toLowerCase()
+	console.log("runScript "+name+" params "+args)
 	getScript(name, function(name, script) {
 		if (script==null) return;
 		try {
@@ -219,7 +235,7 @@ function getSelectedScriptName() {
    var dialog = $("#script_dialog");
    var new_name = dialog.children("input").val()
    var selected_name = dialog.children("select").val()
-   return new_name ? new_name : selected_name ? selected_name : null
+   return new_name ? new_name.toLowerCase() : selected_name ? selected_name.toLowerCase() : null
 }
 function scriptDialogSubmit() {
    var selected_name = getSelectedScriptName();

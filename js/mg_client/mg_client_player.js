@@ -47,7 +47,24 @@ function updatePoints(suffix, val, max) {
 	if (value < 30) { bar.addClass("bg_red") }
 }
 
+function connectPlayer(name) {
+	Player.name = name; 
+	runScript("connect",name.toLowerCase());
+	loadData("player_"+name.toLowerCase(), function(data) {
+		console.log("player "+name +" typ "+typeof(data) + " content "+data);
+		if (data) {
+			Player = JSON.parse(data);
+			runScript(Player.race)
+			runScript(Player.guild)
+			runScript(Player.subguild)
+			runScript(Player.name)
+		}
+	})
+	add_player_triggers();
+}
+
 function showPlayer() {
+	storeData("player_"+Player.name.toLowerCase(),JSON.stringify(Player))
 	updatePoints("kp",Player.kp,Player.max_kp)
 	updatePoints("lp",Player.lp,Player.max_lp)
 	$("#p_vorsicht").text(Player.vorsicht)
@@ -64,38 +81,42 @@ var grab_source = grab_single(/.*/, function(text) { appendTo("source",text); })
   Nurchak                     12   0  41 ( 41) 161 (161)     0  1  1  1 -- - -
 */
 
-function player_triggers(line) {
+function add_player_triggers() {
+    addTrigger("connect_gast",
 	trigger_update(/^Du bist jetzt (.+?) /,function(name) { 
-		Player.name = name; 
-		runScript("connect",name);
-
-	})(line);
+		connectPlayer(name);
+	}));
+	addTrigger("connect_player",
 	trigger_update(/^Schoen, dass Du wieder da bist, (.+?)!/,function(name) { 
-		Player.name = name; 
-		runScript("connect",name);
-	})(line);
+		connectPlayer(name)
+	}));
 
+	addTrigger("teddy",
 	trigger_update(/^Du hast jetzt (\d+) Lebenspunkte und (\d+) Konzentrationspunkte.$/,function(lp,kp) { 
 		Player.lp = lp;
 		Player.kp = kp;
-	})(line);
+	}));
 
+	addTrigger("teddy_vorsicht",
 	trigger_update(/^Vorsicht: (.+). Fluchtrichtung: (.+)$/,function(vorsicht,flucht) { 
 		Player.vorsicht = vorsicht;
 		Player.flucht = flucht;
-	})(line);
+	}));
 
+	addTrigger("vorsicht",
 	trigger_update(/^Vorsicht-Modus \((.+)\)$/,function(vorsicht) { 
 		Player.vorsicht = vorsicht;
-	})(line);
+	}));
+	addTrigger("vorsicht0",
 	trigger_update(/^Prinz Eisenherz-Modus.$/,function() { 
 		Player.vorsicht = 0;
-	})(line);
-	
-	trigger_update(/Konzentration: 0 \|.+\| +(\d+) \((\d+)\)$/,function(val,max) { Player.kp = max; Player.max_kp = max; })(line);
-	trigger_update(/Gesundheit:    0 \|.+\| +(\d+) \((\d+)\)$/,function(val,max) { Player.lp = val; Player.max_lp = max; })(line);
-	trigger_update(/Konzentration: 0 \|.+\| +(\d+)$/,function(max) { Player.kp = max; Player.max_kp = max; })(line);
-	trigger_update(/Gesundheit:    0 \|.+\| +(\d+)$/,function(max) { Player.lp = max; Player.max_lp = max; })(line);
-	showPlayer();
-	return line;
+	}));
+	addTrigger("kurzinfo_kp",
+	trigger_update(/Konzentration: 0 \|.+\| +(\d+) \((\d+)\)$/,function(val,max) { Player.kp = max; Player.max_kp = max; }));
+	addTrigger("kurzinfo_lp",
+	trigger_update(/Gesundheit:    0 \|.+\| +(\d+) \((\d+)\)$/,function(val,max) { Player.lp = val; Player.max_lp = max; }));
+	addTrigger("kurzinfo_kp_max",
+	trigger_update(/Konzentration: 0 \|.+\| +(\d+)$/,function(max) { Player.kp = max; Player.max_kp = max; }));
+	addTrigger("kurzinfo_lp_max",
+	trigger_update(/Gesundheit:    0 \|.+\| +(\d+)$/,function(max) { Player.lp = max; Player.max_lp = max; }));
 }
