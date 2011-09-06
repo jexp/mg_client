@@ -1,3 +1,20 @@
+/*
+Mesirii ist anwesend,
+und zwar von: Daemonendimension (ueber Berlin).
+Eingeloggt seit: Mit,  7. Sep 2011, 00:31:21
+Voller Name: Chaosmacher Mesirii hat eine Elfentraube im Ruecken
+Rasse: Zwerg,  Gilde: Chaos,  Geschlecht: maennlich
+Alter: 4a 49d 00:59:26,   Spielerlevel: 113 (Seher),   Gildenlevel: 11
+Datum des ersten Login: Mit,  9. Nov 1994, 16:22:47
+Homepage: www.rana-elisabeth.de, http://mesirii.de, mud@mesirii.de
+ICQ: 213864527
+Verheiratet mit: Mekare
+Mesirii ist Zweitspieler.
+Bisher bereits 348 mal gestorben
+Avatar-URI: http://www.mesirii.de/mesirii_avatar.jpg
+Projekt: git clone https://github.com/jexp/TinyMacros.git
+
+*/
 var Player = {
 	name : "Unbekannt",
 	lp : 100,
@@ -28,7 +45,16 @@ var Player = {
 	age : null,
 	guild : null,
 	race : null,
-	avatar : "img/drache.gif"
+	avatar : "img/drache.gif",
+	full_name : "Unbekannt",
+	from : null,
+	via : null,
+	logged_in_since: null,
+	first_login : null,
+	married_to : null,
+	deaths: 0,
+	project : null,
+	second : false
 }
 
 function updatePoints(suffix, val, max) {
@@ -102,6 +128,12 @@ function add_player_triggers() {
 	trigger_update(/^Du hast jetzt (\d+) Lebenspunkte und (\d+) Konzentrationspunkte.$/,function(lp,kp) { 
 		Player.lp = lp;
 		Player.kp = kp;
+	}));
+
+	// todo handle complete finger result in one go
+	addTrigger("avatar",
+	trigger_update(/^Avatar-URI: (.+)$/,function(avatar) { 
+		Player.avatar = avatar;
 	}));
 
 	addTrigger("teddy_vorsicht",
