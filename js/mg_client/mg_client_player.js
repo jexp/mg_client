@@ -126,6 +126,7 @@ function showPlayer(player) {
 	var id = "_"+player.name.toLowerCase();
 	updatePoints("kp"+id,player.kp,player.max_kp)
 	updatePoints("lp"+id,player.lp,player.max_lp)
+	console.log($("#avatar"+id).attr("src"))
 	if ($("#avatar"+id).attr("src") != player.avatar) {
 		$("#avatar"+id).attr("src",player.avatar);
 	}
@@ -205,7 +206,11 @@ function add_player_triggers() {
 		Player.lp = lp;
 		Player.kp = kp;
 	}));
-	
+
+	addTrigger("avatar",
+	trigger_update(/^Aktuelle Avatar-URI: (.+)$/,function(uri) { 
+		Player.avatar = uri;
+	}));
 	/*
 	und zwar von: Daemonendimension (ueber Berlin).
 	Eingeloggt seit: Son, 11. Sep 2011, 10:23:45

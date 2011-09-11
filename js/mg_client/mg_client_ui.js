@@ -128,10 +128,10 @@ function handle_keys(e) {
 	var box=$("#mgbox");
 	switch (e.keyCode) {
 	  case KEYBOARD_DOWN : 
-		input(history_next(),false);
+		input(history_next(),true);
 		break;
 	  case KEYBOARD_UP : 
-		input(history_prev(),false);
+		input(history_prev(),true);
 		break;
 	  case KEYBOARD_PAGE_UP : 
 		box.prop("scrollTop", box.prop("scrollTop") - box.height() );
