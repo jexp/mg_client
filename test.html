@@ -40,13 +40,14 @@
 	<script type="text/javascript">
 
     function enrich(line) {
+		line = escapeHTML(line);
+
 		beforeLine();
 
 		grab_battle(line);
 
 		line = runTriggers(line);
 		
-		line = escapeHTML(line);
 		line = color_escapes(line);
 
 		line = line.replace(/\b(norden|nordosten|osten|suedosten|sueden|suedwesten|westen|nordwesten|oben|unten|raus)\b/g,"<span style='color:red' onclick='input(\"$1\");'>$1</span>");
@@ -191,6 +192,7 @@
 		<div id="p_bar_kp" style="height:1.5em;margin:3px;"><span style="position: absolute; width: 50%; text-align: center;">KP: <span id="p_kp">58</span>/<span id="p_max_kp">58</span></span></div>
 		<div>V: <span id="p_vorsicht"></span></div>
 		<div>FR: <span id="p_flucht"></span></div>
+		<div>Gift: <span id="p_poison"></span></div>
 		</div>
 		<div style="clear:both"></div>
 	</div>
