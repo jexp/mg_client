@@ -22,7 +22,7 @@
 	.bg_green { background-color : green;}
 	.bg_yellow {  background-color : yellow;}
 	.bg_red { background-color : red;}
-	
+	.teamlead { border : 2px solid green;}
 	</style>
 	<script type="text/javascript" src="js/jquery/jquery.min.js"></script>
 	<script type="text/javascript" src="js/jquery/jquery-ui.min.js"></script>
@@ -67,8 +67,6 @@
 //		try {
 		loadAllScripts();
 		add_player_connect_triggers(); // todo move to startup script
-		$('#status').dialog({ title: "Status", position : [850,80], width : 300 });
-
 		
 		$('#input').keydown(handle_keys);
 
@@ -180,7 +178,7 @@
 
     </div>
 
-	<div id="status" style="width:200">
+	<!--div id="status" style="width:200">
 		<div style="float:left">
 			<img id="avatar" src="img/drache.gif" width="100"/>
 		</div>
@@ -192,7 +190,7 @@
 		<div>Gift: <span id="p_poison"></span></div>
 		</div>
 		<div style="clear:both"></div>
-	</div>
+	</div-->
 
 	<div class="ie-hack2">&nbsp;</div>
 	</div>

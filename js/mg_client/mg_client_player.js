@@ -63,9 +63,6 @@ var Player = {
 }
 
 function updatePoints(suffix, val, max) {
-	if ($("#avatar").attr("src") != Player.avatar) {
-		$("#avatar").attr("src",Player.avatar);
-	}
 	$("#p_max_"+suffix).text(max);
 	$("#p_"+suffix).text(val);
 	var value = 100.0*parseInt(val)/parseInt(max);
@@ -78,10 +75,35 @@ function updatePoints(suffix, val, max) {
 	if (value < 30) { bar.addClass("bg_red") }
 }
 
+function playerBox(id) {
+	var box=$("#status_"+id);
+	if (box.length) {
+		console.log(box);
+		return box;
+	}
+	
+   	var html = "<div id='status_"+id+"' style='width:200'> \
+		<div style='float:left'> \
+			<img id='avatar_"+id+"' src='img/drache.gif' width='64'/> \
+		</div> \
+		<div style='margin-left:40%'> \
+		<div id='p_bar_lp_"+id+"' style='height:1.5em;margin:3px;'><span style='position: absolute; width: 50%; text-align: center;'>LP: <span id='p_lp_"+id+"'>58</span>/<span id='p_max_lp_"+id+"'>58</span></span></div> \
+		<div id='p_bar_kp_"+id+"' style='height:1.5em;margin:3px;'><span style='position: absolute; width: 50%; text-align: center;'>KP: <span id='p_kp_"+id+"'>58</span>/<span id='p_max_kp_"+id+"'>58</span></span></div> \
+		<div id='data_'"+id+"'> \
+		<div>V: <span id='p_vorsicht_"+id+"'></span> FR: <span id='p_flucht_"+id+"'></span> Gift: <span id='p_poison_"+id+"'></span> </div> \
+		</div></div> \
+		<div style='clear:both'></div> \
+	</div>"
+	box = $(html).dialog();
+	console.log(box);
+	return box;
+}
 function connectPlayer(name) {
 	Player.name = name; 
-	runScript("connect",name.toLowerCase());
-	loadData("player_"+name.toLowerCase(), function(data) {
+	var id=name.toLowerCase();
+	runScript("connect",id);
+	playerBox(id).dialog({ position : [850,80], width : 300 });
+	loadData("player_"+id, function(data) {
 		console.log("player "+name +" typ "+typeof(data) + " content "+data);
 		if (data) {
 			try {
@@ -89,7 +111,8 @@ function connectPlayer(name) {
 				runScript(Player.race)
 				runScript(Player.guild)
 				runScript(Player.subguild)
-				runScript(Player.name)
+				runScript(id)
+				showPlayer(Player)
 			} catch(e) {
 				console.log(e)
 			}
@@ -98,24 +121,39 @@ function connectPlayer(name) {
 	add_player_triggers();
 }
 
-function showPlayer() {
-	storeData("player_"+Player.name.toLowerCase(),JSON.stringify(Player))
-	updatePoints("kp",Player.kp,Player.max_kp)
-	updatePoints("lp",Player.lp,Player.max_lp)
-	$("#p_vorsicht").text(Player.vorsicht)
-	$("#p_flucht").text(Player.flucht)
-	$('#status').dialog("option", "title", Player.name );
-	$("#p_poison").text(Player.poison)
+function showPlayer(player) {
+	player = player || Player;
+	var id = "_"+player.name.toLowerCase();
+	updatePoints("kp"+id,player.kp,player.max_kp)
+	updatePoints("lp"+id,player.lp,player.max_lp)
+	if ($("#avatar"+id).attr("src") != player.avatar) {
+		$("#avatar"+id).attr("src",player.avatar);
+	}
+	$("#p_vorsicht"+id).text(player.vorsicht)
+	$("#p_flucht"+id).text(player.flucht)
+	$('#status'+id).dialog("option", "title", player.name );
+	$("#p_poison"+id).text(player.poison)
+	if (player.lead) {
+		$("#status"+id).addClass("teamlead");
+	} else {
+		$("#status"+id).removeClass("teamlead");
+	}
 }
 
+// todo updated/shown timestamp
+function showTeam() {
+	var teamInfo = $('#team');
+	for (var i=0;i<team.length;i++) {
+		var member=team[i];
+		var id = member.name.toLowerCase()
+		var box = playerBox(id);
+		box.dialog("option","position",[850+(200*member.column),120*member.row]).dialog("option","width",180).dialog("option","minHeight",100).dialog("option","height",120);
+		var player=lookup_player(id);
+		showPlayer(jQuery.extend({},player, member));
+	}
+}
 var grab_battle = grab_single(/(^  [^' ].+|.+ faellt tot zu Boden.$)/, function(text) { appendTo("p_fight",text); })
 var grab_source = grab_single(/.*/, function(text) { appendTo("source",text); })
-
-/*
-  Name        Gilde           LV GLV  LP (MLP)  KP (MKP) Vors. GR AR TR FR A V
-* Mesirii     Chaos          113  11 226 (226) 169 (202)     0  1  1  1 -- - -
-  Nurchak                     12   0  41 ( 41) 161 (161)     0  1  1  1 -- - -
-*/
 
 function add_player_connect_triggers() {
 	addTrigger("connect_gast",
@@ -147,6 +185,7 @@ function property_update(trigger,props) {
 }
 
 function lookup_player(name) {
+	name = name.toLowerCase();
 	if (name == Player.name) {
 		return Player;
 	} 
@@ -155,6 +194,8 @@ function lookup_player(name) {
 	} 
 	return players[name];
 }
+
+var team = []
 
 function add_player_triggers() {
 	console.log("add_player_triggers")
@@ -252,6 +293,38 @@ Alter:	1 Stunde 10 Minuten 36 Sekunden.
 		console.log("info: "+player.name+" av"+player.avatar);
 	}));
 
+	/*
+	  Name        Gilde           LV GLV  LP (MLP)  KP (MKP) Vors. GR AR TR FR A V
+	* Mesirii     Chaos          113  11 226 (226) 169 (202)     0  1  1  1 -- - -
+	  Nurchak                     12   0  41 ( 41) 161 (161)     0  1  1  1 -- - -
+	*/
+
+	addTrigger("teaminfo",
+	   collect(/  Name        Gilde           LV GLV  LP \(MLP\)  KP \(MKP\) Vors. GR AR TR FR A V/, /^\S*>\s*$/, function(text,lines) {
+			team = [];
+			var cols = [0,0,0,0,0];
+			for (var j=1;j<lines.length-1;j++) {
+ // todo escape sequences, strip_escapes - 0x1B\[\d+m
+				var line = strip_esc_colors(lines[j]);
+				var match=line.match(/(\*| ) (\w+) +(\w+) +(\d+) +(\d+) +(\d+) +\( *(\d+)\) +(\d+) +\( *(\d+)\) +(\d+) +(\d+) +(\d+) +(\d+) +(--|\d+) +(-|\d+) +(-|\d+)/);
+				if (match) {
+				var member = { lead : match[1]!=" ", name: match[2], guild:match[3], level: match[4], guild_level:match[5],
+								lp : match[6], max_lp : match[7],kp : match[8], max_kp : match[9],vorsicht:match[10],
+								intended_row : match[11], current_row : match[12], real_row : match[13], flight_row: match[14], attack: match[15], follow: match[16]
+							};
+				var row=member.current_row-1;
+				member.row=row;
+				member.column = cols[row];
+				cols[row] += 1;
+				team.push(member);
+				} else {
+					console.log("Error matching team member "+line);
+				}
+				showTeam();
+//				player = lookup_player(member.name);
+}
+	}));
+
     addTriggers("gift",[
 		highlight({trigger:/Du hast eine leichte Vergiftung./, style: {color:"yellow"}, action : function() { Player.poison = 1 }}),
 		highlight({trigger:/Du hast eine schwere Vergiftung./, style: {color:"red"},  action : { poison : 2 }}),
@@ -294,5 +367,6 @@ function createPlayerBackup() {
 
 function showPlayerIfChanged() {
 	if (objectEquals(Player,playerBackup)) return;
-	showPlayer();
+	showPlayer(Player);
+	storeData("player_"+Player.name.toLowerCase(),JSON.stringify(Player))
 }

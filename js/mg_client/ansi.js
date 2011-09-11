@@ -59,7 +59,10 @@
 		return res;
 	}
 
-	function color_escapes(text) {
+	function strip_esc_colors(text) {
+		return text.replace(/\x1B\[([\d<;]+)m/g,"");
+	}
+ 	function color_escapes(text) {
       if (text == null) return text;
 	  var color=null, background = null,flags = Array();
 	  var result="";
