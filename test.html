@@ -38,9 +38,13 @@
 	<script type="text/javascript" src="js/mg_client/mg_client_persist.js"></script>
 	<script type="text/javascript" src="js/edit_area/edit_area_full.js"></script>
 	<script type="text/javascript">
-
+	
     function enrich(line) {
 		line = escapeHTML(line);
+
+		if (handlePassword(line)) {
+			return line;
+		}
 
 		beforeLine();
 
@@ -115,14 +119,6 @@
 
 		});
 		$("#script_editor").dialog({autoOpen : false ,width : $("#script_editor").width() });
-		
-		console.log(highlight({ 
-			trigger: /Test/, 
-			style : { color:"red" }, 
-			click: function(text) { return "input(\""+text+"\")";}
-			})("Das ist ein Test"));
-		
-		runScript("xxx");
 			
 		runScript("startup");
 
@@ -177,8 +173,9 @@
 		</span>
 	</span>
 
-	<form id="form" method="post"  style="margin: 5px;" onsubmit="try {sendInput()} catch(e) { alert(e); };return false;">
-		<input type="text" id="input" style="width:50em;font-family:monospace;font-size:12px;"/>
+	<form id="form" method="post"  style="margin: 5px;"> <!-- onsubmit="try {sendInput()} catch(e) { alert(e); };return false;" -->
+		<input type="text" id="input" style="width:50em;font-family:monospace;font-size:12px;" onKeyPress="return submitEnter(this,event)"/>
+		<input type="password" id="password" style="width:50em;font-family:monospace;font-size:12px;display:none" onKeyPress="return submitEnter(this,event)"/>
 	</form>
 
     </div>

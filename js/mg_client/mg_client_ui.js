@@ -22,7 +22,7 @@ function addWindow(id,w) {
 	}
 	add_close_button(div)
 	var menue = $("<a>").appendTo($("#nav_sub_start"))
-	menue.click(function() { $('#'+id).toggle(); return false; }).text(id).attr("href","#");
+	menue.click(function() { $('#'+id).show(); return false; }).text(id).attr("href","#");
 }
 
 function setTabText(id, text, append) {
@@ -57,13 +57,10 @@ function add_close_button(d) {
 
 function input(text, dontSubmit) {
 	$('#input').val(text);
-	if (dontSubmit == null || dontSubmit==true) {
-		$('#form').submit();
+	if (!dontSubmit) {
+		sendInput();
 	}
 }
-
-
-
 
 function beforeLine() {
    createPlayerBackup();	
@@ -86,12 +83,33 @@ function showText(text) {
 	scrollBottom("mgbox");
 }
 
+var password = false
+
+function toggleInputPassword() {
+	var input=$("#input");
+	var pass=$("#password");
+	input.hide().attr("id","password");
+	pass.show().focus().attr("id","input");
+}
+function handlePassword(line) {
+	if (!password && line.match(/asswor/) || password) {
+		toggleInputPassword();
+		password = !password;
+	}
+	return password;
+}
+
 function sendInput() {
-   var input=$('#input')
+   var input=$('#input');
    var value=input.val();
-   var toSend = runHooks(value);
-   showText(value + "\n");
-   addToHistory(value);
+   var toSend = value;
+   if (!password) {
+   	toSend = runHooks(value);
+   	showText(value + "\n");
+   	addToHistory(value);
+   } else {
+	 input.val("");
+   }
    if (toSend!=null) {
      server.send(toSend + "\n");
    }
@@ -131,6 +149,21 @@ function add_button(label, action) {
 
 function window_top_offset() {
  	return $("#nav_sub_start").children().size() * 85;
+}
+
+function getKeyCode(e) {
+	if (window.event) return window.event.keyCode;
+	if (e) return e.which;
+	return undefined;
+}
+
+function submitEnter(field,e) {
+	if (getKeyCode(e) == 13) {
+		sendInput();
+   		return false;
+   	} else {
+     	return true;
+    }
 }
 
 function addBox(id,title,autoOpen) {
