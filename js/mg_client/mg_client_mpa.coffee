@@ -71,7 +71,7 @@ add_mpa_triggers =
                   mpa[name] = {} if !mpa[name]
                   mpa[name].artikel = []
                   for line in lines
-                    if match = line.match(/\s*(\d+)\. (.+?)  +(\d+) +\((\w+) *\) +(\d+\. \w{3})/)
+                    if match = line.match(/\s*(\d+)\.[* ](.+?)  +(\d+) +\((\w+) *\) +(\d+\. \w{3})/)
                       artikel = { id: parseInt(match[1]), title: match[2], replies: parseInt(match[3]), autor: match[4], date : match[5]}
                       mpa[name].artikel.push(artikel)
                   console.log(mpa[name].artikel)
