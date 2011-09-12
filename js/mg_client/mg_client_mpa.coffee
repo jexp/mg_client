@@ -3,7 +3,7 @@ Es gibt zur Zeit 62 Rubriken.
 (* oder x: enthaelt neue Artikel, x oder -: abbestellt, >: aktuelle Rubrik)
 
  x  1. allgemeines                            :   1 Artikel ( 6. Sep 11)
-    2. anzeigen                               :         - leer -
+ *  2. anzeigen                               :         - leer -
 >
 
 > rubrik 1
@@ -54,7 +54,7 @@ add_mpa_triggers =
                addStart:true,
                fun : (text,lines) ->
                   for line in lines
-                    if match = line.match(/[> ]([x -]) +(\d+)\. (.+) +: +(- leer -|(\d+) Artikel \( ?(\d+\. \w{3} \d{2})\))/)
+                    if match = line.match(/[> ]([*x -]) +(\d+)\. (.+) +: +(- leer -|(\d+) Artikel \( ?(\d+\. \w{3} \d{2})\))/)
                       name = match[3];
                       mpa[name] = { title : name, id : match[2] } if !mpa[name]
                       mpa[name].count = if match[4] == "- leer -" then 0 else parseInt(match[5]) 
