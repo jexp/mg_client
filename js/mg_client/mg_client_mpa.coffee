@@ -59,6 +59,7 @@ add_mpa_triggers =
                  if match = line.match(/Ok, Du hast die Rubrik (.+) mit \d+ Artikeln? aufgeschlagen. /)
                    akt_rubrik = match[1]
 #                  send("inhalt "+akt_rubrik)   
+                 line
     addTrigger "mpa_rubriken", 
                collect({start:/Es gibt zur Zeit \d+ Rubriken./, 
                addStart:true,
