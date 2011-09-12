@@ -18,6 +18,7 @@ function runTriggers(line) {
 	if (!line) return line;
 	for (name in triggers) {
 		line = triggers[name](line);
+		if (!line) return line;
 	}
 	return line;
 }

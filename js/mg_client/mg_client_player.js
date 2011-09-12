@@ -207,7 +207,7 @@ function add_player_triggers() {
 		Player.kp = kp;
 	}));
 
-	addTrigger("avatar",
+	addTrigger("avatar_neu",
 	trigger_update(/^Aktuelle Avatar-URI: (.+)$/,function(uri) { 
 		Player.avatar = uri;
 	}));
@@ -235,7 +235,7 @@ function add_player_triggers() {
 		,property_update(/Verheiratet mit: (.+)/,'married_to')
 		,property_update(/.+ ist Zweitspieler\./,'second')
 		,property_update(/Bisher bereits (\d+) mal gestorben/,'deaths')
-		,property_update(/Projekt: (.)/,'project')
+		,property_update(/Projekt: (.+)/,'project')
 		,property_update(/Avatar-URI: (.+)/,'avatar')
 	];
 	
@@ -302,9 +302,41 @@ Alter:	1 Stunde 10 Minuten 36 Sekunden.
 	  Name        Gilde           LV GLV  LP (MLP)  KP (MKP) Vors. GR AR TR FR A V
 	* Mesirii     Chaos          113  11 226 (226) 169 (202)     0  1  1  1 -- - -
 	  Nurchak                     12   0  41 ( 41) 161 (161)     0  1  1  1 -- - -
-	*/
+	Dotz: 200 LP 
 
-	addTrigger("teaminfo",
+	Dotz: 152 KP 
+
+	Tolot: 29 KP 
+
+	Tolot: 30 KP 
+
+	Dotz: 203 LP / 154 KP 
+
+	Dotz: 10 LP / 151 KP, Tolot: 28 KP 
+	*/
+	
+	
+
+	addTriggers("teaminfo",[
+	   function(line) {
+		  if (team && team.length && line.match(/^[A-Z].+ (KP|LP) *$/)) {
+			 var infos=line.split(", ");
+			 for (var i=0;i<infos.length;i++) {
+				var match=infos[i].match(/^(\w+): (\d+) (LP|KP)(?: \/ (\d+) KP)? *$/);
+				var id=match[1].toLowerCase();
+				for (var j=0;j<team.length;j++) {
+					if (team[j].id == id) {
+						if (match[3]=="LP") team[j].lp=match[2];
+						else team[j].kp=match[2];
+						if (match[4]) team[j].kp=match[4];
+					}
+				}
+			}
+			showTeam();
+			return null;
+		  }
+		  return line;
+	   },
 	   collect(/  Name        Gilde           LV GLV  LP \(MLP\)  KP \(MKP\) Vors. GR AR TR FR A V/, /^\S*>\s*$/, function(text,lines) {
 			team = [];
 			var cols = [0,0,0,0,0];
@@ -313,7 +345,7 @@ Alter:	1 Stunde 10 Minuten 36 Sekunden.
 				var line = strip_esc_colors(lines[j]);
 				var match=line.match(/(\*| ) (\w+) +(\w+) +(\d+) +(\d+) +(\d+) +\( *(\d+)\) +(\d+) +\( *(\d+)\) +(\d+) +(\d+) +(\d+) +(\d+) +(--|\d+) +(-|\d+) +(-|\d+)/);
 				if (match) {
-				var member = { lead : match[1]!=" ", name: match[2], guild:match[3], level: match[4], guild_level:match[5],
+				var member = { lead : match[1]!=" ", name: match[2], id: match[2].toLowerCase(), guild:match[3], level: match[4], guild_level:match[5],
 								lp : match[6], max_lp : match[7],kp : match[8], max_kp : match[9],vorsicht:match[10],
 								intended_row : match[11], current_row : match[12], real_row : match[13], flight_row: match[14], attack: match[15], follow: match[16]
 							};
@@ -328,7 +360,7 @@ Alter:	1 Stunde 10 Minuten 36 Sekunden.
 				showTeam();
 //				player = lookup_player(member.name);
 }
-	}));
+	})]);
 
     addTriggers("gift",[
 		highlight({trigger:/Du hast eine leichte Vergiftung./, style: {color:"yellow"}, action : function() { Player.poison = 1 }}),
