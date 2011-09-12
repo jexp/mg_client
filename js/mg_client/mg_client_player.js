@@ -343,7 +343,7 @@ Alter:	1 Stunde 10 Minuten 36 Sekunden.
 			for (var j=1;j<lines.length-1;j++) {
  // todo escape sequences, strip_escapes - 0x1B\[\d+m
 				var line = strip_esc_colors(lines[j]);
-				var match=line.match(/(\*| ) (\w+) +(\w+) +(\d+) +(\d+) +(\d+) +\( *(\d+)\) +(\d+) +\( *(\d+)\) +(\d+) +(\d+) +(\d+) +(\d+) +(--|\d+) +(-|\d+) +(-|\d+)/);
+				var match=line.match(/(\*| ) (\w+) +(\w+) +(\d+) +(\d+) +(\d+) +\( *(\d+)\) +(\d+) +\( *(\d+)\) +(\d+) +(\d+) +(\d+) +(--|\d+) +(--|\d+) +(-|\d+) +(-|\d+)/);
 				if (match) {
 				var member = { lead : match[1]!=" ", name: match[2], id: match[2].toLowerCase(), guild:match[3], level: match[4], guild_level:match[5],
 								lp : match[6], max_lp : match[7],kp : match[8], max_kp : match[9],vorsicht:match[10],
