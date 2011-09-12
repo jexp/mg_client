@@ -7,7 +7,7 @@ function addTab(id, name, tab) {
 	if (tab["start"]) {
 		var end = tab["end"] ? tab["end"] : /^\S*>\s*$/;
 		var fun = tab["fun"] || function(text) {setTabText(name,text)};
-		addTrigger(name,collect(tab["start"],end, fun));
+		addTrigger(name,collect({start:tab["start"],addStart:tab["addStart"],end:end, fun:fun}));
 	}
 	$("#"+name).css("overflow-y","auto").css("overflow-x","auto").css("max-height",300)
 }

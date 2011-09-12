@@ -78,7 +78,6 @@ function updatePoints(suffix, val, max) {
 function playerBox(id) {
 	var box=$("#status_"+id);
 	if (box.length) {
-		console.log(box);
 		return box;
 	}
 	
@@ -95,7 +94,6 @@ function playerBox(id) {
 		<div style='clear:both'></div> \
 	</div>"
 	box = $(html).dialog();
-	console.log(box);
 	return box;
 }
 function connectPlayer(name) {
@@ -126,7 +124,6 @@ function showPlayer(player) {
 	var id = "_"+player.name.toLowerCase();
 	updatePoints("kp"+id,player.kp,player.max_kp)
 	updatePoints("lp"+id,player.lp,player.max_lp)
-	console.log($("#avatar"+id).attr("src"))
 	if ($("#avatar"+id).attr("src") != player.avatar) {
 		$("#avatar"+id).attr("src",player.avatar);
 	}
@@ -178,7 +175,6 @@ function property_update(trigger,props) {
 				var value=match[i];
 				if (value) {
 	  				var prop = properties[i];
-	  				console.log("Updating "+prop+" to "+value);
 	  				player[prop]=value;
 				}
 	  		}
@@ -240,7 +236,7 @@ function add_player_triggers() {
 	];
 	
 	addTrigger("finger",
-	   collect(/^.+ ist anwesend,$/, /^\S*>\s*$/, function(text,lines) {
+	   collect({addStart:true, start:/^.+ ist anwesend,$/, end:/^\S*>\s*$/, fun:function(text,lines) {
 		var player,match;
 		if (match = text.match(/^(.+) ist anwesend,\n/)) {
 		   var name = match[1];
@@ -252,7 +248,7 @@ function add_player_triggers() {
 			}
 		}
 		console.log("finger: "+player.name+" av"+player.avatar);
-	}));
+	}}));
 
 /*
 - Gast5 der hoffnungsvolle Anfaenger. --------------------------------
@@ -288,7 +284,7 @@ Alter:	1 Stunde 10 Minuten 36 Sekunden.
 	];
 
 	addTrigger("info",
-	   collect(/- .+ -{3,}$/, /----------------------------------------------------------------------/, function(text,lines) {
+	   collect({start:/- .+ -{3,}$/, end: /----------------------------------------------------------------------/, fun : function(text,lines) {
 		var player = Player;
 		for (var i=0;i<info_checks.length;i++) {
 			for (var j=0;j<lines.length;j++) {
@@ -296,7 +292,7 @@ Alter:	1 Stunde 10 Minuten 36 Sekunden.
 			}
 		}
 		console.log("info: "+player.name+" av"+player.avatar);
-	}));
+	}}));
 
 	/*
 	  Name        Gilde           LV GLV  LP (MLP)  KP (MKP) Vors. GR AR TR FR A V
@@ -337,10 +333,12 @@ Alter:	1 Stunde 10 Minuten 36 Sekunden.
 		  }
 		  return line;
 	   },
-	   collect(/  Name        Gilde           LV GLV  LP \(MLP\)  KP \(MKP\) Vors. GR AR TR FR A V/, /^\S*>\s*$/, function(text,lines) {
+	   collect({start:/  Name        Gilde           LV GLV  LP \(MLP\)  KP \(MKP\) Vors. GR AR TR FR A V/, 
+				end: /^\S*>\s*$/, 
+				fun: function(text,lines) {
 			team = [];
 			var cols = [0,0,0,0,0];
-			for (var j=1;j<lines.length-1;j++) {
+			for (var j=0;j<lines.length;j++) {
  // todo escape sequences, strip_escapes - 0x1B\[\d+m
 				var line = strip_esc_colors(lines[j]);
 				var match=line.match(/(\*| ) (\w+) +(\w+) +(\d+) +(\d+) +(\d+) +\( *(\d+)\) +(\d+) +\( *(\d+)\) +(\d+) +(\d+) +(\d+) +(--|\d+) +(--|\d+) +(-|\d+) +(-|\d+)/);
@@ -360,7 +358,7 @@ Alter:	1 Stunde 10 Minuten 36 Sekunden.
 				showTeam();
 //				player = lookup_player(member.name);
 }
-	})]);
+	}})]);
 
     addTriggers("gift",[
 		highlight({trigger:/Du hast eine leichte Vergiftung./, style: {color:"yellow"}, action : function() { Player.poison = 1 }}),

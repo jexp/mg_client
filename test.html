@@ -85,7 +85,7 @@
 		showPlayer();
 		addWindow("Spieler",
 				{ p_info: { 
-				title: "Info", start:/- .+ -{3,}$/,  
+				title: "Info", start:/- .+ -{3,}$/, addStart:true, 
 				end: /----------------------------------------------------------------------/ },
 				  p_inventory : { title: "Inventory", start : /^(inv|inventory|i)\s*$/ },
 				  p_ausruestung : { title: "Ausr&uuml;stung", start : /^(ar|ausruestung)\s*$/ ,
@@ -94,8 +94,8 @@
 				});
 		addWindow("Mud", {
 			p_ort : { title: "Ort", 	start : /^(schaue?|l|look|norden|nordosten|osten|suedosten|sueden|suedwesten|westen|nordwesten|oben|unten|raus|n|nw|no|o|s|w|sw|so|ob|u)\s*$/},
-			p_finger : { title: "Finger", start : /^.+ ist anwesend,$/ },
-			p_kwer : { title : "Anwesende", start: /^     Liste der Mitspieler vom/ },
+			p_finger : { title: "Finger", start : /^.+ ist anwesend,$/ , addStart:true},
+			p_kwer : { title : "Anwesende", start: /^     Liste der Mitspieler vom/, addStart:true },
 			p_team : { title : "Team" , start: /^  Name        Gilde           LV GLV  LP (MLP)  KP (MKP) Vors. GR AR TR FR A V/ }});
 		addWindow("Kommunikation", {
 			teilemit : { title : "Mitteilungen", trigger : /^(Du teilst .+ mit|.+ teilt Dir mit):/ , 

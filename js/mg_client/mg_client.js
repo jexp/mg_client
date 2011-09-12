@@ -34,20 +34,24 @@ function trigger_update(regexp, fun) {
 	}
 }
 
-function collect(start,end, fun) { // todo objekt, mit start/end ausschluss, gag
+function collect(trigger) { // todo objekt, mit start/end ausschluss, gag
 	var collected = null;
 	return function(line) {
-		if (line.match(start)) {
+		if (line.match(trigger.start)) {
 			collected = [];
-		} 
-		if (collected) {
-			collected.push(line);
-		}
-		if (line.match(end)) {
-			if (collected && collected.length > 0) {
-				fun(collected.join("\n"),collected);
+			if (trigger.addStart) {
+				collected.push(line);
 			}
-			collected = null;
+		} else if (line.match(trigger.end)) {
+				if (trigger.addEnd) {
+					collected.push(line);
+				}
+				if (collected && collected.length > 0) {
+					trigger.fun(collected.join("\n"),collected);
+				}
+				collected = null;
+		} else if (collected) {
+			collected.push(line);
 		}
 		return line;
 	}
