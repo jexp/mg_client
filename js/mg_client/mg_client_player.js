@@ -279,7 +279,6 @@ Alter:	1 Stunde 10 Minuten 36 Sekunden.
 	,property_update(/Konzentration .... (\d+)(?: +\((\d+)\))? +Vorsicht ......... (\d+|mutig)/,'kp','max_kp','vorsicht')
 	,property_update(/Todesfolgen....... (\d|kein Malus)/,'death_marks')
 	,property_update(/Du kennst Dich im MorgenGrauen (.+)/,'fp')
-//	property_update(/Rasse ............ (.+)             Abenteuer ........ (\d+)(?: \((\d+)\))?/,'race','ap','max_ap')
 	
 	];
 
@@ -291,7 +290,7 @@ Alter:	1 Stunde 10 Minuten 36 Sekunden.
 				info_checks[i](player, lines[j]);
 			}
 		}
-		console.log("info: "+player.name+" av"+player.avatar);
+		console.log("info: "+player.name+" avatar: "+player.avatar);
 	}}));
 
 	/*

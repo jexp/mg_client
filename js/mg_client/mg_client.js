@@ -98,7 +98,7 @@ function hookScript(input) {
 	if (match) {
 		if (hasScript(match[1])) {
 			input = input.substring(1);
-			args = input.split("\s+");
+			args = input.split(/\s+/);
 			console.log("hookScript apply "+args)
 			return runScript.apply(this,args)
 		}
@@ -224,10 +224,11 @@ function runScript() { // name, params = Array ?
 		try {
 			script.apply(this,args);
 		} catch(e) {
-			console.log("Error running stored script "+name+" "+data)
+			console.log("Error running stored script "+name+" "+script+"\n"+e)
 		}
 	})
 }
+
 
 function run(action,line, match,trigger) {
 	var type = typeof(action)

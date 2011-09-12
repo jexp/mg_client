@@ -66,6 +66,13 @@
 	$(document).ready(function(){
 //		try {
 		loadAllScripts();
+		addScript("skript",function(name,commands){ 
+			commands = Array.prototype.slice.call(arguments);
+			commands.shift();
+			var script=commands.join(" ");
+			addScript(name, "function() { "+script+" }");
+		});
+		
 		add_player_connect_triggers(); // todo move to startup script
 		
 		$('#input').keydown(handle_keys);
