@@ -144,7 +144,7 @@
 		aoColumns: [ { sTitle: "Nr", sWidth : "3em" }, 
 		             { sTitle: "Titel", sWidth : "20em", fnRender: function(obj) {
 							var data = obj.aData[ obj.iDataColumn ];
-							return "<span onClick='send(\"lies artikel "+obj.aData[ 0 ]+" in "+$('#mpa_rubrik_name').text()+"\")'>"+data+"</span>";
+							return "<span onClick='liesArtikel(\""+$('#mpa_rubrik_name').text()+"\","+obj.aData[ 0 ]+")'>"+data+"</span>";
 						} },
 					 { sTitle: "Autor", sWidth : "10em" }, 
 					 { sTitle: "Antworten", sWidth : "3em" },

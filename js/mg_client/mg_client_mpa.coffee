@@ -26,6 +26,7 @@ Vielen Dank Zesstra und einen grossen blumenstrauss fuer Dich zum Dank.
 
 ###
 mpa = {}
+akt_rubrik = "allgemeines"
 
 showRubriken = ->
   rows = ([rubrik.id, name, rubrik.count, rubrik.latest] for name, rubrik of mpa)
@@ -42,6 +43,10 @@ showRubrik = (name) ->
   table.fnAddData(rows)
   showTab("tab-mpa-rubrik")
 
+liesArtikel = (rubrik,artikel) ->
+  send("rubrik "+rubrik) if akt_rubrik != rubrik
+  send("lies artikel "+artikel)
+
 showArtikel = (artikel) ->
   console.log(artikel)
   $('#mpa_artikel_name').text(artikel.titel)
@@ -49,6 +54,11 @@ showArtikel = (artikel) ->
 
 add_mpa_triggers = 
   (player) -> 
+    addTrigger "rubrik_wechsel", 
+               (line) -> 
+                 if match = line.match(/Ok, Du hast die Rubrik (.+) mit \d+ Artikeln? aufgeschlagen. /)
+	               akt_rubrik = match[1]
+#                  send("inhalt "+akt_rubrik)	
     addTrigger "mpa_rubriken", 
                collect({start:/Es gibt zur Zeit \d+ Rubriken./, 
                addStart:true,
