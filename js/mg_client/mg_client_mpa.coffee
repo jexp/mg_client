@@ -26,7 +26,7 @@ Vielen Dank Zesstra und einen grossen blumenstrauss fuer Dich zum Dank.
 
 ###
 mpa = {}
-akt_rubrik = "allgemeines"
+akt_rubrik = null
 
 showRubriken = ->
   rows = ([rubrik.id, name, rubrik.count, rubrik.latest] for name, rubrik of mpa)
