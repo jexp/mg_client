@@ -86,7 +86,7 @@ add_mpa_triggers =
                   console.log(artikel)
                   showArtikel(artikel)
                })
-    send("rubriken")
+#    send("rubriken")
     return player
 
 addHook "connect", "add_mpa_triggers", add_mpa_triggers
