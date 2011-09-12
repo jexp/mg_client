@@ -25,6 +25,10 @@ function addWindow(id,w) {
 	menue.click(function() { $('#'+id).show(); return false; }).text(id).attr("href","#");
 }
 
+function showTab(id) {
+	$("#"+id).parent().tabs("select","#"+id);
+}
+
 function setTabText(id, text, append) {
 	if (text==null) return;
 	var tab = $("#"+id)
@@ -33,7 +37,7 @@ function setTabText(id, text, append) {
 	} else {
 		tab.empty().append(text); 
 	}
-	tab.parent().tabs("select","#"+id);
+	showTab(id);
 }
 
 function appendTabText(id, text) {
@@ -73,7 +77,7 @@ function scrollBottom(name) {
    box.prop("scrollTop", box.prop("scrollHeight") - box.height() );	
 }
 function showText(text) {
-	var lines=text.split(/\r\n/);
+	var lines=text.replace(/\r\n/,"\n").split(/\n/);
 	lines.forEach(function(line) {
 	    var result = enrich(line);
 	    if (result!=null) {
@@ -99,20 +103,24 @@ function handlePassword(line) {
 	return password;
 }
 
+function send(str) {
+	if (str) {
+		server.send(str + "\n");
+	}
+}
+
 function sendInput() {
    var input=$('#input');
    var value=input.val();
    var toSend = value;
    if (!password) {
-   	toSend = runHooks(value);
+   	toSend = runHooks("send",value);
    	showText(value + "\n");
    	addToHistory(value);
    } else {
 	 input.val("");
    }
-   if (toSend!=null) {
-     server.send(toSend + "\n");
-   }
+   send(toSend);
    input.focus();
    input.select();
 }

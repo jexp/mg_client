@@ -24,6 +24,7 @@
 	.bg_red { background-color : red;}
 	.teamlead { border : 2px solid green;}
 	</style>
+	<script type="text/javascript" src="js/coffeescript/coffee-script.js"></script>
 	<script type="text/javascript" src="js/jquery/jquery.min.js"></script>
 	<script type="text/javascript" src="js/jquery/jquery-ui.min.js"></script>
 	<script type="text/javascript" src="js/mg_client/base.js"></script>
@@ -33,9 +34,11 @@
 	<script type="text/javascript" src="js/mg_client/mg_client_io.js"></script>
 	<script type="text/javascript" src="js/mg_client/mg_client_player.js"></script>
 	<script type="text/javascript" src="js/mg_client/mg_client_history.js"></script>
+	<script type="text/coffeescript" src="js/mg_client/mg_client_mpa.coffee"></script>
 	<script type="text/javascript" src="js/mg_client/mg_client_config.js"></script>
 	<script type="text/javascript" src="js/persist/persist-min.js"></script>
 	<script type="text/javascript" src="js/mg_client/mg_client_persist.js"></script>
+	<script type="text/javascript" src="js/datatables/js/jquery.dataTables.min.js"></script>
 	<script type="text/javascript" src="js/edit_area/edit_area_full.js"></script>
 	<script type="text/javascript">
 	
@@ -75,6 +78,7 @@
 		
 		add_player_connect_triggers(); // todo move to startup script
 		
+		$('#debug_trigger').dialog({title:"Debug Trigger", position: [850,600], width: 400, autoOpen : false});
 		$('#input').keydown(handle_keys);
 
 		addBox("p_fight","Kampf");
@@ -126,7 +130,28 @@
 		$("#script_editor").dialog({autoOpen : false ,width : $("#script_editor").width() });
 			
 		runScript("startup");
-
+		runHooks("startup");
+		
+		$('#mpa_rubriken').dataTable( { bJQueryUI: true, // aaData: [["1","allgemeines"]],  
+		aoColumns: [ { sTitle: "Nr", sWidth : "3em" }, 
+		             { sTitle: "Rubrik", sWidth : "20em", fnRender: function(obj) {
+							var data = obj.aData[ obj.iDataColumn ];
+							return "<span onClick='send(\"inhalt "+data+"\",true)'>"+data+"</span>";
+						} },
+					 { sTitle: "Anzahl", sWidth : "4em" }, 
+					 { sTitle: "Letzte", sWidth : "10em" } ] } );
+		$('#mpa_rubrik').dataTable( { bJQueryUI: true, // aaData: [["1","allgemeines"]],  
+		aoColumns: [ { sTitle: "Nr", sWidth : "3em" }, 
+		             { sTitle: "Titel", sWidth : "20em", fnRender: function(obj) {
+							var data = obj.aData[ obj.iDataColumn ];
+							return "<span onClick='send(\"lies artikel "+obj.aData[ 0 ]+" in "+$('#mpa_rubrik_name').text()+"\")'>"+data+"</span>";
+						} },
+					 { sTitle: "Autor", sWidth : "10em" }, 
+					 { sTitle: "Antworten", sWidth : "3em" },
+					 { sTitle: "Datum", sWidth : "10em" }
+					 ] } );
+		$('#mpa').tabs().draggable().resizable(); // .dialog({ title: "MPA", width: 600});
+		add_close_button($('#mpa'))
 //		addScript("startup", function(x) { alert("test "+x)});
 //		editScript("startup");
 		$('#input').focus();
@@ -144,6 +169,7 @@
 	 <a href="#" class="nav" id="nav_start" style="margin-top:0;">Fenster</a>
 	  <span id="nav_sub_start" class="secnav">
 	  <a href="#" id="nav_eingang" onclick="$('#status').dialog('open'); return false;">Status</a>
+	  <a href="#" id="nav_eingang" onclick="$('#mpa').show(); return false;">MPA</a>
 	</span>
 
   	<a href="#" class="nav" id="nav_neues">Makros</a>
@@ -151,6 +177,7 @@
     	<a href="#" class="nav" onclick="scriptDialog('edit'); return false;">Edit</a>
     	<a href="#" class="nav" onclick="editScript('startup'); return false;">Startup</a>
     	<a href="#" class="nav" onclick="editScript('connect'); return false;">Connect</a>
+	  	<a href="#" class="nav" onclick="$('#debug_trigger').dialog('open'); return false;">Debug Trigger</a>
   	</span>
 
 	  </div>
@@ -209,5 +236,25 @@
 		</select><br/>
 		<input type="submit" value="Save">
 	</form>
+	<div id="debug_trigger">
+		<textarea rows="10" cols="78" id="debug_trigger_test"></textarea>
+		<input type="submit" value="test" onClick="showText($('#debug_trigger_test').val());false;">
+	</div>
+	
+	<div id="mpa">
+		<ul>
+			<li><a href="#tab-mpa-rubriken">Rubriken</a></li>
+			<li><a id="mpa_rubrik_name" href="#tab-mpa-rubrik">Allgemein</a></li>
+			<li><a id="mpa_artikel_name" href="#mpa_artikel">Artikel</a></li>
+		</ul>
+		<div id="tab-mpa-rubriken">
+		<table cellpadding="0" cellspacing="0" border="0" class="display" id="mpa_rubriken"></table>
+		</div>
+		<div id="tab-mpa-rubrik">
+		<table cellpadding="0" cellspacing="0" border="0" class="display" id="mpa_rubrik"></table>
+		</div>
+		<pre style="overflow:auto" id="mpa_artikel"></pre>
+	</div>
+	
 </body>
 </html>

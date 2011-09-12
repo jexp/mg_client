@@ -34,8 +34,10 @@ function trigger_update(regexp, fun) {
 	}
 }
 
+const PROMPT = /^\S*>\s*$/
 function collect(trigger) { // todo objekt, mit start/end ausschluss, gag
 	var collected = null;
+	trigger.end = trigger.end || PROMPT;
 	return function(line) {
 		if (line.match(trigger.start)) {
 			collected = [];
@@ -47,6 +49,7 @@ function collect(trigger) { // todo objekt, mit start/end ausschluss, gag
 					collected.push(line);
 				}
 				if (collected && collected.length > 0) {
+//					console.log("collect "+trigger.fun.toString()+" "+collected);
 					trigger.fun(collected.join("\n"),collected);
 				}
 				collected = null;
@@ -65,7 +68,7 @@ function grab_single(regexp, fun) {
 		return line;
 	}
 }
-var hooks = { script : hookScript, multi_commands : multiCommands }
+var hooks = { send : { script : hookScript, multi_commands : multiCommands } }
 
 function multiCommands(input) {
 	if (input.match(/;/)) {
@@ -78,16 +81,21 @@ function multiCommands(input) {
 	}
 	return input;
 }
-function addHook(name, hook) {
-	hooks[name.toLowerCase()]=hook;
+function addHook(type, name, hook) {
+	if (!hooks[type]) {
+		hooks[type]={};
+	}
+	hooks[type][name.toLowerCase()]=hook;
 }
 
-function removeHook(name) {
-	hooks[name.toLowerCase()]=null;
+function removeHook(type, name) {
+	if (!hooks[type]) return;
+	hooks[type][name.toLowerCase()]=null;
 }
+
 // todo rather a separate alias list?
 function addExpandHook(name, match, expand) {
-	addHook(name, function(input) {
+	addHook("send",name, function(input) {
 		if (input.match(match)) return expand; // todo parameter substitution
 	})
 }
@@ -107,15 +115,17 @@ function hookScript(input) {
 	return input;
 }
 
-function runHooks(input) {
-	for (name in hooks) {
-		if (hooks[name]) {
-			console.log("running hook "+name+" with "+input);
-			input = hooks[name](input)
-			if (!input) return null; // todo handle fallthrough etc
+function runHooks(type, data) {
+	var h=hooks[type];
+	if (!h) return data;
+	for (name in h) {
+		if (h[name]) {
+			console.log("running hook "+name+" with "+data);
+			data = h[name](data)
+			if (!data) return null; // todo handle fallthrough etc
 		}
 	}
-	return input;
+	return data;
 }
 
 var scripts = {}

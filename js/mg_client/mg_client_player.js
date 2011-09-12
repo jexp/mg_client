@@ -96,6 +96,7 @@ function playerBox(id) {
 	box = $(html).dialog();
 	return box;
 }
+
 function connectPlayer(name) {
 	Player.name = name; 
 	var id=name.toLowerCase();
@@ -117,6 +118,8 @@ function connectPlayer(name) {
 		}
 	})
 	add_player_triggers();
+//	add_mpa_triggers(name)
+	runHooks("connect",Player);
 }
 
 function showPlayer(player) {
@@ -236,7 +239,7 @@ function add_player_triggers() {
 	];
 	
 	addTrigger("finger",
-	   collect({addStart:true, start:/^.+ ist anwesend,$/, end:/^\S*>\s*$/, fun:function(text,lines) {
+	   collect({addStart:true, start:/^.+ ist anwesend,$/, fun:function(text,lines) {
 		var player,match;
 		if (match = text.match(/^(.+) ist anwesend,\n/)) {
 		   var name = match[1];
@@ -333,7 +336,6 @@ Alter:	1 Stunde 10 Minuten 36 Sekunden.
 		  return line;
 	   },
 	   collect({start:/  Name        Gilde           LV GLV  LP \(MLP\)  KP \(MKP\) Vors. GR AR TR FR A V/, 
-				end: /^\S*>\s*$/, 
 				fun: function(text,lines) {
 			team = [];
 			var cols = [0,0,0,0,0];
