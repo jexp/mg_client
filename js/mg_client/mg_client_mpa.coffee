@@ -43,7 +43,7 @@ showRubrik = (name) ->
   table.fnAddData(rows)
   showTab("tab-mpa-rubrik")
 
-liesArtikel = (rubrik,artikel) ->
+window.liesArtikel = (rubrik,artikel) ->
   send("rubrik "+rubrik) if akt_rubrik != rubrik
   send("lies artikel "+artikel)
 
