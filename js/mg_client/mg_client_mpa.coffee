@@ -35,11 +35,11 @@ showRubriken = ->
   showTab("tab-mpa-rubriken")
 
 showRubrik = (name) ->
+  $('#mpa_rubrik_name').text(name)
   rows = ([artikel.id, artikel.title, artikel.autor, artikel.replies, artikel.date ] for artikel in mpa[name].artikel)
   table = $('#mpa_rubrik').dataTable()
   table.fnClearTable()
   table.fnAddData(rows)
-  $('#mpa_rubrik_name').text(name)
   showTab("tab-mpa-rubrik")
 
 showArtikel = (artikel) ->
