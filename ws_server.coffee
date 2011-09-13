@@ -26,6 +26,10 @@ server.on "connection", (conn) ->
       conn.send error if error
       conn.close()
   )
+  conn.on 'error', (error) -> 
+    console.log ('Connection error: ' + error)
+    conn.close()
+
   input = ""
   conn.on "message", (msg) -> 
     console.log msg
@@ -35,7 +39,8 @@ server.on "connection", (conn) ->
       input = ""
     else
       input += msg
-    
+
+server.on 'error', (error) -> console.log ('Server Error: ' + error)
 
 console.log "Started..."
 server.listen 8000
