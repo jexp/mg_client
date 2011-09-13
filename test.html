@@ -205,26 +205,12 @@
 		</span>
 	</span>
 
-	<form id="form" method="post"  style="margin: 5px;"> <!-- onsubmit="try {sendInput()} catch(e) { alert(e); };return false;" -->
+	<form id="form" method="post"  style="margin: 5px;" onsubmit="try { sendInput()} catch(e) { alert(e); };return false;">
 		<input type="text" id="input" style="width:50em;font-family:monospace;font-size:12px;" onKeyPress="return submitEnter(this,event)"/>
 		<input type="password" id="password" style="width:50em;font-family:monospace;font-size:12px;display:none" onKeyPress="return submitEnter(this,event)"/>
 	</form>
 
     </div>
-
-	<!--div id="status" style="width:200">
-		<div style="float:left">
-			<img id="avatar" src="img/drache.gif" width="100"/>
-		</div>
-		<div style="margin-left:40%">
-		<div id="p_bar_lp" style="height:1.5em;margin:3px;"><span style="position: absolute; width: 50%; text-align: center;">LP: <span id="p_lp">58</span>/<span id="p_max_lp">58</span></span></div>
-		<div id="p_bar_kp" style="height:1.5em;margin:3px;"><span style="position: absolute; width: 50%; text-align: center;">KP: <span id="p_kp">58</span>/<span id="p_max_kp">58</span></span></div>
-		<div>V: <span id="p_vorsicht"></span></div>
-		<div>FR: <span id="p_flucht"></span></div>
-		<div>Gift: <span id="p_poison"></span></div>
-		</div>
-		<div style="clear:both"></div>
-	</div-->
 
 	<div class="ie-hack2">&nbsp;</div>
 	</div>
