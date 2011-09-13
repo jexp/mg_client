@@ -58,26 +58,31 @@ window.showArtikel = (artikel) ->
   showTab("tab-mpa-artikel")
 
 window.writeArticle = (rubrik,id = 0) ->
-	rubriken = if rubrik then [rubrik] else (name for name of mpa)
-	rubriken = ("""<option value="#{name}">#{name}</option>""" for name in rubriken).join("\n")
-	$("""<div id="mpa_edit_article">
-	Rubrik: <select id="mpa_edit_article_rubrik">#{rubriken}</select> 
-	<input type="submit" value="Veröffentlichen" onclick="submitArticle($('#mpa_edit_article_rubrik').val(),#{id})"/><br/>
-	<input id="mpa_edit_article_title" size="78" placeholder="Titel"/>
-	<textarea id="mpa_edit_article_text" cols="78" rows="15"></textarea>
-	</div>""")
-	.dialog( {title: "Artikel verfassen, Rubrik: "+rubrik, width : 450, height : 300})
-
-window.submitArticle = (rubrik,id) ->
-	send("rubrik "+rubrik)
-	if id
-      send("antworte auf artikel "+id) 
-	else
-      send("schreibe "+$('#mpa_edit_article_title').val()) 
-	  send($('#mpa_edit_article_text').val())
-	  send(".")
-	$('#mpa_edit_article').dialog("destroy")
+    rubriken = if rubrik then [rubrik] else (name for name of mpa)
+    rubriken = ("""<option value="#{name}">#{name}</option>""" for name in rubriken).join("\n")
+    $("""<div id="mpa_edit_article">
+    Rubrik: <select id="mpa_edit_article_rubrik">#{rubriken}</select> 
+    <input type="submit" value="Veröffentlichen" onclick="submitArticle($('#mpa_edit_article_rubrik').val(),#{id})"/><br/>
+    <input id="mpa_edit_article_title" size="78" placeholder="Titel"/>
+    <textarea id="mpa_edit_article_text" cols="78" rows="15"></textarea>
+    </div>""")
+    .dialog( {title: "Artikel verfassen, Rubrik: "+rubrik, width : 450, height : 300})
+    $('#mpa_edit_article_title').hide() if (id) 
 	
+window.submitArticle = (rubrik,id) ->
+    send("rubrik "+rubrik)
+    if !id
+      send("schreibe "+$('#mpa_edit_article_title').val()) 
+    else
+      if id > 0  
+        send("antworte auf artikel "+id) 
+      else
+        send("antworte") 
+
+    send($('#mpa_edit_article_text').val())
+    send(".")
+    $('#mpa_edit_article').dialog("close").dialog("destroy")
+    
 add_mpa_triggers = 
   (player) -> 
     addTrigger "rubrik_wechsel", 
