@@ -143,11 +143,18 @@
 		$('#mpa_rubrik').dataTable( { bJQueryUI: true, // aaData: [["1","allgemeines"]],  
 		aoColumns: [ { sTitle: "Nr", sWidth : "3em" }, 
 		             { sTitle: "Titel", sWidth : "20em", fnRender: function(obj) {
+						    var id = obj.aData[ 0 ];
 							var data = obj.aData[ obj.iDataColumn ];
-							return "<span onClick='liesArtikel(\""+$('#mpa_rubrik_name').text()+"\","+obj.aData[ 0 ]+")'>"+data+"</span>";
+							var rubrik = $('#mpa_rubrik_tab_name').text();
+							return "<span onClick='liesArtikel(\""+rubrik+"\","+id+")'>"+data+"</span>";
 						} },
 					 { sTitle: "Autor", sWidth : "10em" }, 
-					 { sTitle: "Antworten", sWidth : "3em" },
+					 { sTitle: "Antworten", sWidth : "10em", fnRender: function(obj) {
+						    var id = obj.aData[ 0 ];
+							var data = obj.aData[ obj.iDataColumn ];
+							var rubrik = $('#mpa_rubrik_tab_name').text();
+							return data + "<input type=\"submit\" onClick='writeArticle(\""+rubrik+"\","+id+")' value='Antworten'/>";
+					} },
 					 { sTitle: "Datum", sWidth : "10em" }
 					 ] } );
 		$('#mpa').tabs().draggable().resizable(); // .dialog({ title: "MPA", width: 600});
@@ -230,16 +237,26 @@
 	<div id="mpa">
 		<ul>
 			<li><a href="#tab-mpa-rubriken">Rubriken</a></li>
-			<li><a id="mpa_rubrik_name" href="#tab-mpa-rubrik">Allgemein</a></li>
-			<li><a id="mpa_artikel_name" href="#mpa_artikel">Artikel</a></li>
+			<li><a id="mpa_rubrik_tab_name" href="#tab-mpa-rubrik">Allgemein</a></li>
+			<li><a id="mpa_artikel_tab_name" href="#tab-mpa-artikel">Artikel</a></li>
 		</ul>
 		<div id="tab-mpa-rubriken">
+			<input type="submit" onClick="writeArticle()" value="Verfassen"/>
 		<table cellpadding="0" cellspacing="0" border="0" class="display" id="mpa_rubriken"></table>
 		</div>
 		<div id="tab-mpa-rubrik">
+			<input type="submit" onClick="writeArticle($('#mpa_rubrik_tab_name').text())" value="Verfassen"/>
 		<table cellpadding="0" cellspacing="0" border="0" class="display" id="mpa_rubrik"></table>
 		</div>
-		<pre style="overflow:auto" id="mpa_artikel"></pre>
+		<div id="tab-mpa-artikel">
+			Rubrik: <span id="mpa_artikel_rubrik"></span>
+			Nummer: <span id="mpa_artikel_id"></span>
+			Titel: <span id="mpa_artikel_titel"></span>
+			Autor: <span id="mpa_artikel_autor"></span>
+			Datum: <span id="mpa_artikel_date"></span>
+			<input type="submit" onClick="writeArticle($('#mpa_artikel_rubrik').text(), $('#mpa_artikel_id').text())" value="Antworten"/>
+			<pre style="overflow:auto" id="mpa_artikel_text"></pre>
+	    </div>
 	</div>
 	
 </body>

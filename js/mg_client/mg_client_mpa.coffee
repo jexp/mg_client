@@ -16,13 +16,16 @@ Zur Zeit befindet sich ein Artikel in der Rubrik:
 
  1. Danke                                              3 (Mirimadel  )  6. Sep
 
-> lies artikel 1
+>
+ lies artikel 1
 > lies artikel 1 in allgemeines
+
 Danke (Mirimadel,  6. Sep 2011, 20:22:35):
 
 Die Veraenderung beim Hoerrohr ist grossartig und spitzenmaessig.
 Vielen Dank Zesstra und einen grossen blumenstrauss fuer Dich zum Dank.
 
+>
 
 ###
 mpa = {}
@@ -36,7 +39,7 @@ showRubriken = ->
   showTab("tab-mpa-rubriken")
 
 showRubrik = (name) ->
-  $('#mpa_rubrik_name').text(name)
+  $('#mpa_rubrik_tab_name').text(name)
   rows = ([artikel.id, artikel.title, artikel.autor, artikel.replies, artikel.date ] for artikel in mpa[name].artikel)
   table = $('#mpa_rubrik').dataTable()
   table.fnClearTable()
@@ -47,11 +50,34 @@ window.liesArtikel = (rubrik,artikel) ->
   send("rubrik "+rubrik) if akt_rubrik != rubrik
   send("lies artikel "+artikel)
 
-showArtikel = (artikel) ->
+window.showArtikel = (artikel) ->
   console.log(artikel)
-  $('#mpa_artikel_name').text(artikel.titel)
-  setTabText("mpa_artikel",artikel.text,false)
+  $('#mpa_artikel_'+name).text(wert) for name, wert of artikel
+  $('#mpa_artikel_tab_name').text(artikel.titel)
+  $('#mpa_artikel_reply').attr("onClick", "writeArticle(\""+artikel.rubrik+"\","+artikel.id+")")
+  showTab("tab-mpa-artikel")
 
+window.writeArticle = (rubrik,id = 0) ->
+	rubriken = if rubrik then [rubrik] else (name for name of mpa)
+	rubriken = ("""<option value="#{name}">#{name}</option>""" for name in rubriken).join("\n")
+	$("""<div id="mpa_edit_article">
+	Rubrik: <select id="mpa_edit_article_rubrik">#{rubriken}</select> 
+	<input type="submit" value="Veröffentlichen" onclick="submitArticle($('#mpa_edit_article_rubrik').val(),#{id})"/><br/>
+	<input id="mpa_edit_article_title" size="78" placeholder="Titel"/>
+	<textarea id="mpa_edit_article_text" cols="78" rows="15"></textarea>
+	</div>""")
+	.dialog( {title: "Artikel verfassen, Rubrik: "+rubrik, width : 450, height : 300})
+
+window.submitArticle = (rubrik,id) ->
+	send("rubrik "+rubrik)
+	if id
+      send("antworte auf artikel "+id) 
+	else
+      send("schreibe "+$('#mpa_edit_article_title').val()) 
+	  send($('#mpa_edit_article_text').val())
+	  send(".")
+	$('#mpa_edit_article').dialog("destroy")
+	
 add_mpa_triggers = 
   (player) -> 
     addTrigger "rubrik_wechsel", 
@@ -93,7 +119,7 @@ add_mpa_triggers =
                addStart:true,
                fun : (text,lines) ->
                   match = lines[0].match(/(.+?) +\((\w+), +(\d+\. \w{3} \d{4}), (\d{1,2}:\d{2}:\d{2})\)/) 
-                  artikel = { titel : match[1], autor: match[2], date:match[3], time:match[4], text : text}
+                  artikel = { titel : match[1], autor: match[2], date:match[3], time:match[4], text : text, rubrik: akt_rubrik }
                   console.log(artikel)
                   showArtikel(artikel)
                })
