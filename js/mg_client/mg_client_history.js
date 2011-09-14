@@ -1,4 +1,4 @@
-var history = Array()
+var history = [];
 var histoffset = 0;
 
 function addToHistory(text) {
