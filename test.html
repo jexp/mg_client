@@ -88,15 +88,12 @@
 		addBox("p_fight","Kampf");
 		addBox("source","Source");
 
-		add_button("Info","info");
-		add_button("Inventory","inv");
-		add_button("nn","nn");
-		add_button("Ausruestung","ausruestung");
+		add_buttons("toolbar",[{label:"info"},{label:"ausruestung"},{label:"inv"},
+		                       {label:"Kurz", action:"kurz"},{label:"Lang", action:"lang"},{label:"nn"},
+							   {label:"Anwesende",action:"kwer"}]);
 
-		$( "#b_grafik" ).button().click(function() { 
-		   input("grafik aus"); 
-		});
-		$( "#b_modus" ).buttonset();
+		addCompass();
+		
 		showPlayer();
 		addWindow("Kommunikation", {
 			teilemit : { title : "Mitteilungen", trigger : /^(Du teilst .+ mit|.+ teilt Dir mit):/ , 
@@ -117,6 +114,7 @@
 			p_finger : { title: "Finger", start : /^.+ ist anwesend,$/ , addStart:true},
 			p_kwer : { title : "Anwesende", start: /^     Liste der Mitspieler vom/, addStart:true },
 			p_team : { title : "Team" , start: /^  Name        Gilde           LV GLV  LP (MLP)  KP (MKP) Vors. GR AR TR FR A V/ }});
+//		$('#docs').tabs().resizable().draggable().tabs("add","docs.html","Dokumentation");
 		$('#Mud').hide()
 		$('#Spieler').hide()
 		editAreaLoader.init({
@@ -172,6 +170,8 @@
 //		addScript("startup", function(x) { alert("test "+x)});
 //		editScript("startup");
 		$('#input').focus();
+		$('#b_submit').button();
+		$('#docs').tabs().draggable().resizable();
 //	} catch(e) {console.log(e);throw e;}
 	});
 	var	server = connect(showText);
@@ -186,8 +186,10 @@
 	 <a href="#" class="nav" id="nav_start" style="margin-top:0;">Fenster</a>
 	  <span id="nav_sub_start" class="secnav">
 	  <a href="#" id="nav_eingang" onclick="$('#status_'+Player.name.toLowerCase()).dialog('open'); return false;">Status</a>
-	  <a href="#" id="nav_eingang" onclick="$('#mpa').show(); return false;">MPA</a>
+	  <a href="#" id="nav_eingang" onclick="$('#mpa').toggle(); return false;">MPA</a>
 	</span>
+
+  	<a href="#" class="nav" onclick="$('#docs').toggle();return false;">Dokumentation</a>
 
   	<a href="#" class="nav" id="nav_neues">Makros</a>
   	<span class="secnav">
@@ -212,19 +214,15 @@
 
 	<div style="margin-left:-100px;margin-top:5px;">
 
-	<span id="toolbar" class="ui-widget-header ui-corner-all">
-		<input type="checkbox" id="b_grafik" /><label for="b_grafik">Grafik aus</label>
-
-		<span id="b_modus">
-			<input type="radio" id="b_lang" name="b_modus" onchange="input('lang');"/><label for="b_lang">Lang</label>
-			<input type="radio" id="b_kurz" name="b_modus"  onchange="input('kurz');" checked="checked" /><label for="b_kurz">Kurz</label>
-			<input type="radio" id="b_ultrakurz" name="b_modus"  onchange="input('ultrakurz');"/><label for="b_ultrakurz">Ultrakurz</label>
-		</span>
-	</span>
+	<div id="toolbar" class="ui-corner-all"> <!--ui-widget-header -->
+	</div>
+	<div id="compass" style="position:absolute;left:610px;top:455px;">
+	</div>
 
 	<form id="form" method="post"  style="margin: 5px;" onsubmit="try { sendInput()} catch(e) { alert(e); };return false;">
-		<input type="text" id="input" style="width:50em;font-family:monospace;font-size:12px;" onKeyPress="return submitEnter(this,event)"/>
+		<input type="text" id="input" style="width:40em;font-family:monospace;font-size:12px;" onKeyPress="return submitEnter(this,event)"/>
 		<input type="password" id="password" style="width:50em;font-family:monospace;font-size:12px;display:none" onKeyPress="return submitEnter(this,event)"/>
+		<button id="b_submit" action="sendInput();">Submit</button>
 	</form>
 
     </div>
@@ -242,6 +240,9 @@
 	<div id="debug_trigger">
 		<textarea rows="10" cols="78" id="debug_trigger_test"></textarea>
 		<input type="submit" value="test" onClick="showText($('#debug_trigger_test').val());false;">
+	</div>
+
+	<div id="docs" style="width:550px;height:250px;right:100px;top:50px;position:absolute">
 	</div>
 	
 	<div id="mpa" style="width:550px;height:250px;right:100px;top:50px;position:absolute">

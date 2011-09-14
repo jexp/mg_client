@@ -64,7 +64,7 @@ window.writeArticle = (rubrik,id = 0) ->
     Rubrik: <select id="mpa_edit_article_rubrik">#{rubriken}</select> 
     <input type="submit" value="Veröffentlichen" onclick="submitArticle($('#mpa_edit_article_rubrik').val(),#{id})"/><br/>
     <input id="mpa_edit_article_title" size="78" placeholder="Titel"/>
-    <textarea id="mpa_edit_article_text" cols="78" rows="15"></textarea>
+    <textarea id="mpa_edit_article_text" cols="78" rows="15" wrap="soft"></textarea>
     </div>""")
     .dialog( {title: "Artikel verfassen, Rubrik: "+rubrik, width : 450, height : 300})
     $('#mpa_edit_article_title').hide() if (id) 

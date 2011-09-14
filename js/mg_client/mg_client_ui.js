@@ -150,10 +150,22 @@ function handle_keys(e) {
 		break;
 	}
 }
+function add_buttons(target,buttons) {
+	for (var i=0;i<buttons.length;i++) {
+		add_button(buttons[i],target);
+	}
+	return $('#'+target);
+}
 
-function add_button(label, action) {
-	$("#toolbar").prepend("<button id=\"b_"+label+"\">"+label+"</button>");
-	$("#b_"+label).button({options: { label: label }}).click(function() { input(action); });
+function add_button(button, target) {
+	if (!target) target = "toolbar";
+	if (button.separator == "newline") {
+		$("#"+target).append("<br/>")
+	} else {
+		var b=$('<button>');
+		b.attr("id","b_"+button.label).text(button.label).css({"min-width":50}).appendTo($("#"+target));
+		b.button().click(function() { send(button.action||button.label); });
+	}
 }
 
 function window_top_offset() {
@@ -183,4 +195,10 @@ function addBox(id,title,autoOpen) {
 	var menue = $("<a>").appendTo($("#nav_sub_start"))
 	menue.click(function() { $('#'+id).dialog('open'); return false; }).text(title).attr("href","#");
 	return box;
+}
+
+function addCompass() {
+   add_buttons("compass",[{label:"nw"},{label:"n"},{label:"no"},{label:"ob"},{separator:"newline"},
+                          {label:"w"},{label:"schau"},{label:"o"},{label:"u"},{separator:"newline"},
+                          {label:"sw"},{label:"s"},{label:"so"},{label:"raus"}]);
 }
