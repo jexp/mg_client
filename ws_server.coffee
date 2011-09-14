@@ -1,5 +1,6 @@
 net = require 'net'
-connect = (host,port,onData, onClose = (error) -> ) ->
+Telnet = {}
+Telnet.connect = (host,port,onData, onClose = (error) -> ) ->
   telnet = net.createConnection port, host
   telnet.on "close", -> console.log "server closed"
   telnet.on "end",  -> 
@@ -7,7 +8,6 @@ connect = (host,port,onData, onClose = (error) -> ) ->
     console.log "server closed"
     onClose(null)
   telnet.on "data", (data) -> 
-    console.log data.toString()
     onData data.toString()
   telnet.on "error", (e) -> 
     console.log "Error" + e
@@ -16,23 +16,15 @@ connect = (host,port,onData, onClose = (error) -> ) ->
   telnet.send = (data) -> telnet.write data
   telnet
 
-ws = require "websocket-server"
-server = ws.createServer()
+ws = require('socket.io').listen(8002)
 
-server.on "connection", (conn) ->
-  telnet = connect("localhost",4711,
-    (data) -> conn.send data
-    (error) -> 
-      conn.send error if error
-      conn.close()
-  )
-  conn.on 'error', (error) -> 
-    console.log ('Connection error: ' + error)
-    conn.close()
-
+ws.set('log level', 1)
+ws.set('timeout', 3600000)
+ws.sockets.on('connection', (conn) ->
+  console.log("connection established")
   input = ""
   conn.on "message", (msg) -> 
-    console.log msg
+#    console.log msg
     return if msg.match /^telnet\|.+/ 
     if msg.match /.*\n/
       telnet.send input + msg
@@ -40,7 +32,14 @@ server.on "connection", (conn) ->
     else
       input += msg
 
-server.on 'error', (error) -> console.log ('Server Error: ' + error)
-
-console.log "Started..."
-server.listen 8000
+  conn.on('disconnect', (x) -> console.log("disconnect "+x))
+  conn.on('error', (e) -> console.log("error "+e))
+  telnet = Telnet.connect("localhost",4711,
+    (data) -> 
+      console.log("## "+data.substr(data.length-30))
+      if data
+        conn.send(data, (response) -> console.log("response "+response) if response)
+    (error) -> 
+      conn.send error if error
+  )
+)
