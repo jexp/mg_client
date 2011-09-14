@@ -23,6 +23,9 @@
 	.bg_yellow {  background-color : yellow;}
 	.bg_red { background-color : red;}
 	.teamlead { border : 2px solid green;}
+	.table_bottom div { display: inline;}
+	.table_top div { display: inline;}
+	.table_toolbar { display: inline;}
 	</style>
 	<script type="text/javascript" src="js/coffeescript/coffee-script.js"></script>
 	<script type="text/javascript" src="js/jquery/jquery.min.js"></script>
@@ -95,6 +98,11 @@
 		});
 		$( "#b_modus" ).buttonset();
 		showPlayer();
+		addWindow("Kommunikation", {
+			teilemit : { title : "Mitteilungen", trigger : /^(Du teilst .+ mit|.+ teilt Dir mit):/ , 
+			fun : function (text) { appendTabText("teilemit",text); } },
+			ebenen :   { title : "Ebenen", trigger : /^\[[A-Z]\w+/, fun : function (text) { appendTabText("ebenen",text); }}
+		})		
 		addWindow("Spieler",
 				{ p_info: { 
 				title: "Info", start:/- .+ -{3,}$/, addStart:true, 
@@ -109,12 +117,8 @@
 			p_finger : { title: "Finger", start : /^.+ ist anwesend,$/ , addStart:true},
 			p_kwer : { title : "Anwesende", start: /^     Liste der Mitspieler vom/, addStart:true },
 			p_team : { title : "Team" , start: /^  Name        Gilde           LV GLV  LP (MLP)  KP (MKP) Vors. GR AR TR FR A V/ }});
-		addWindow("Kommunikation", {
-			teilemit : { title : "Mitteilungen", trigger : /^(Du teilst .+ mit|.+ teilt Dir mit):/ , 
-			fun : function (text) { appendTabText("teilemit",text); } },
-			ebenen :   { title : "Ebenen", trigger : /^\[[A-Z]\w+/, fun : function (text) { appendTabText("ebenen",text); }}
-		})		
-		
+		$('#Mud').hide()
+		$('#Spieler').hide()
 		editAreaLoader.init({
 			  id : "script_editor"
 			, syntax: "js"		
@@ -134,6 +138,7 @@
 		runHooks("startup");
 		
 		$('#mpa_rubriken').dataTable( { bJQueryUI: true, // aaData: [["1","allgemeines"]],  
+		sDom: '<"table_top"f<"table_toolbar">>rt<"table_bottom"ipl><"clear">',
 		aoColumns: [ { sTitle: "Nr", sWidth : "3em" }, 
 		             { sTitle: "Rubrik", sWidth : "20em", fnRender: function(obj) {
 							var data = obj.aData[ obj.iDataColumn ];
@@ -141,7 +146,10 @@
 						} },
 					 { sTitle: "Anzahl", sWidth : "4em" }, 
 					 { sTitle: "Letzte", sWidth : "10em" } ] } );
+		$('#tab-mpa-rubriken .table_toolbar').prepend($('#tab-mpa-rubriken input[type=submit]').button())
+
 		$('#mpa_rubrik').dataTable( { bJQueryUI: true, // aaData: [["1","allgemeines"]],  
+		sDom: '<"table_top"f<"table_toolbar">>rt<"table_bottom"ipl><"clear">',
 		aoColumns: [ { sTitle: "Nr", sWidth : "3em" }, 
 		             { sTitle: "Titel", sWidth : "20em", fnRender: function(obj) {
 						    var id = obj.aData[ 0 ];
@@ -159,6 +167,7 @@
 					 { sTitle: "Datum", sWidth : "10em" }
 					 ] } );
 		$('#mpa').tabs().draggable().resizable(); // .dialog({ title: "MPA", width: 600});
+		$('#tab-mpa-rubrik .table_toolbar').prepend($('#tab-mpa-rubrik input[type=submit]').button())
 		add_close_button($('#mpa'))
 //		addScript("startup", function(x) { alert("test "+x)});
 //		editScript("startup");
@@ -170,8 +179,8 @@
 	</script>
 </head>
 <body style="font-size:10px;height:100%;">
-	<div id="nav" style="left: 700px; top: 75px; position: absolute;">
-	  <div class="nav-1">&nbsp;</div>
+	<div id="nav" style="left: 610px; top: 20px; position: absolute;">
+	  <div class="nav-1" style="z-index:-1;">&nbsp;</div>
 
 	  <div class="nav-2" style="font-size:12px;">
 	 <a href="#" class="nav" id="nav_start" style="margin-top:0;">Fenster</a>
@@ -194,10 +203,10 @@
 	</div>
 
 	<div id="ie-hack">&nbsp;</div>
-	<div id="doc">
+	<div id="doc" style="width:95%;height:100%;margin:5px;">
+		<div id="mg-logo" style="position:absolute; left:190px;top:510px;">&nbsp;</div>
 		
 	<div id="mgbox" style="overflow-x:hidden;overflow-y:auto;height:450px;width:48em;line-height:1.2em;font-size:12px;margin-top:-40px;margin-left:-100px;" class="mudtext">
-		<div id="mg-logo" style="margin-top:-12px;margin-left:-390px;">&nbsp;</div>
 		<pre id="out"></pre>
 	</div>
 
@@ -235,7 +244,7 @@
 		<input type="submit" value="test" onClick="showText($('#debug_trigger_test').val());false;">
 	</div>
 	
-	<div id="mpa">
+	<div id="mpa" style="width:550px;height:250px;right:100px;top:50px;position:absolute">
 		<ul>
 			<li><a href="#tab-mpa-rubriken">Rubriken</a></li>
 			<li><a id="mpa_rubrik_tab_name" href="#tab-mpa-rubrik">Allgemein</a></li>
@@ -258,7 +267,7 @@
 			Autor: <span id="mpa_artikel_autor"></span>
 			Datum: <span id="mpa_artikel_date"></span>
 			<input type="submit" onClick="writeArticle($('#mpa_artikel_rubrik').text(), -1)" value="Antworten"/>
-			<pre style="overflow:auto" id="mpa_artikel_text"></pre>
+			<pre style="overflow-x:none;overflow-y:auto" id="mpa_artikel_text"></pre>
 	    </div>
 	</div>
 	

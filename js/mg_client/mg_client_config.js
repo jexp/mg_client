@@ -1,3 +1,3 @@
-const HOST="localhost";
-const PORT=8002;
+HOST="localhost";
+PORT=8002;
 	

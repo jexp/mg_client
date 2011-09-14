@@ -34,7 +34,7 @@ function trigger_update(regexp, fun) {
 	}
 }
 
-const PROMPT = /^\S*>\s*$/
+PROMPT = /^\S*>\s*$/
 function collect(trigger) { // todo objekt, mit start/end ausschluss, gag
 	var collected = null;
 	trigger.end = trigger.end || PROMPT;
