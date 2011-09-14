@@ -22,6 +22,8 @@ ws.set('log level', 1)
 ws.set('timeout', 3600000)
 ws.sockets.on('connection', (conn) ->
   console.log("connection established")
+  	
+  console.log("remote address"+conn.remoteAddress)
   input = ""
   conn.on "message", (msg) -> 
 #    console.log msg
@@ -32,8 +34,14 @@ ws.sockets.on('connection', (conn) ->
     else
       input += msg
 
-  conn.on('disconnect', (x) -> console.log("disconnect "+x))
-  conn.on('error', (e) -> console.log("error "+e))
+  conn.on('disconnect', (x) -> 
+    console.log("disconnect "+x)
+    telnet.end()
+  )
+  conn.on('error', (e) -> 
+    console.log("error "+e)
+    telnet.end()
+  )
   telnet = Telnet.connect("localhost",4711,
     (data) -> 
       console.log("## "+data.substr(data.length-30))
