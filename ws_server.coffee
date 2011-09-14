@@ -1,4 +1,6 @@
 net = require 'net'
+require './js/mg_client/mg_client_config'
+
 Telnet = {}
 Telnet.connect = (host,port,onData, onClose = (error) -> ) ->
   telnet = net.createConnection port, host
@@ -13,7 +15,11 @@ Telnet.connect = (host,port,onData, onClose = (error) -> ) ->
     console.log "Error" + e
     telnet.end()
     onClose(e)
-  telnet.send = (data) -> telnet.write data
+  telnet.send = (data) ->
+    try
+      telnet.write data
+    catch e
+      console.log("""Error writing data #{data} to telnet\n#{e}""")
   telnet
 
 ws = require('socket.io').listen(8002)
@@ -22,7 +28,7 @@ ws.set('log level', 1)
 ws.set('timeout', 3600000)
 ws.sockets.on('connection', (conn) ->
   console.log("connection established")
-  	
+    
   console.log("remote address"+conn.remoteAddress)
   input = ""
   conn.on "message", (msg) -> 
@@ -42,7 +48,7 @@ ws.sockets.on('connection', (conn) ->
     console.log("error "+e)
     telnet.end()
   )
-  telnet = Telnet.connect("localhost",4711,
+  telnet = Telnet.connect(config.mud_host,config.mud_port,
     (data) -> 
       console.log("## "+data.substr(data.length-30))
       if data

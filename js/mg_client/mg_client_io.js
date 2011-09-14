@@ -1,5 +1,5 @@
 	function connect(receive) {
-		var url = "http://"+HOST+":"+PORT+"/"; // todo socket.io
+		var url = "http://"+config.proxy_host+":"+config.proxy_port +"/";
 
 		var socket = io.connect(url);
 		  socket.on('connect', function () {
