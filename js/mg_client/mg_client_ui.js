@@ -104,7 +104,7 @@ function handlePassword(line) {
 }
 
 function send(str) {
-	if (str) {
+	if (str!=null) {
 		server.send(str + "\n");
 	}
 }
@@ -120,6 +120,7 @@ function sendInput() {
    } else {
 	 input.val("");
    }
+   console.log("send: #"+value+"#"+toSend+"#")
    send(toSend);
    input.focus();
    input.select();

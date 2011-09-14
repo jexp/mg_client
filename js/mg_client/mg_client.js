@@ -120,9 +120,9 @@ function runHooks(type, data) {
 	if (!h) return data;
 	for (name in h) {
 		if (h[name]) {
-			console.log("running hook "+name+" with "+data);
+//			console.log("running hook "+name+" with "+data+" result: "+data);
 			data = h[name](data)
-			if (!data) return null; // todo handle fallthrough etc
+			if (data==null) return null; // todo handle fallthrough etc
 		}
 	}
 	return data;
