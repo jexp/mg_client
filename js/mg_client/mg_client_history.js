@@ -1,26 +1,26 @@
-var history = new Array();
+var inputHistory = [];
 var histoffset = 0;
 
 function addToHistory(text) {
 	if (text==null) return;
-	var idx=jQuery.inArray(text,history);
+	var idx=jQuery.inArray(text,inputHistory);
 	if (idx>-1) {
-		history.splice(idx,1);
+		inputHistory = inputHistory.splice(idx,1);
 	}
-	history.unshift(text);
-	histoffset = 0;
+	inputHistory.push(text);
+	histoffset = inputHistory.length-1;
 }
 
 function history_prev() {
-	var result = history[histoffset];
-	histoffset += 1;
-	if (histoffset >= history.length) histoffset = history.length - 1;
+	var result = inputHistory[histoffset];
+	histoffset -= 1;
+	if (histoffset < 0) histoffset = 0;
 	return result;
 }
 
 function history_next() {
-	var result = history[histoffset];
-	histoffset -= 1;
-	if (histoffset < 0) histoffset = 0;
+	var result = inputHistory[histoffset];
+	histoffset += 1;
+	if (histoffset >= inputHistory.length) histoffset = inputHistory.length - 1;
 	return result;
 }

@@ -77,7 +77,7 @@ function run(action,line, match,trigger) {
 	var type = typeof(action)
 	if (type == "string" ) return eval(action);
 	if (type == "function" ) {
-		var fullmatch = match.shift();
+		var fullmatch = match.shift() ;
 		return action.call(this, { match : fullmatch, line:line, trigger:trigger, groups : match });
 	}
 	if (type == "object" ) {
@@ -96,12 +96,20 @@ function highlight(trigger) {
 		if (trigger.action) {  run(trigger.action, line, match, trigger); }
 		if (!(trigger.style || trigger.click || trigger.dblclick)) return line;
 		
-		return line.replace(trigger.trigger, function (text) {
-			var span = $("<span>");
-			if (trigger.style) { span.css(trigger.style); }
-			if (trigger.click) { span.click(trigger.click(text)); }
-			if (trigger.dblclick) { span.dblclick(trigger.dblclick(text));}
-			span.text(text);
+		return line.replace(trigger.trigger, function () {
+			var args=Array.prototype.slice.call(arguments);
+			var matches;
+			if (args.length==3) matches=[args[0]];
+			else {
+				matches=args.slice(1,-2);
+			}
+			for (var int=0;i<matches.length;i++) {
+				var span = $("<span>");
+				if (trigger.style) { span.css(trigger.style); }
+				if (trigger.click) { span.click(trigger.click(text)); }
+				if (trigger.dblclick) { span.dblclick(trigger.dblclick(text));}
+				span.text(matches[i]);
+			}
 			return span.wrap("<div>").parent().html();
 		});
 	}

@@ -47,9 +47,16 @@
 	<script type="text/javascript" src="js/mg_client/mg_client_persist.js"></script>
 	<script type="text/javascript" src="js/datatables/js/jquery.dataTables.min.js"></script>
 	<script type="text/javascript" src="js/edit_area/edit_area_full.js"></script>
+	<script type="text/javascript" src="js/mg_client/mg_client_test.js"></script>
 	<script type="text/javascript">
 	
+	// markup : { from : to : style: , click : dbclick : title }
+	function extractMarkup(line) {
+		return { line : line, markup : [], original : line }
+	}
     function enrich(line) {
+		var result = extractMarkup(line);
+		
 		line = escapeHTML(line);
 
 		if (handlePassword(line)) {
@@ -203,6 +210,7 @@
     	<a href="#" class="nav" onclick="editScript('startup'); return false;">Startup</a>
     	<a href="#" class="nav" onclick="editScript('connect'); return false;">Connect</a>
 	  	<a href="#" class="nav" onclick="$('#debug_trigger').dialog('open'); return false;">Debug Trigger</a>
+	  	<a href="#" class="nav" onclick="runTestSuite(); return false;">Run Tests</a>
   	</span>
 
 	  </div>

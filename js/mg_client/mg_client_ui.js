@@ -96,7 +96,10 @@ function toggleInputPassword() {
 	pass.show().focus().attr("id","input");
 	$('#form').prepend($('#input'))
 	$('#hidden_form').prepend($('#password'))
+	input.focus();
+    input.select();
 }
+
 function handlePassword(line) {
 	if (!password && line.match(/asswor/) || password) {
 		toggleInputPassword();
