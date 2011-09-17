@@ -62,7 +62,7 @@ var Player = {
 	second : false
 }
 
-function updatePoints(suffix, val, max) {
+function showPoints(suffix, val, max) {
 	$("#p_max_"+suffix).text(max);
 	$("#p_"+suffix).text(val);
 	var value = 100.0*parseInt(val)/parseInt(max);
@@ -125,8 +125,8 @@ function connectPlayer(name) {
 function showPlayer(player) {
 	player = player || Player;
 	var id = "_"+player.name.toLowerCase();
-	updatePoints("kp"+id,player.kp,player.max_kp)
-	updatePoints("lp"+id,player.lp,player.max_lp)
+	showPoints("kp"+id,player.kp,player.max_kp)
+	showPoints("lp"+id,player.lp,player.max_lp)
 	if ($("#avatar"+id).attr("src") != player.avatar) {
 		$("#avatar"+id).attr("src",player.avatar);
 	}
@@ -169,6 +169,15 @@ function add_player_connect_triggers() {
 
 var players = {};
 
+function withPlayer(fun, player) {
+	if (!player) player = Player;
+	return function() { 
+		var args=Array.prototype.slice.call(arguments);
+		args.unshift(player);
+		return fun.apply(this, args);
+	}
+}
+
 function property_update(trigger,props) {
 	var properties = Array.prototype.slice.call(arguments);
 	return function(player, line) {
@@ -177,11 +186,17 @@ function property_update(trigger,props) {
 	  		for (var i=1;i<match.length && i<properties.length; i++) {
 				var value=match[i];
 				if (value) {
-	  				var prop = properties[i];
-	  				player[prop]=value;
+					var prop = properties[i];
+	  				var prop = prop.indexOf(",")==-1 ? [prop] : prop.split(/, */);
+					for (var j=0;j<prop.length;j++) {
+//					   console.log("updating "+prop[j]+" to "+value);
+		  			   player[prop[j]]=value;
+					}
 				}
 	  		}
-	  	}};
+	  	}
+		return line;
+	};
 }
 
 function lookup_player(name) {
@@ -273,13 +288,13 @@ Alter:	1 Stunde 10 Minuten 36 Sekunden.
 	var info_checks = [
 	property_update(/Rasse ............ (.+)             Abenteuer ........ (\d+)(?: \((\d+)\))?/,'race','ap','max_ap')
 	,property_update(/Geschlecht ....... (.+)          Groesse .......... (\d+) cm/,'gender','size')
-	,property_update(/Stufe ............ (\d+)(?: +\((\d+)\)) +Gewicht .......... (\d+) kg/,'level','max_level','weight')
-	,property_update(/Gilde ............ (.+)         Gildenstufe ...... (\d+)(?: \((\d+)\))?/,'guild','guild_level','max_guild_level')
+	,property_update(/Stufe ............ (\d+)(?: +\((\d+)\)) +Gewicht .......... (\d+) kg/,'level,max_level','max_level','weight')
+	,property_update(/Gilde ............ (.+)         Gildenstufe ...... (\d+)(?: \((\d+)\))?/,'guild','guild_level,max_guild_level','max_guild_level')
 	,property_update(/Erfahrung ........ (\d+) Punkte           Charakter ........ (.+)/,'xp','align')
 	,property_update(/Ausdauer ......... +(\d+)(?: \(([+-]\d+)\)) +Geschicklichkeit .  (\d+)(?: \(([+-]\d+)\))/,'constitution','constitution_mod','dexterity','dexterity_mod')
 	,property_update(/Kraft ............ +(\d+)(?: \(([+-]\d+)\)) +Intelligenz ......  (\d+)(?: \(([+-]\d+)\))/,'strength','strength','intellect','intellect_mod')
-	,property_update(/Gesundheit ....... (\d+)(?: +\((\d+)\))? +Gift ............. (gesund|leicht|gefaehrlich)/,'lp','max_lp','poison')
-	,property_update(/Konzentration .... (\d+)(?: +\((\d+)\))? +Vorsicht ......... (\d+|mutig)/,'kp','max_kp','vorsicht')
+	,property_update(/Gesundheit ....... (\d+)(?: +\((\d+)\))? +Gift ............. (gesund|leicht|gefaehrlich)/,'lp,max_lp','max_lp','poison')
+	,property_update(/Konzentration .... (\d+)(?: +\((\d+)\))? +Vorsicht ......... (\d+|mutig)/,'kp,max_kp','max_kp','vorsicht')
 	,property_update(/Todesfolgen....... (\d|kein Malus)/,'death_marks')
 	,property_update(/Du kennst Dich im MorgenGrauen (.+)/,'fp')
 	
@@ -368,9 +383,15 @@ Alter:	1 Stunde 10 Minuten 36 Sekunden.
 	]);
 
 	addTriggers("kurzinfo",[
-		highlight({ trigger: /Konzentration: 0 \|.+\| +(\d+) \((\d+)\)$/, action : function(args) { 
+//                                   Konzentration: 0 |###################################  .  | 179 (202)
+		withPlayer(property_update(/^Konzentration: 0 \|.+\| +(\d+)(?: \((\d+)\))?$/,"kp,max_kp","max_kp")),
+		withPlayer(property_update(/^Gesundheit:    0 \|.+\| +(\d+)(?: \((\d+)\))?$/,"lp,max_lp","max_lp"))
+/*
+		highlight({ trigger: , action : function(args) { 
+			console.log("updating kp to "+args.groups[0]+" max_kp to "+args.groups[1]);
 			Player.kp = args.groups[0]; Player.max_kp = args.groups[1]; 
 		}})
+*/
 	]);
 	
 	addTriggers("vorsicht",[
@@ -388,12 +409,16 @@ Alter:	1 Stunde 10 Minuten 36 Sekunden.
 
 //	addTrigger("kurzinfo_kp",
 //	trigger_update(/Konzentration: 0 \|.+\| +(\d+) \((\d+)\)$/,function(val,max) { Player.kp = max; Player.max_kp = max; }));
+/*
 	addTrigger("kurzinfo_lp",
-	trigger_update(/Gesundheit:    0 \|.+\| +(\d+) \((\d+)\)$/,function(val,max) { Player.lp = val; Player.max_lp = max; }));
+	trigger_update(/^Gesundheit:    0 \|.+\| +(\d+) \((\d+)\)$/,function(val,max) { Player.lp = val; Player.max_lp = max; }));
 	addTrigger("kurzinfo_kp_max",
-	trigger_update(/Konzentration: 0 \|.+\| +(\d+)$/,function(max) { Player.kp = max; Player.max_kp = max; }));
+	trigger_update(/^Konzentration: 0 \|.+\| +(\d+)$/,function(max) { 
+ 		Player.kp = max; Player.max_kp = max; 
+	}));
 	addTrigger("kurzinfo_lp_max",
-	trigger_update(/Gesundheit:    0 \|.+\| +(\d+)$/,function(max) { Player.lp = max; Player.max_lp = max; }));
+	trigger_update(/^Gesundheit:    0 \|.+\| +(\d+)$/,function(max) { Player.lp = max; Player.max_lp = max; }));
+*/
 }
 
 var playerBackup = null;

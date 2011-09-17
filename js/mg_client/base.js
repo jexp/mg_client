@@ -67,3 +67,8 @@ function clone(obj) {
 
     throw new Error("Unable to copy obj! Its type isn't supported.");
 }
+
+function loadScript(script) {
+	if ($('script[src]='+script)) return;
+	var s=$('<script>').attr('type',"text/javascript").attr('src',script).appendTo($('head'));
+}

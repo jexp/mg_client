@@ -33,8 +33,11 @@
 	<script type="text/javascript" src="js/socket.io/socket.io.min.js"></script>
 	<script type="text/javascript" src="js/mg_client/base.js"></script>
 	<script type="text/javascript" src="js/mg_client/ansi.js"></script>
-	<script type="text/javascript" src="js/mg_client/mg_client_ui.js"></script>
+	<script type="text/javascript" src="js/mg_client/mg_client_script.js"></script>
+	<script type="text/javascript" src="js/mg_client/mg_client_hooks.js"></script>
+	<script type="text/javascript" src="js/mg_client/mg_client_trigger.js"></script>
 	<script type="text/javascript" src="js/mg_client/mg_client.js"></script>
+	<script type="text/javascript" src="js/mg_client/mg_client_ui.js"></script>
 	<script type="text/javascript" src="js/mg_client/mg_client_io.js"></script>
 	<script type="text/javascript" src="js/mg_client/mg_client_player.js"></script>
 	<script type="text/javascript" src="js/mg_client/mg_client_history.js"></script>
@@ -114,7 +117,7 @@
 			p_finger : { title: "Finger", start : /^.+ ist anwesend,$/ , addStart:true},
 			p_kwer : { title : "Anwesende", start: /^     Liste der Mitspieler vom/, addStart:true },
 			p_team : { title : "Team" , start: /^  Name        Gilde           LV GLV  LP (MLP)  KP (MKP) Vors. GR AR TR FR A V/ }});
-//		$('#docs').tabs().resizable().draggable().tabs("add","docs.html","Dokumentation");
+		$('#docs').tabs().tabs("add","docs.html","Dokumentation").tabs("add","bugs.html","Bekannte Fehler").resizable().draggable().hide();
 		$('#Mud').hide()
 		$('#Spieler').hide()
 		editAreaLoader.init({
@@ -185,11 +188,14 @@
 	  <div class="nav-2" style="font-size:12px;">
 	 <a href="#" class="nav" id="nav_start" style="margin-top:0;">Fenster</a>
 	  <span id="nav_sub_start" class="secnav">
-	  <a href="#" id="nav_eingang" onclick="$('#status_'+Player.name.toLowerCase()).dialog('open'); return false;">Status</a>
-	  <a href="#" id="nav_eingang" onclick="$('#mpa').toggle(); return false;">MPA</a>
+	  <a href="#" onclick="$('#status_'+Player.name.toLowerCase()).dialog('open'); return false;">Status</a>
+	  <a href="#" onclick="$('#mpa').toggle(); return false;">MPA</a>
 	</span>
 
   	<a href="#" class="nav" onclick="$('#docs').toggle();return false;">Dokumentation</a>
+  	<span class="secnav">
+	  	<a href="#" class="nav" onclick="$('#docs').show();showTab('docs','bugs');return false;">Bekannte Fehler</a>
+  	</span>
 
   	<a href="#" class="nav" id="nav_neues">Makros</a>
   	<span class="secnav">
@@ -219,10 +225,13 @@
 	<div id="compass" style="position:absolute;left:610px;top:455px;">
 	</div>
 
+	<div id="hidden_form2" style="display:none">
+		<input type="password" id="password" style="width:40em;font-family:monospace;font-size:12px;display:none;"/>
+	</div>
+
 	<form id="form" method="post"  style="margin: 5px;" onsubmit="try { sendInput()} catch(e) { alert(e); };return false;">
-		<input type="text" id="input" style="width:40em;font-family:monospace;font-size:12px;" onKeyPress="return submitEnter(this,event)"/>
-		<input type="password" id="password" style="width:50em;font-family:monospace;font-size:12px;display:none" onKeyPress="return submitEnter(this,event)"/>
-		<button id="b_submit" action="sendInput();">Submit</button>
+		<input type="text" id="input" style="width:40em;font-family:monospace;font-size:12px;"/>
+		<button id="b_submit">Submit</button>
 	</form>
 
     </div>
@@ -243,6 +252,7 @@
 	</div>
 
 	<div id="docs" style="width:550px;height:250px;right:100px;top:50px;position:absolute">
+		<ul></ul>
 	</div>
 	
 	<div id="mpa" style="width:550px;height:250px;right:100px;top:50px;position:absolute">
@@ -271,6 +281,7 @@
 			<pre style="overflow-x:none;overflow-y:auto" id="mpa_artikel_text"></pre>
 	    </div>
 	</div>
-	
+	<a href="http://github.com/jexp/mg_client">Source / BugTracker auf GitHub</a>
+	<a href="http://wiki.morgengrauen.info/index.php?n=MorgenGrauen.MG-Client">Docs im MG-Wiki</a>
 </body>
 </html>

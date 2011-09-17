@@ -40,7 +40,7 @@ function removeFromIndex(id) {
 
 function getIndex(fun) {
 	store.get("__index__", function(ok,index) {
-		console.log(" get index "+index+" typ "+typeof(index))
+//		console.log(" get index "+index+" typ "+typeof(index))
 		if (!ok || index==null) {
 			fun(Array())
 		} else {

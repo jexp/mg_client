@@ -14,7 +14,7 @@ function addTab(id, name, tab) {
 function addWindow(id,w) {
 	var div = $("<div></div>").attr("id",id).append("<ul>").appendTo("body").css("width","550px")
 	.css("right","100px").css("top",window_top_offset() + "px").css("position","absolute")
-	div.tabs({ panelTemplate : "<pre></pre>" }).draggable().resizable();
+	div.tabs({ panelTemplate : "<pre></pre>" }).draggable({ scroll: false }).resizable();
 	
 	for (name in w) {
 		var tab=w[name];
@@ -22,7 +22,7 @@ function addWindow(id,w) {
 	}
 	add_close_button(div)
 	var menue = $("<a>").appendTo($("#nav_sub_start"))
-	menue.click(function() { $('#'+id).show(); return false; }).text(id).attr("href","#");
+	menue.click(function() { $('#'+id).toggle(); return false; }).text(id).attr("href","#");
 }
 
 function showTab(id) {
@@ -77,7 +77,7 @@ function scrollBottom(name) {
    box.prop("scrollTop", box.prop("scrollHeight") - box.height() );	
 }
 function showText(text) {
-	var lines=text.replace(/\r\n/,"\n").split(/\n/);
+	var lines=text.replace(/\r+/g,"").split(/\n/);
 	lines.forEach(function(line) {
 	    var result = enrich(line);
 	    if (result!=null) {
@@ -94,6 +94,8 @@ function toggleInputPassword() {
 	var pass=$("#password");
 	input.hide().attr("id","password");
 	pass.show().focus().attr("id","input");
+	$('#form').prepend($('#input'))
+	$('#hidden_form').prepend($('#password'))
 }
 function handlePassword(line) {
 	if (!password && line.match(/asswor/) || password) {
@@ -135,7 +137,7 @@ KEYBOARD_HOME = 36;
 
 function handle_keys(e) {
 	var box=$("#mgbox");
-	switch (e.keyCode) {
+	switch (getKeyCode(e)) {
 	  case KEYBOARD_DOWN : 
 		input(history_next(),true);
 		break;
