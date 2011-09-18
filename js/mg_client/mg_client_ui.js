@@ -77,9 +77,20 @@ function scrollBottom(name) {
    box.prop("scrollTop", box.prop("scrollHeight") - box.height() );	
 }
 
+var lastLine = null;
 function showText(text) {
-	var lines=text.replace(/\r+/g,"").split(/\n/);
+	var lines=text.split(/\n/); // replace(/\r+/g,"")
+	if (!lines.length) return;
+	if (lastLine) {
+		lines[0] = lastLine + lines[0];
+		lastLine = null;
+	}
+	if (!lines[lines.length-1].match(/([\r>:?]\W*)$/)) {
+        lastLine = lines.pop();
+	}
+//	console.log("lastLine: "+lastLine);
 	lines.forEach(function(line) {
+		line.replace(/\r+/,"");
 	    var result = enrich(line);
 	    if (result!=null) {
 		  $('#out').append(result+"\n");
@@ -97,8 +108,7 @@ function toggleInputPassword() {
 	pass.show().focus().attr("id","input");
 	$('#form').prepend($('#input'))
 	$('#hidden_form').prepend($('#password'))
-	input.focus();
-    input.select();
+	$('#input').focus().val("");
 }
 
 function handlePassword(line) {

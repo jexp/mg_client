@@ -96,12 +96,14 @@ add_mpa_triggers =
                addStart:true,
                fun : (text,lines) ->
                   for line in lines
-                    if match = line.match(/[> ]([*x -]) +(\d+)\. (.+) +: +(- leer -|(\d+) Artikel \( ?(\d+\. \w{3} \d{2})\))/)
+                    if match = line.match(/[> ]([*x -]) +(\d+)\. (.+?) +: +(- leer -|(\d+) Artikel \( ?(\d+\. \w{3} \d{2})\))/)
                       name = match[3];
-                      mpa[name] = { title : name, id : match[2] }
+                      mpa[name] = { title : name } if !mpa[name]
+                      mpa[name].id = match[2];
                       mpa[name].count = if match[4] == "- leer -" then 0 else parseInt(match[5]) 
                       mpa[name].latest = if match[6] then match[6] else ""
-                      mpa[name].ignore = match[3] != " "
+                      mpa[name].ignore = match[1] != " "
+                  console.log(mpa)
                   showRubriken()
                })
     addTrigger "mpa_rubrik", 

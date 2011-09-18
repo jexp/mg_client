@@ -101,7 +101,7 @@
 
 		add_buttons("toolbar",[{label:"info"},{label:"ausruestung"},{label:"inv"},
 		                       {label:"Kurz", action:"kurz"},{label:"Lang", action:"lang"},{label:"nn"},
-							   {label:"Anwesende",action:"kwer"}]);
+							   {label:"Anwesende",action:"kwer"},{label:"Abmelden",action:"schlafe ein"}]);
 
 		addCompass();
 		
@@ -240,7 +240,7 @@
 
 	<form id="form" method="post"  style="margin: 5px;" onsubmit="try { sendInput()} catch(e) { alert(e); };return false;" autocomplete="off">
 		<input type="text" id="input" style="width:40em;font-family:monospace;font-size:12px;"/>
-		<button id="b_submit">Submit</button>
+		<button id="b_submit">Senden</button>
 	</form>
 
     </div>
