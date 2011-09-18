@@ -1,0 +1,22 @@
+MorgenGrauen Web-Client (siehe http://mg.mud.de)
+
+Läuft auf http://x.cd/3w
+
+* node.js Proxy server der die Telnet-Verbindung ins MG hält
+* javascript basierte web-ui die per socket.io (websocket) mit dem Proxy redet
+
+Enthält bis jetzt folgende Features
+* Trigger, Text-Umleitung
+* Anzeige LP/KP, Avatar-Bilder aus dem MG
+* Parsen von Spieler-Attributen
+* eigene Skripte in Javascript schreiben
+* send hooks für multi-befehle und Skript-Ausführung
+* MPA - Interface mit Rubriken, Rubrik- und Einzelanzeige, Editor zum Schreiben von Artikeln
+* Speichern von Spieler-Infos und Skripten
+* Ansi-Formatierung
+* Action-Buttons
+* Hervorhebung + Klick auf Ausgänge
+* Doppelklick auf Substantive zum Untersuchen
+* Support von Screenreadern
+
+* uvm.
