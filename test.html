@@ -125,7 +125,8 @@
 			p_finger : { title: "Finger", start : /^.+ ist anwesend,$/ , addStart:true},
 			p_kwer : { title : "Anwesende", start: /^     Liste der Mitspieler vom/, addStart:true },
 			p_team : { title : "Team" , start: /^  Name        Gilde           LV GLV  LP (MLP)  KP (MKP) Vors. GR AR TR FR A V/ }});
-		$('#docs').tabs().tabs("add","docs.html","Dokumentation").tabs("add","bugs.html","Bekannte Fehler").resizable().draggable().hide();
+		$('#docs').tabs().tabs("add","docs.html","Dokumentation").tabs("add","bugs.html","Bekannte Fehler").hide();
+		makeTabWindow($('#docs'))
 		$('#Mud').hide()
 		$('#Spieler').hide()
 		editAreaLoader.init({
@@ -175,9 +176,9 @@
 					} },
 					 { sTitle: "Datum", sWidth : "10em" }
 					 ] } );
-		$('#mpa').tabs().draggable().resizable(); // .dialog({ title: "MPA", width: 600});
+		$('#mpa').tabs(); // .dialog({ title: "MPA", width: 600});
 		$('#tab-mpa-rubrik .table_toolbar').prepend($('#tab-mpa-rubrik input[type=submit]').button())
-		add_close_button($('#mpa'))
+		makeTabWindow($('#mpa'))
 //		addScript("startup", function(x) { alert("test "+x)});
 //		editScript("startup");
 		$('#input').focus();

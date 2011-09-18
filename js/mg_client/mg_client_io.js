@@ -21,7 +21,8 @@ var	IAC = {
 		WONT : "\uFFFC",
 		DO : "\uFFFD",
 		DONT : "\uFFFE",
-		EOR : "\x19"
+		TELOPT_EOR : "\x19",
+		EOR : "\xEF"
 	}
 
 function char2hex(d) { 
@@ -32,7 +33,7 @@ function char2hex(d) {
 	}
 	return result;
 }
-var TELNET_RE = new RegExp("(?:(["+IAC.WILL+IAC.WONT+IAC.DO+IAC.DONT+"]+)("+".)|"+IAC.SB+"(.)(.+?)"+IAC.SE+")","g")
+var TELNET_RE = new RegExp("(?:(["+IAC.WILL+IAC.WONT+IAC.DO+IAC.DONT+"]+)("+".)|"+IAC.SB+"+(.)(.+?)"+IAC.SE+"+)","g")
 function extractIAC(line) {
 	var match, found;
 	while (match = TELNET_RE.exec(line)) {

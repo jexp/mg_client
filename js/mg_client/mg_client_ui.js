@@ -14,13 +14,13 @@ function addTab(id, name, tab) {
 function addWindow(id,w) {
 	var div = $("<div></div>").attr("id",id).append("<ul>").appendTo("body").css("width","550px")
 	.css("right","100px").css("top",window_top_offset() + "px").css("position","absolute")
-	div.tabs({ panelTemplate : "<pre></pre>" }).draggable({ scroll: false }).resizable();
+	div.tabs({ panelTemplate : "<pre></pre>" });
 	
 	for (name in w) {
 		var tab=w[name];
         addTab(id, name, tab)
 	}
-	add_close_button(div)
+	makeTabWindow(div);
 	var menue = $("<a>").appendTo($("#nav_sub_start"))
 	menue.click(function() { $('#'+id).toggle(); return false; }).text(id).attr("href","#");
 }
@@ -49,6 +49,10 @@ function appendTo(id, text) {
 	var target = $("#"+id);
 	target.append(text);
 	target.prop("scrollTop", target.prop("scrollHeight") - target.height() );
+}
+function makeTabWindow(d) {
+	d.resizable().draggable({handle:'ul', scroll:false });
+	add_close_button(d);
 }
 
 function add_close_button(d) {

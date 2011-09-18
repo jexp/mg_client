@@ -4,12 +4,14 @@ require './js/mg_client/mg_client_config'
 Telnet = {}
 Telnet.connect = (host,port,remote,onData, onClose = (error) -> ) ->
   telnet = net.createConnection port, host
+  telnet.setEncoding('ascii')
   telnet.on "close", -> console.log "server closed"
   telnet.on "end",  -> 
     telnet.end()
     console.log "server closed"
     onClose(null)
-  telnet.on "data", (data) -> 
+  telnet.on "data", (data) ->
+#    console.log((c+"("+c.charCodeAt(0).toString(16)+")" for c in data.substring(0,200)).join())
     onData data.toString()
   telnet.on "error", (e) -> 
     console.log "Error" + e
