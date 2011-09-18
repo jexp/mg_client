@@ -93,13 +93,13 @@ function showText(text) {
         lastLine = lines.pop();
 	}
 //	console.log("lastLine: "+lastLine);
-	lines.forEach(function(line) {
-		line.replace(/\r+/,"");
+	for (var i=0;i<lines.length;i++) {
+		var line = lines[i].replace(/\r+/,"");
 	    var result = enrich(line);
 	    if (result!=null) {
 		  $('#out').append(result+"\n");
 		}
-	});
+	};
 	scrollBottom("mgbox");
 }
 
