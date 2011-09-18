@@ -55,6 +55,7 @@
 		return { line : line, markup : [], original : line }
 	}
     function enrich(line) {
+	    line = extractIAC(line);
 		var result = extractMarkup(line);
 		
 		line = escapeHTML(line);
@@ -220,7 +221,7 @@
 
 	<div id="ie-hack">&nbsp;</div>
 	<div id="doc" style="width:95%;height:100%;margin:5px;">
-		<div id="mg-logo" style="position:absolute; left:190px;top:520px;">&nbsp;</div>
+		<div id="mg-logo" style="position:absolute; left:190px;top:525px;">&nbsp;</div>
 		
 	<div id="mgbox" style="overflow-x:hidden;overflow-y:auto;height:450px;width:48em;line-height:1.2em;font-size:12px;margin-top:-40px;margin-left:-100px;" class="mudtext">
 		<pre id="out" aria-live="polite"></pre>
@@ -237,7 +238,7 @@
 		<input type="password" id="password" style="width:40em;font-family:monospace;font-size:12px;display:none;"/>
 	</div>
 
-	<form id="form" method="post"  style="margin: 5px;" onsubmit="try { sendInput()} catch(e) { alert(e); };return false;">
+	<form id="form" method="post"  style="margin: 5px;" onsubmit="try { sendInput()} catch(e) { alert(e); };return false;" autocomplete="off">
 		<input type="text" id="input" style="width:40em;font-family:monospace;font-size:12px;"/>
 		<button id="b_submit">Submit</button>
 	</form>

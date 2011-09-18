@@ -76,6 +76,7 @@ function scrollBottom(name) {
    var box = $("#"+name);
    box.prop("scrollTop", box.prop("scrollHeight") - box.height() );	
 }
+
 function showText(text) {
 	var lines=text.replace(/\r+/g,"").split(/\n/);
 	lines.forEach(function(line) {
@@ -128,7 +129,7 @@ function sendInput() {
    console.log("send: #"+value+"#"+toSend+"#")
    send(toSend);
    input.focus();
-   input.select();
+   input.val("");
 }
 KEYBOARD_LEFT = 37;
 KEYBOARD_RIGHT = 39;

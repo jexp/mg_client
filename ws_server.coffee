@@ -19,7 +19,8 @@ Telnet.connect = (host,port,remote,onData, onClose = (error) -> ) ->
     try
       telnet.write data
     catch e
-      console.log("""Error writing data #{data} to telnet\n#{e}""")
+      console.log("""Error writing data #{d44ata} to telnet\n#{e}""")
+#  telnet.send(TELNEGS.IAC+TELNEGS.DO+TELNEGS.EOR)
   telnet.send("REMOTE_HOST="+remote+"\n") if remote
   telnet
 
@@ -29,8 +30,7 @@ ws.set('log level', 1)
 ws.set('timeout', 3600000)
 ws.sockets.on('connection', (conn) ->
   console.log("connection established")
-    
-  console.log("remote address"+JSON.stringify(conn.handshake.address.address))
+  console.log("remote address"+JSON.stringify(conn.handshake))
   input = ""
   conn.on "message", (msg) -> 
 #    console.log msg
