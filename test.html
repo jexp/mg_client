@@ -55,6 +55,7 @@
 	<script type="text/javascript" src="js/mg_client/mg_client_test.js"></script>
 	<script type="text/javascript">
 	
+	Persist.remove('cookie');
 	// markup : { from : to : style: , click : dbclick : title }
 	function extractMarkup(line) {
 		return { line : line, markup : [], original : line }
@@ -102,7 +103,7 @@
 		$('#input').keydown(handle_keys);
 
 		addBox("p_fight","Kampf");
-		addBox("source","Source");
+		addBox("source","Source",false,"nav_debug");
 
 		add_buttons("toolbar",[{label:"info"},{label:"ausruestung"},{label:"inv"},
 		                       {label:"Kurz", action:"kurz"},{label:"Lang", action:"lang"},{label:"nn"},
@@ -112,7 +113,7 @@
 		
 		showPlayer();
 		addWindow("Kommunikation", {
-			teilemit : { title : "Mitteilungen", trigger : /^(Du teilst .+ mit|.+ teilt Dir mit):/ , 
+			teilemit : { title : "Mitteilungen", trigger : /^(Du teilst .+ mit|.+ teilt Dir mit|Du fluesterst .+ zu|.+ fluestert Dir zu):/ , 
 			fun : function (text) { appendTabText("teilemit",text); } },
 			ebenen :   { title : "Ebenen", trigger : /^\[[A-Z]\w+/, fun : function (text) { appendTabText("ebenen",text); }}
 		})		
@@ -183,7 +184,8 @@
 					 ] } );
 		$('#mpa').tabs(); // .dialog({ title: "MPA", width: 600});
 		$('#tab-mpa-rubrik .table_toolbar').prepend($('#tab-mpa-rubrik input[type=submit]').button())
-		makeTabWindow($('#mpa'))
+		makeTabWindow($('#mpa'));
+		$('#mpa').hide();
 //		addScript("startup", function(x) { alert("test "+x)});
 //		editScript("startup");
 		$('#input').focus();
@@ -191,32 +193,40 @@
 		$('#docs').tabs().draggable().resizable();
 //	} catch(e) {console.log(e);throw e;}
 	});
-	var	server = connect(showText);
-	console.log(server);
+	var	server;
 	</script>
 </head>
-<body style="font-size:10px;height:100%;">
+<body style="font-size:10px;height:100%;width:90%;">
+	<script type="text/javascript">
+		server = connect(showText);
+		console.log(server);
+	</script>
 	<div id="nav" style="left: 610px; top: 20px; position: absolute;">
 	  <div class="nav-1" style="z-index:-1;">&nbsp;</div>
 
 	  <div class="nav-2" style="font-size:12px;">
 	 <a href="#" class="nav" id="nav_start" style="margin-top:0;">Fenster</a>
-	  <span id="nav_sub_start" class="secnav">
-	  <a href="#" onclick="$('#status_'+Player.name.toLowerCase()).dialog('open'); return false;">Status</a>
+	  <span id="nav_mud" class="secnav">
+	  <a href="#" onclick="toggleDialog('status_'+Player.name.toLowerCase()); return false;">Status</a>
 	  <a href="#" onclick="$('#mpa').toggle(); return false;">MPA</a>
 	</span>
 
   	<a href="#" class="nav" onclick="$('#docs').toggle();return false;">Dokumentation</a>
-  	<span class="secnav">
-	  	<a href="#" class="nav" onclick="$('#docs').show();showTab('docs','bugs');return false;">Bekannte Fehler</a>
+  	<span id="nav_doc" class="secnav">
+	  	<a href="#" class="nav" onclick="$('#docs').toggle();showTab('docs','bugs');return false;">Bekannte Fehler</a>
   	</span>
 
   	<a href="#" class="nav" id="nav_neues">Makros</a>
-  	<span class="secnav">
+  	<span id="nav_debug" class="secnav">
     	<a href="#" class="nav" onclick="scriptDialog('edit'); return false;">Edit</a>
     	<a href="#" class="nav" onclick="editScript('startup'); return false;">Startup</a>
     	<a href="#" class="nav" onclick="editScript('connect'); return false;">Connect</a>
-	  	<a href="#" class="nav" onclick="$('#debug_trigger').dialog('open'); return false;">Debug Trigger</a>
+  	</span>
+
+  	<a href="#" class="nav" id="nav_neues">Debug</a>
+  	<span class="secnav">
+	  	<a href="#" class="nav" onclick="toggleDialog('source'); return false;">Source</a>
+	  	<a href="#" class="nav" onclick="toggleDialog('debug_trigger'); return false;">Debug Trigger</a>
 	  	<a href="#" class="nav" onclick="runTestSuite(); return false;">Run Tests</a>
   	</span>
 
@@ -252,6 +262,11 @@
     </div>
 
 	<div class="ie-hack2">&nbsp;</div>
+	<div style="text-align:right;margin-right:10em;">
+	<a href="http://github.com/jexp/mg_client">Source / BugTracker auf GitHub</a>
+	<a href="http://wiki.morgengrauen.info/index.php?n=MorgenGrauen.MG-Client">Docs im MG-Wiki</a>
+	</div>
+	
 	</div>
     <textarea id="script_editor" cols="80" style="display:none"></textarea>
 	<div id="disclaimer"><span style="text-align:center;">&copy; MorgenGrauen. Alle Rechte vorbehalten.</span></div>
@@ -296,7 +311,5 @@
 			<pre style="overflow-x:none;overflow-y:auto" id="mpa_artikel_text"></pre>
 	    </div>
 	</div>
-	<a href="http://github.com/jexp/mg_client">Source / BugTracker auf GitHub</a>
-	<a href="http://wiki.morgengrauen.info/index.php?n=MorgenGrauen.MG-Client">Docs im MG-Wiki</a>
 </body>
 </html>

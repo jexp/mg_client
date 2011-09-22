@@ -9,19 +9,19 @@ function addTab(id, name, tab) {
 		var fun = tab["fun"] || function(text) {setTabText(name,text)};
 		addTrigger(name,collect({start:tab["start"],addStart:tab["addStart"],end:end, fun:fun}));
 	}
-	$("#"+name).css("overflow-y","auto").css("overflow-x","auto").css("max-height",300)
+	$("#"+name).css("max-height",300) // css("overflow-y","auto").css("overflow-x","auto")
 }
 function addWindow(id,w) {
-	var div = $("<div></div>").attr("id",id).append("<ul>").appendTo("body").css("width","550px")
+	var div = $("<div></div>").attr("id",id).append("<ul>").appendTo("body").css("width","580px")
 	.css("right","100px").css("top",window_top_offset() + "px").css("position","absolute")
-	div.tabs({ panelTemplate : "<pre></pre>" });
+	div.tabs({ panelTemplate : "<pre style='overflow-x:hidden;overflow-y:auto;'></pre>" });
 	
 	for (name in w) {
 		var tab=w[name];
         addTab(id, name, tab)
 	}
 	makeTabWindow(div);
-	var menue = $("<a>").appendTo($("#nav_sub_start"))
+	var menue = $("<a>").appendTo($("#nav_mud"))
 	menue.click(function() { $('#'+id).toggle(); return false; }).text(id).attr("href","#");
 }
 
@@ -189,7 +189,7 @@ function add_button(button, target) {
 }
 
 function window_top_offset() {
- 	return $("#nav_sub_start").children().size() * 85;
+ 	return $("#nav_mud").children().size() * 85;
 }
 
 function getKeyCode(e) {
@@ -207,14 +207,19 @@ function submitEnter(field,e) {
     }
 }
 
-function addBox(id,title,autoOpen) {
+function addBox(id,title,autoOpen,menu) {
 	var box=$('<pre>');
 	box.appendTo("body").attr("id",id).css("overflow-x","hidden").css("overflow-y", "auto")
 	.dialog({ title: title, position : ["right",window_top_offset()], width : 500, height : 200, autoOpen: autoOpen==null ? false : autoOpen });
 
-	var menue = $("<a>").appendTo($("#nav_sub_start"))
-	menue.click(function() { $('#'+id).dialog('open'); return false; }).text(title).attr("href","#");
+	var menue = $("<a>").appendTo($("#" + ( menu ||"nav_mud")))
+	menue.click(function() { toggleDialog(id); return false; }).text(title).attr("href","#");
 	return box;
+}
+
+function toggleDialog(id) {
+	var d =$('#'+id)
+	d.dialog(d.is(":visible") ? 'close' : 'open'); 
 }
 
 function addCompass() {
