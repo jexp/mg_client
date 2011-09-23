@@ -1,3 +1,4 @@
+Persist.remove('cookie');
 var store = new Persist.Store('MG-Client');
 // store trigger, window(s), button basisobjekte ?
 // separat liste der gespeicherten dinge
