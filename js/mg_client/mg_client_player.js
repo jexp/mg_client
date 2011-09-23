@@ -19,6 +19,7 @@ Projekt: git clone https://github.com/jexp/TinyMacros.git
 */
 var Player = {
 	name : "Unbekannt",
+	id : "unbekannt",
 	lp : 100,
 	max_lp : 100,
 	kp : 100,
@@ -99,7 +100,8 @@ function playerBox(id) {
 
 function connectPlayer(name) {
 	Player.name = name; 
-	var id=name.toLowerCase();
+	Player.id = name.toLowerCase();
+	var id=Player.id
 	runScript("connect",id);
 	playerBox(id).dialog({ position : [850,80], width : 300 });
 	loadData("player_"+id, function(data) {
@@ -124,7 +126,7 @@ function connectPlayer(name) {
 
 function showPlayer(player) {
 	player = player || Player;
-	var id = "_"+player.name.toLowerCase();
+	var id = "_"+player.id;
 	showPoints("kp"+id,player.kp,player.max_kp)
 	showPoints("lp"+id,player.lp,player.max_lp)
 	if ($("#avatar"+id).attr("src") != player.avatar) {
@@ -200,14 +202,14 @@ function property_update(trigger,props) {
 }
 
 function lookup_player(name) {
-	name = name.toLowerCase();
-	if (name == Player.name) {
+	var id = name.toLowerCase();
+	if (id == Player.id) {
 		return Player;
 	} 
-	if (!players[name]) {
-		players[name] = { name : name};
+	if (!players[id]) {
+		players[id] = { name : name, id: id};
 	} 
-	return players[name];
+	return players[id];
 }
 
 var team = []
@@ -258,14 +260,14 @@ function add_player_triggers() {
 		var player,match;
 		if (match = text.match(/^(.+) ist anwesend,\n/)) {
 		   var name = match[1];
-		   player = lookup_player(name)
+		   player = lookup_player(name.toLowerCase())
 		}
 		for (var i=0;i<finger_checks.length;i++) {
 			for (var j=0;j<lines.length;j++) {
 				finger_checks[i](player, lines[j]);
 			}
 		}
-		console.log("finger: "+player.name+" av"+player.avatar);
+		console.log("finger: "+player.name+" av: "+player.avatar);
 	}}));
 
 /*
@@ -428,6 +430,7 @@ function createPlayerBackup() {
 
 function showPlayerIfChanged() {
 	if (objectEquals(Player,playerBackup)) return;
+	console.log("ShowPlayer "+JSON.stringify(Player));
 	showPlayer(Player);
-	storeData("player_"+Player.name.toLowerCase(),JSON.stringify(Player))
+	storeData("player_"+Player.id,JSON.stringify(Player))
 }
