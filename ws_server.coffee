@@ -40,7 +40,12 @@ ws.sockets.on('connection', (conn) ->
 #    console.log msg
     return if msg.match /^telnet\|.+/ 
     if msg.match /.*\n/
-      telnet.send iconv.convert(input + msg).toString('ascii');
+      input = iconv.convert(input + msg).toString('ascii');
+# Bedauerlicherweise ist die offizielle Transliteration der Umlaute nicht so
+# doll... Daher nochmal ersetzen. :-(
+      input = input.replace("\"a","ae").replace("\"u","ue").replace("\"o","oe");
+      input = input.replace("\"A","Ae").replace("\"U","Ue").replace("\"O","Oe");
+      telnet.send input;
       input = ""
     else
       input += msg
