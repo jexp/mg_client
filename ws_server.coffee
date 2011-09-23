@@ -27,8 +27,14 @@ Telnet.connect = (host,port,remote,onData, onClose = (error) -> ) ->
   telnet
 
 ws = require('socket.io').listen(8002)
-Iconv = require('iconv').Iconv;
-iconv = new Iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE');
+Iconv = require('iconv').Iconv
+iconv = new Iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE')
+
+translate = (input) -> 
+  try
+    iconv.convert(input).toString('ascii').replace(/"([aAuUoO])/g,"$1e")
+  catch e
+    input
 
 ws.set('log level', 1)
 ws.set('timeout', 3600000)
@@ -40,12 +46,7 @@ ws.sockets.on('connection', (conn) ->
 #    console.log msg
     return if msg.match /^telnet\|.+/ 
     if msg.match /.*\n/
-      input = iconv.convert(input + msg).toString('ascii');
-# Bedauerlicherweise ist die offizielle Transliteration der Umlaute nicht so
-# doll... Daher nochmal ersetzen. :-(
-      input = input.replace("\"a","ae").replace("\"u","ue").replace("\"o","oe");
-      input = input.replace("\"A","Ae").replace("\"U","Ue").replace("\"O","Oe");
-      telnet.send input;
+      telnet.send translate(input + msg)
       input = ""
     else
       input += msg
