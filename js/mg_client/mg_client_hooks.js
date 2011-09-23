@@ -1,8 +1,8 @@
 var hooks = { send : { script : hookScript, multi_commands : multiCommands } }
 
 function multiCommands(input) {
-	if (input.match(/;/)) {
-		var commands = input.split(/;/);
+	if (input.match(/;;/)) {
+		var commands = input.split(/;;/);
 		console.log("commands")
 		for (i=0;i<commands.length;i++) {
 			server.send(commands[i]+"\n");
