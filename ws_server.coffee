@@ -27,6 +27,8 @@ Telnet.connect = (host,port,remote,onData, onClose = (error) -> ) ->
   telnet
 
 ws = require('socket.io').listen(8002)
+Iconv = require('iconv').Iconv;
+iconv = new Iconv('UTF-8', 'ASCII//TRANSLIT//IGNORE');
 
 ws.set('log level', 1)
 ws.set('timeout', 3600000)
@@ -38,7 +40,7 @@ ws.sockets.on('connection', (conn) ->
 #    console.log msg
     return if msg.match /^telnet\|.+/ 
     if msg.match /.*\n/
-      telnet.send input + msg
+      telnet.send iconv.convert(input + msg).toString('ascii');
       input = ""
     else
       input += msg
