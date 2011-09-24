@@ -76,18 +76,18 @@ window.chatTab = (name) ->
    
 window.onlineBox = () -> $('#online').height($("#left-box").height()-$("#people").height())
 window.showOnline = () ->
-  rows = ([name, data.name, data.level||"?", data.idle||"", data.away ||""] for name, data of online)
+  rows = ([name, data.name, data.level||"?", data.idle||"", data.away ||""] for name, data of online).sort((a,b) -> if a[0]<b[0] then -1 else 1)
   table = $('#online_table').dataTable()
   table.fnClearTable()
   table.fnAddData(rows)
-  onlineBox().show().empty().append(("""<option onClick="playerPopup(window.event,'#{data.name}');return false;">#{data.name}</option>""" for name, data of online).join())
+  onlineBox().show().empty().append(("""<option onClick="playerPopup(window.event,'#{name}');return false;">#{name}</option>""" for name in (data.name for name, data of online).sort((a,b)-> if a<b then -1 else 1)).join())
   showTab("chat_online")
 
   
 add_chat_triggers = (player) ->
     addTrigger "teile_mit", 
                (line) -> 
-                 if match = line.match(/(?:Du teilst (.+)|(.+) teilt Dir) mit: (.+)/)
+                 if match = line.match(/^(?:Du teilst (\w+)|(\w+) teilt Dir) mit: (.+)/)
                    prefix = if match[1] then "->" else "<-"
                    other = match[1] || match[2]
                    text = match[3]
