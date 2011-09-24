@@ -97,11 +97,12 @@
 	</form>
     </div>
 	</div>
-	<div id="windows" style="height:40px;margin-left:800px;margin-top:-40px;">
+	<div id="windows" style="height:40px;margin-left:680px;margin-top:-40px;">
+		<button icon="ui-icon-comment" onclick="$('#Chat').toggle(); return false;">Chat</button>
+		<button icon="ui-icon-info" onclick="$('#mpa').toggle(); return false;">MPA</button>
 		<button icon="ui-icon-copy">Fenster</button>
 		<ul id="nav_mud">
 			<li><a href="#" onclick="toggleDialog('status_'+Player.id); return false;">Status</a></li>
-			<li><a href="#" onclick="$('#mpa').toggle(); return false;">MPA</a></li>
 		</ul>
 		<button icon="ui-icon-help">Dokumentation</button>
 		<ul id="nav_doc">
@@ -110,7 +111,6 @@
 			<li><a target="_blank" href="http://mg.mud.de/newweb/hilfe/tutorial/inhalt.shtml">MG-Tutorial</a></li>
 			<li><a target="_blank" href="http://github.com/jexp/mg_client">Source / BugTracker auf GitHub</a></li>
 			<li><a target="_blank" href="http://wiki.morgengrauen.info/index.php?n=MorgenGrauen.MG-Client">Docs im MG-Wiki</a></li>
-			
 		</ul>
 		<button icon="ui-icon-play">Makros</button>
 		<ul id="nav_macro">

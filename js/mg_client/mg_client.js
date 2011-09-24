@@ -169,7 +169,9 @@ function startUp(){
 		$('#b_submit').button();
 		$('#docs').tabs().draggable().resizable();
 		$('#menu').menu();
-		$("#windows button").each(function() {
+		$("#windows button[onclick]").each(function() {$(this).button({icons: { primary: $(this).attr("icon")}})});
+
+		$("#windows button:not([onclick])").each(function() {
 		    $(this).button({icons: { primary: $(this).attr("icon"),secondary: "ui-icon-triangle-1-s"}});
 		  }).next().menu({
 					select: function(event, ui) {
