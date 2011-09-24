@@ -106,6 +106,39 @@ function showText(text) {
 
 var password = false
 
+function handleWord(fun) {
+	return function(e) {
+		var element = jQuery.elementFromPoint(e.clientX,e.clientY);
+		if (!element || element.nodeName != "SPAN") return;
+		element = $(element);
+		var param = element.text();
+		console.log(element);
+		console.log(param);
+		if (!param) return;
+		fun(e, param);
+	}
+}
+
+
+function showPopup(pos, param, actions) {
+	popup = $('#popup')
+	if (!popup.length) {
+	  popup = $("<div id='popup'/>").attr("id","popup").css({"background-color":"lightgray","border":"1px solid black"}).appendTo($('body')); //.dialog({autoOpen:false});
+	  popup.mouseleave(function() { popup.hide(); });
+	  popup.mouseup(function() { popup.hide(); });
+	}
+	// popup.dialog("options","title",title);
+	popup.empty();
+	for (var i=0;i<actions.length;i++) {
+	  var a=actions[i]
+	  add_button({label : a.label, action: (a.action||"").replace("#",param), fun : a.fun, separator: a.separator },"popup");	
+	}
+	// popup.dialog("options", "position", pos).dialog("open")
+	popup.css({position:"absolute",left:pos[0],top:pos[1]});
+	popup.show();
+	// move mouse inside popup
+}
+
 function toggleInputPassword() {
 	var input=$("#input");
 	var pass=$("#password");
@@ -126,6 +159,7 @@ function handlePassword(line) {
 
 function send(str) {
 	if (str!=null) {
+		console.log("send: "+str);
 		server.send(str + "\n");
 	}
 }
@@ -178,14 +212,22 @@ function add_buttons(target,buttons) {
 	return $('#'+target);
 }
 
+function handleButton(button) {
+	if (button.fun) { 
+		button.fun.call(this); 
+	} else { 
+		send(button.action||button.label); 
+	}
+}
+
 function add_button(button, target) {
 	if (!target) target = "toolbar";
 	if (button.separator == "newline") {
 		$("#"+target).append("<br/>")
 	} else {
-		var b=$('<button>');
-		b.attr("id","b_"+button.label).text(button.label).css({"min-width":50}).appendTo($("#"+target));
-		b.button().click(function() { send(button.action||button.label); });
+		var b=$('<button>').appendTo($("#"+target));
+		b.css({"min-width":50}).text(button.label); // .attr("id","b_"+button.label)
+		b.button().click(function() {handleButton(button)});
 	}
 }
 
@@ -221,10 +263,4 @@ function addBox(id,title,autoOpen,menu) {
 function toggleDialog(id) {
 	var d =$('#'+id)
 	d.dialog(d.is(":visible") ? 'close' : 'open'); 
-}
-
-function addCompass() {
-   add_buttons("compass",[{label:"nw"},{label:"n"},{label:"no"},{label:"ob"},{separator:"newline"},
-                          {label:"w"},{label:"schau"},{label:"o"},{label:"u"},{separator:"newline"},
-                          {label:"sw"},{label:"s"},{label:"so"},{label:"raus"}]);
 }

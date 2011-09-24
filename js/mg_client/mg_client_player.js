@@ -143,16 +143,22 @@ function showPlayer(player) {
 	}
 }
 
+function showOtherPlayer(name,data) {
+	data = data || {};
+	var id = name.toLowerCase();
+	var box = playerBox(id);
+	box.dialog("option","width",180).dialog("option","minHeight",100).dialog("option","height",120);
+	var player=lookup_player(id);
+	showPlayer(jQuery.extend({},player, data));
+	return box;
+}
 // todo updated/shown timestamp
 function showTeam() {
 	var teamInfo = $('#team');
 	for (var i=0;i<team.length;i++) {
 		var member=team[i];
-		var id = member.name.toLowerCase()
-		var box = playerBox(id);
-		box.dialog("option","position",[850+(200*member.column),120*member.row]).dialog("option","width",180).dialog("option","minHeight",100).dialog("option","height",120);
-		var player=lookup_player(id);
-		showPlayer(jQuery.extend({},player, member));
+		var box = showOtherPlayer(member.name,member)
+		box.dialog("option","position",[850+(200*member.column),120*member.row])
 	}
 }
 var grab_battle = grab_single(/(^  [^' ].+|.+ faellt tot zu Boden.$)/, function(text) { appendTo("p_fight",text); })

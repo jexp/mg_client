@@ -15,7 +15,7 @@ Marcus.........J.m Bambulko.......j.M Gloinson.........H
 
 >
 ###
-online = {}
+window.online = {}
 makeOnlineTab = (onlineTab) ->
     onlineTab.append($("""
         <button onClick="send('kwer')">Aktualisieren</button>
@@ -24,13 +24,21 @@ makeOnlineTab = (onlineTab) ->
     $('#online_table').dataTable( { 
       bJQueryUI: true, 
       sDom: '<"table_top"f<"table_toolbar">>rt<"table_bottom"ipl><"clear">',
-      aoColumns: [ { sTitle: "Name", sWidth : "20em", fnRender: (obj) ->
-                        name = obj.aData[ obj.iDataColumn ]
-                        "<span onClick='chatTab(\""+name+"\")'>"+name+"</span>"
+      aoColumns: [ { sTitle : "Id", bVisible: false}, 
+                 { sTitle: "Name", sWidth : "20em", fnRender: (obj) ->
+                        name = obj.aData[ 0 ]
+                        "<span onClick='chatTab(\""+name+"\")'>"+obj.aData[ obj.iDataColumn ]+"</span>"
                  },
-                 { sTitle: "Stufe", sWidth : "2em" }, 
-                 { sTitle: "Idle", sWidth : "2em" }, 
-                 { sTitle: "Abwesend", sWidth : "2em" } ] } 
+                 { sTitle: "Stufe", sWidth : "5em" }, 
+                 { sTitle: "Idle", sWidth : "5em" }, 
+                 { sTitle: "Abwesend", sWidth : "5em" },
+                 { sTitle: "Aktionen", sWidth : "10em", fnRender: (obj) ->
+                     name = obj.aData[ 0 ]
+                     """<span onClick='send("finger -a #{name}")'>finger</span>
+                        <span onClick='showOtherPlayer("#{name}")'>status</span>
+                     """
+                 }
+                 ] } 
       )
     $('#chat_online .table_toolbar').prepend($('#chat_online button').button())
     
@@ -63,10 +71,11 @@ window.chatTab = (name) ->
     $('#Chat ul li a[href=#chat_tab_'+id+']').parent().append($("""<button onClick='closeChatTab("#{id}");return false;'>X</button>""").button())
 
   $('#chat_'+id).text(online[id].text.join("\n")) if online[id].text
+  $('#Chat').show()
   showTab("chat_tab_"+id)
    
 window.showOnline = () ->
-  rows = ([data.name, data.level||"?", data.idle||"", data.away ||""] for name, data of online)
+  rows = ([name, data.name, data.level||"?", data.idle||"", data.away ||""] for name, data of online)
   table = $('#online_table').dataTable()
   table.fnClearTable()
   table.fnAddData(rows)
