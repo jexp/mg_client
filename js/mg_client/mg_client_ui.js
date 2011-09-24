@@ -241,7 +241,7 @@ function add_button(button, target) {
 }
 
 function window_top_offset() {
-	return ($('.ui-tabs:visible').length + $('body > .ui-dialog:visible').length) * 85+15;
+	return ($('.ui-tabs:visible').length + $('body > .ui-dialog:visible').length) * 85+50;
 // 	return $("#nav_mud").children().size() * 85;
 }
 

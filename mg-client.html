@@ -76,37 +76,12 @@
 		<div id="people"></div>
 		<select id="online" size="20" style="display:none;width:100%;"></select>
 	</div>
-	<div id="windows" style="height:40px;margin-left:60px;margin-top:-40px;">
-		<button icon="ui-icon-copy">Fenster</button>
-		<ul id="nav_mud">
-			<li><a href="#" onclick="toggleDialog('status_'+Player.id); return false;">Status</a></li>
-			<li><a href="#" onclick="$('#mpa').toggle(); return false;">MPA</a></li>
-		</ul>
-		<button icon="ui-icon-help">Dokumentation</button>
-		<ul id="nav_doc">
-			<li><a href="#" onclick="$('#docs').toggle();return false;">Dokumentation</a></li>
-			<li><a href="#" onclick="$('#docs').toggle();showTab('docs','bugs');return false;">Bekannte Fehler</a></li>
-			<li><a href="http://github.com/jexp/mg_client">Source / BugTracker auf GitHub</a></li>
-			<li><a href="http://wiki.morgengrauen.info/index.php?n=MorgenGrauen.MG-Client">Docs im MG-Wiki</a></li>
-		</ul>
-		<button icon="ui-icon-play">Makros</button>
-		<ul id="nav_macro">
-			<li><a href="#"  onclick="scriptDialog('edit'); return false;">Edit</a></li>
-	    	<li><a href="#"  onclick="editScript('startup'); return false;">Startup</a></li>
-	    	<li><a href="#"  onclick="editScript('connect'); return false;">Connect</a></li>
-		</ul>
-		<button icon="ui-icon-wrench">Debug</button>
-		<ul id="nav_debug">
-			<li><a href="#"  onclick="toggleDialog('source'); return false;">Source</a></li>
-		  	<li><a href="#"  onclick="toggleDialog('debug_trigger'); return false;">Debug Trigger</a></li>
-		  	<li><a href="#"  onclick="runTestSuite(); return false;">Run Tests</a></li>
-		</ul>
-	</div>	
-	<div id="mgbox" style=" overflow-x:hidden;overflow-y:auto; height:90%;width:48em;line-height:1.2em;font-size:12px;margin-top:0px;margin-left:60px;" class="mudtext">
+	<div id="main-box" style="float:left;margin-top:-40px;margin-left:10px;height:110%;">
+	<div id="mgbox" style="overflow-x:hidden;overflow-y:auto; height:98%;width:48em;line-height:1.2em;font-size:12px;" class="mudtext">
 		<pre id="out" aria-live="polite"></pre>
 	</div>
 
-	<div style="margin-left:60px;margin-top:5px;">
+	<div style="margin-top:5px;">
 	<div id="toolbar" class="ui-corner-all"> <!--ui-widget-header -->
 	</div>
 	<div id="compass" style="position:absolute;left:30px;top:470px;">
@@ -121,6 +96,35 @@
 		<button id="b_submit">Senden</button>
 	</form>
     </div>
+	</div>
+	<div id="windows" style="height:40px;margin-left:800px;margin-top:-40px;">
+		<button icon="ui-icon-copy">Fenster</button>
+		<ul id="nav_mud">
+			<li><a href="#" onclick="toggleDialog('status_'+Player.id); return false;">Status</a></li>
+			<li><a href="#" onclick="$('#mpa').toggle(); return false;">MPA</a></li>
+		</ul>
+		<button icon="ui-icon-help">Dokumentation</button>
+		<ul id="nav_doc">
+			<li><a href="#" onclick="$('#docs').toggle();return false;">Dokumentation</a></li>
+			<li><a href="#" onclick="$('#docs').toggle();showTab('docs','bugs');return false;">Bekannte Fehler</a></li>
+			<li><a target="_blank" href="http://mg.mud.de/newweb/hilfe/tutorial/inhalt.shtml">MG-Tutorial</a></li>
+			<li><a target="_blank" href="http://github.com/jexp/mg_client">Source / BugTracker auf GitHub</a></li>
+			<li><a target="_blank" href="http://wiki.morgengrauen.info/index.php?n=MorgenGrauen.MG-Client">Docs im MG-Wiki</a></li>
+			
+		</ul>
+		<button icon="ui-icon-play">Makros</button>
+		<ul id="nav_macro">
+			<li><a href="#"  onclick="scriptDialog('edit'); return false;">Edit</a></li>
+	    	<li><a href="#"  onclick="editScript('startup'); return false;">Startup</a></li>
+	    	<li><a href="#"  onclick="editScript('connect'); return false;">Connect</a></li>
+		</ul>
+		<button icon="ui-icon-wrench">Debug</button>
+		<ul id="nav_debug">
+			<li><a href="#"  onclick="toggleDialog('source'); return false;">Source</a></li>
+		  	<li><a href="#"  onclick="toggleDialog('debug_trigger'); return false;">Debug Trigger</a></li>
+		  	<li><a href="#"  onclick="runTestSuite(); return false;">Run Tests</a></li>
+		</ul>
+	</div>	
 	<div class="ie-hack2">&nbsp;</div>
 	</div>
 <div style="height:0px">
