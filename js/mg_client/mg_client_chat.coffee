@@ -93,7 +93,8 @@ add_chat_triggers = (player) ->
                     if match = line.match(/[,.]$/)
                       names = line.split /[,.]\s*/
                       for name in names
-                        online[name.toLowerCase()]={name:name}
+                        id = name.toLowerCase()
+                        online[id]={name:name, text:[]} if (!online[id])
                   console.log(online)
                })
     addTrigger "chat_kwer", 
@@ -106,7 +107,11 @@ add_chat_triggers = (player) ->
                       for entry in entries
                         if match = entry.match(re)
                           name = match[1]
-                          online[name.toLowerCase()]={name:name, idle:match[2], away : match[3], level : match[4]}
+                          id = name.toLowerCase()
+                          online[id]={name:name, text:[]} if (!online[id])
+                          online[id].idle=match[2] if match[2]!="."
+                          online[id].away=match[3] if match[3]!="."
+                          online[id].level=match[4] if match[4]!="."
                   console.log(online)
                   showOnline()
                })
