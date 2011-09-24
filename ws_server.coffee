@@ -21,7 +21,7 @@ Telnet.connect = (host,port,remote,onData, onClose = (error) -> ) ->
     try
       telnet.write data
     catch e
-      console.log("""Error writing data #{d44ata} to telnet\n#{e}""")
+      console.log("""Error writing data #{data} to telnet\n#{e}""")
 #  telnet.send(TELNEGS.IAC+TELNEGS.DO+TELNEGS.EOR)
   telnet.send("REMOTE_HOST="+remote+"\n") if remote
   telnet
