@@ -50,7 +50,8 @@ window.closeChatTab = (name) ->
 window.chatTab = (name) ->
   id = name.toLowerCase()
   tabId = '#chat_tab_'+id
-  if !$(tabId).length
+  tab = $(tabId)
+  if !tab.length
     $('#Chat').tabs('add',tabId, name, 1) 
     tab = $(tabId)
     tab.append("""<pre id="chat_#{id}" style='overflow-y:auto;height:80%;width:80%;padding:5px;border:1px solid black;max-height:10em;'></pre>""")
