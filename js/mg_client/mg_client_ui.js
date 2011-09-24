@@ -23,6 +23,7 @@ function addWindow(id,w) {
 	makeTabWindow(div);
 	var menue = $("<a>").appendTo($("#nav_mud"))
 	menue.click(function() { $('#'+id).toggle(); return false; }).text(id).attr("href","#");
+	return div
 }
 
 function showTab(id) {
