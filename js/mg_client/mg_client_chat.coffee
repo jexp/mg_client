@@ -59,8 +59,9 @@ window.chatTab = (name) ->
                   <input size="80" id="chat_input_#{id}" type='text'/>
                   <button>Senden</button>
                   </form>""")
-  tab.children('form').children('button').button()
-  $('#Chat ul li a[href=#chat_tab_'+id+']').parent().append($("""<button onClick='closeChatTab("#{id}");return false;'>X</button>""").button())
+    tab.children('form').children('button').button()
+    $('#Chat ul li a[href=#chat_tab_'+id+']').parent().append($("""<button onClick='closeChatTab("#{id}");return false;'>X</button>""").button())
+
   $('#chat_'+id).text(online[id].text.join("\n")) if online[id].text
   showTab("chat_tab_"+id)
    
