@@ -15,6 +15,7 @@
 	  <!--
 	  #nav .secnav { display: block;}
 	  #nav #nav_start { color:#043341;}
+	  .ui-menu { width: 200px; position: absolute; }
 	  -->
 	</style>
 
@@ -68,53 +69,46 @@
 	</script>
 </head>
 <body style="font-size:10px;height:100%;width:90%;">
-	<div id="nav" style="left: 610px; top: 20px; position: absolute;">
-	  <div class="nav-1" style="z-index:-1;">&nbsp;</div>
-
-	  <div class="nav-2" style="font-size:12px;">
-	 <a href="#" class="nav" id="nav_start" style="margin-top:0;">Fenster</a>
-	  <span id="nav_mud" class="secnav">
-	  <a href="#" onclick="toggleDialog('status_'+Player.id); return false;">Status</a>
-	  <a href="#" onclick="$('#mpa').toggle(); return false;">MPA</a>
-	</span>
-
-  	<a href="#" class="nav" onclick="$('#docs').toggle();return false;">Dokumentation</a>
-  	<span id="nav_doc" class="secnav">
-	  	<a href="#" class="nav" onclick="$('#docs').toggle();showTab('docs','bugs');return false;">Bekannte Fehler</a>
-  	</span>
-
-  	<a href="#" class="nav" id="nav_neues">Makros</a>
-  	<span id="nav_debug" class="secnav">
-    	<a href="#" class="nav" onclick="scriptDialog('edit'); return false;">Edit</a>
-    	<a href="#" class="nav" onclick="editScript('startup'); return false;">Startup</a>
-    	<a href="#" class="nav" onclick="editScript('connect'); return false;">Connect</a>
-  	</span>
-
-  	<a href="#" class="nav" id="nav_neues">Debug</a>
-  	<span class="secnav">
-	  	<a href="#" class="nav" onclick="toggleDialog('source'); return false;">Source</a>
-	  	<a href="#" class="nav" onclick="toggleDialog('debug_trigger'); return false;">Debug Trigger</a>
-	  	<a href="#" class="nav" onclick="runTestSuite(); return false;">Run Tests</a>
-  	</span>
-
-	  </div>
-
-	  <div class="nav-3">&nbsp;</div>
-	</div>
-
 	<div id="ie-hack">&nbsp;</div>
 	<div id="doc" style="width:95%;height:100%;margin:5px;">
-		<div id="mg-logo" style="position:absolute; left:190px;top:525px;">&nbsp;</div>
-		
-	<div id="mgbox" style="overflow-x:hidden;overflow-y:auto;height:450px;width:48em;line-height:1.2em;font-size:12px;margin-top:-40px;margin-left:-100px;" class="mudtext">
+		<!--div id="mg-logo" style="position:absolute; left:190px;top:525px;">&nbsp;</div-->
+	<div id="left-box" style="float:left;height:450px;max-height:450px;width:150px;margin-top:-40px;margin-left:-100px;">
+		<div id="people"></div>
+		<select id="online" size="20" style="display:none;width:100%;"></select>
+	</div>
+	<div id="windows" style="height:40px;margin-left:60px;margin-top:-40px;">
+		<button icon="ui-icon-copy">Fenster</button>
+		<ul id="nav_mud">
+			<li><a href="#" onclick="toggleDialog('status_'+Player.id); return false;">Status</a></li>
+			<li><a href="#" onclick="$('#mpa').toggle(); return false;">MPA</a></li>
+		</ul>
+		<button icon="ui-icon-help">Dokumentation</button>
+		<ul id="nav_doc">
+			<li><a href="#" onclick="$('#docs').toggle();return false;">Dokumentation</a></li>
+			<li><a href="#" onclick="$('#docs').toggle();showTab('docs','bugs');return false;">Bekannte Fehler</a></li>
+		</ul>
+		<button icon="ui-icon-play">Makros</button>
+		<ul id="nav_macro">
+			<li><a href="#"  onclick="scriptDialog('edit'); return false;">Edit</a></li>
+	    	<li><a href="#"  onclick="editScript('startup'); return false;">Startup</a></li>
+	    	<li><a href="#"  onclick="editScript('connect'); return false;">Connect</a></li>
+		</ul>
+		<button icon="ui-icon-wrench">Debug</button>
+		<ul id="nav_debug">
+			<li><a href="#"  onclick="toggleDialog('source'); return false;">Source</a></li>
+		  	<li><a href="#"  onclick="toggleDialog('debug_trigger'); return false;">Debug Trigger</a></li>
+		  	<li><a href="#"  onclick="runTestSuite(); return false;">Run Tests</a></li>
+		</ul>
+	</div>	
+	<div id="mgbox" style=" overflow-x:hidden;overflow-y:auto; height:450px;width:48em;line-height:1.2em;font-size:12px;margin-top:0px;margin-left:60px;" class="mudtext">
 		<pre id="out" aria-live="polite"></pre>
 	</div>
 
-	<div style="margin-left:-100px;margin-top:5px;">
+	<div style="margin-left:60px;margin-top:5px;">
 
 	<div id="toolbar" class="ui-corner-all"> <!--ui-widget-header -->
 	</div>
-	<div id="compass" style="position:absolute;left:610px;top:455px;">
+	<div id="compass" style="position:absolute;left:30px;top:470px;">
 	</div>
 
 	<div id="hidden_form2" style="display:none">
@@ -148,11 +142,11 @@
 		<input type="submit" value="test" onClick="showText($('#debug_trigger_test').val());false;">
 	</div>
 
-	<div id="docs" style="width:550px;height:250px;right:100px;top:50px;position:absolute">
+	<div id="docs" style="width:550px;height:250px;right:60px;top:200px;position:absolute">
 		<ul></ul>
 	</div>
 	
-	<div id="mpa" style="width:550px;height:250px;right:100px;top:50px;position:absolute">
+	<div id="mpa" style="width:550px;height:250px;right:60px;top:300px;position:absolute">
 		<ul>
 			<li><a href="#tab-mpa-rubriken">Rubriken</a></li>
 			<li><a id="mpa_rubrik_tab_name" href="#tab-mpa-rubrik">Allgemein</a></li>

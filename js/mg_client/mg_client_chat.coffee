@@ -74,11 +74,13 @@ window.chatTab = (name) ->
   $('#Chat').show()
   showTab("chat_tab_"+id)
    
+window.onlineBox = () -> $('#online').height($("#left-box").height()-$("#people").height())
 window.showOnline = () ->
   rows = ([name, data.name, data.level||"?", data.idle||"", data.away ||""] for name, data of online)
   table = $('#online_table').dataTable()
   table.fnClearTable()
   table.fnAddData(rows)
+  onlineBox().show().empty().append(("""<option onClick="playerPopup(window.event,'#{data.name}');return false;">#{data.name}</option>""" for name, data of online).join())
   showTab("chat_online")
 
   

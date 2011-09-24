@@ -11,9 +11,19 @@ function addTab(id, name, tab) {
 	}
 	$("#"+name).css("max-height",300) // css("overflow-y","auto").css("overflow-x","auto")
 }
-function addWindow(id,w) {
+
+function addToMenue(id, fun,target) {
+	var entry = $("<a>");
+	entry.click(fun).text(id).attr("href","#");
+	var menu = $("#" + ( target ||"nav_mud"));
+	$('<li>').addClass("ui-menu-item").attr("role","presentation").append(entry).appendTo(menu);
+	menu.menu({select: function(event, ui) {
+					$(this).hide();
+				}}).popup();
+}
+function addWindow(id,w,target) {
 	var div = $("<div></div>").attr("id",id).append("<ul>").appendTo("body").css("width","580px")
-	.css("right","100px").css("top",window_top_offset() + "px").css("position","absolute")
+	.css("right","60px").css("top",window_top_offset() + "px").css("position","absolute")
 	div.tabs({ panelTemplate : "<pre style='overflow-x:hidden;overflow-y:auto;'></pre>" });
 	
 	for (name in w) {
@@ -21,8 +31,7 @@ function addWindow(id,w) {
         addTab(id, name, tab)
 	}
 	makeTabWindow(div);
-	var menue = $("<a>").appendTo($("#nav_mud"))
-	menue.click(function() { $('#'+id).toggle(); return false; }).text(id).attr("href","#");
+	addToMenue(id,function() { $('#'+id).toggle(); return false; }, target);
 	return div
 }
 
@@ -232,7 +241,8 @@ function add_button(button, target) {
 }
 
 function window_top_offset() {
- 	return $("#nav_mud").children().size() * 85;
+	return ($('.ui-tabs:visible').length + $('body > .ui-dialog:visible').length) * 85+15;
+// 	return $("#nav_mud").children().size() * 85;
 }
 
 function getKeyCode(e) {
@@ -250,13 +260,12 @@ function submitEnter(field,e) {
     }
 }
 
-function addBox(id,title,autoOpen,menu) {
+function addBox(id,title,autoOpen,target) {
 	var box=$('<pre>');
 	box.appendTo("body").attr("id",id).css("overflow-x","hidden").css("overflow-y", "auto")
 	.dialog({ title: title, position : ["right",window_top_offset()], width : 500, height : 200, autoOpen: autoOpen==null ? false : autoOpen });
 
-	var menue = $("<a>").appendTo($("#" + ( menu ||"nav_mud")))
-	menue.click(function() { toggleDialog(id); return false; }).text(title).attr("href","#");
+	addToMenue(title,function() { toggleDialog(id); return false; }, target);
 	return box;
 }
 

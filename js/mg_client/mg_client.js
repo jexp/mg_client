@@ -4,11 +4,13 @@ loadScript('js/mg_client/mg_client_trigger.js');
 loadScript('js/mg_client/mg_client_hooks.js');
 */
 
-
 function actionsFor(param) {
+	param = param.toLowerCase();
 	if (online[param]) {
 		return [{label:"reden", fun:function() { chatTab(param); }},
-				{label:"finger", action:"finger #"},{label:"rknuddel",action:"rknuddel #"}];
+				{label:"rknuddel",action:"rknuddel #"},{separator:"newline"},
+				{label:"finger", action:"finger -a #"},
+				{label:"Anzeigen", fun: function() { showOtherPlayer(param); }}];
 	} else {
 		return [{label:"unt", action:"unt #"},{label:"nimm",action:"nimm #"},
 		           {label:"trage", action:"trage #"},{separator:"newline"},
@@ -17,11 +19,17 @@ function actionsFor(param) {
 }
 
 function addCompass() {
-   add_buttons("compass",[{label:"nw"},{label:"n"},{label:"no"},{label:"ob"},{separator:"newline"},
-                          {label:"w"},{label:"schau"},{label:"o"},{label:"u"},{separator:"newline"},
-                          {label:"sw"},{label:"s"},{label:"so"},{label:"raus"}]);
+   add_buttons("compass",[{label:"nw"},{label:"n"},{label:"no"},{separator:"newline"},
+                          {label:"w"},{label:"schau"},{label:"o"},{separator:"newline"},
+                          {label:"sw"},{label:"s"},{label:"so"},{separator:"newline"},
+                          {label:"ob"},{label:"u"},{label:"raus"}]);
 }
 
+function playerPopup(e, name) {
+   var param=name.toLowerCase();
+   if (!online[param]) return;
+   showPopup([e.pageX - 50,e.pageY - 20 ],param,actionsFor(param));
+}
 
 // markup : { from : to : style: , click : dbclick : title }
 function extractMarkup(line) {
@@ -160,6 +168,13 @@ function startUp(){
 		$('#input').focus();
 		$('#b_submit').button();
 		$('#docs').tabs().draggable().resizable();
+		$('#menu').menu();
+		$("#windows button").each(function() {
+		    $(this).button({icons: { primary: $(this).attr("icon"),secondary: "ui-icon-triangle-1-s"}});
+		  }).next().menu({
+					select: function(event, ui) {
+						$(this).hide();
+					}}).popup();
 		
 		$('#mgbox').click( handleWord(
 			function(e, param) {

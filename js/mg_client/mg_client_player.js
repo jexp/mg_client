@@ -82,7 +82,7 @@ function playerBox(id) {
 		return box;
 	}
 	
-   	var html = "<div id='status_"+id+"' style='width:200'> \
+   	var html = "<div id='status_"+id+"' style='width:200;padding:3px;'> \
 		<div style='float:left'> \
 			<img id='avatar_"+id+"' src='img/drache.gif' width='64'/> \
 		</div> \
@@ -95,6 +95,8 @@ function playerBox(id) {
 		<div style='clear:both'></div> \
 	</div>"
 	box = $(html).dialog();
+	box.dialog("option","width",150).dialog("option","minHeight",80).dialog("option","height",100);
+	addToPeople(box);
 	return box;
 }
 
@@ -103,7 +105,8 @@ function connectPlayer(name) {
 	Player.id = name.toLowerCase();
 	var id=Player.id
 	runScript("connect",id);
-	playerBox(id).dialog({ position : [850,80], width : 300 });
+	var box = playerBox(id); // .dialog(){ position : [850,80], width : 300 });
+	addToPeople(box);
 	loadData("player_"+id, function(data) {
 		console.log("player "+name +" typ "+typeof(data) + " content "+data);
 		if (data) {
@@ -119,6 +122,7 @@ function connectPlayer(name) {
 			}
 		}
 	})
+
 	add_player_triggers();
 //	add_mpa_triggers(name)
 	runHooks("connect",Player);
@@ -143,11 +147,17 @@ function showPlayer(player) {
 	}
 }
 
+function addToPeople(box) {
+	var people=$('#people');
+	var offset=(people.children().length-1)*100; // box.parent().height()
+	box.parent().css({position:"static",left:0,top:0}).appendTo(people);
+	onlineBox();
+	return box;
+}
 function showOtherPlayer(name,data) {
 	data = data || {};
 	var id = name.toLowerCase();
 	var box = playerBox(id);
-	box.dialog("option","width",180).dialog("option","minHeight",100).dialog("option","height",120);
 	var player=lookup_player(id);
 	showPlayer(jQuery.extend({},player, data));
 	return box;
@@ -158,7 +168,7 @@ function showTeam() {
 	for (var i=0;i<team.length;i++) {
 		var member=team[i];
 		var box = showOtherPlayer(member.name,member)
-		box.dialog("option","position",[850+(200*member.column),120*member.row])
+		// box.dialog("option","position",[850+(200*member.column),120*member.row])
 	}
 }
 var grab_battle = grab_single(/(^  [^' ].+|.+ faellt tot zu Boden.$)/, function(text) { appendTo("p_fight",text); })
