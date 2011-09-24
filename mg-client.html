@@ -1,5 +1,5 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
+<html style="height:95%;overflow:none;">
 <head>
 <link rel="stylesheet" type="text/css" href="css/morgengrauen.css" media="screen">
 <link rel="stylesheet" type="text/css" href="css/WebTelnet.css" media="screen">
@@ -70,9 +70,9 @@
 </head>
 <body style="font-size:10px;height:100%;width:90%;">
 	<div id="ie-hack">&nbsp;</div>
-	<div id="doc" style="width:95%;height:100%;margin:5px;">
+	<div id="doc" style="width:95%;height:80%;margin:5px;">
 		<!--div id="mg-logo" style="position:absolute; left:190px;top:525px;">&nbsp;</div-->
-	<div id="left-box" style="float:left;height:450px;max-height:450px;width:150px;margin-top:-40px;margin-left:-100px;">
+	<div id="left-box" style="float:left;height:90%;max-height:90%;width:150px;margin-top:-40px;margin-left:-100px;">
 		<div id="people"></div>
 		<select id="online" size="20" style="display:none;width:100%;"></select>
 	</div>
@@ -86,6 +86,8 @@
 		<ul id="nav_doc">
 			<li><a href="#" onclick="$('#docs').toggle();return false;">Dokumentation</a></li>
 			<li><a href="#" onclick="$('#docs').toggle();showTab('docs','bugs');return false;">Bekannte Fehler</a></li>
+			<li><a href="http://github.com/jexp/mg_client">Source / BugTracker auf GitHub</a></li>
+			<li><a href="http://wiki.morgengrauen.info/index.php?n=MorgenGrauen.MG-Client">Docs im MG-Wiki</a></li>
 		</ul>
 		<button icon="ui-icon-play">Makros</button>
 		<ul id="nav_macro">
@@ -100,12 +102,11 @@
 		  	<li><a href="#"  onclick="runTestSuite(); return false;">Run Tests</a></li>
 		</ul>
 	</div>	
-	<div id="mgbox" style=" overflow-x:hidden;overflow-y:auto; height:450px;width:48em;line-height:1.2em;font-size:12px;margin-top:0px;margin-left:60px;" class="mudtext">
+	<div id="mgbox" style=" overflow-x:hidden;overflow-y:auto; height:90%;width:48em;line-height:1.2em;font-size:12px;margin-top:0px;margin-left:60px;" class="mudtext">
 		<pre id="out" aria-live="polite"></pre>
 	</div>
 
 	<div style="margin-left:60px;margin-top:5px;">
-
 	<div id="toolbar" class="ui-corner-all"> <!--ui-widget-header -->
 	</div>
 	<div id="compass" style="position:absolute;left:30px;top:470px;">
@@ -119,19 +120,13 @@
 		<input type="text" id="input" style="width:40em;font-family:monospace;font-size:12px;"/>
 		<button id="b_submit">Senden</button>
 	</form>
-
     </div>
-
 	<div class="ie-hack2">&nbsp;</div>
-	<div style="text-align:right;margin-right:10em;">
-	<a href="http://github.com/jexp/mg_client">Source / BugTracker auf GitHub</a>
-	<a href="http://wiki.morgengrauen.info/index.php?n=MorgenGrauen.MG-Client">Docs im MG-Wiki</a>
 	</div>
-	
-	</div>
-    <textarea id="script_editor" cols="80" style="display:none"></textarea>
+<div style="height:0px">
+	<textarea id="script_editor" cols="80" style="display:none"></textarea>
 	<div id="disclaimer"><span style="text-align:center;">&copy; MorgenGrauen. Alle Rechte vorbehalten.</span></div>
-    <form id="script_dialog" onsubmit="scriptDialogSubmit();return false;" style="display:none">
+	<form id="script_dialog" onsubmit="scriptDialogSubmit();return false;" style="display:none">
 		<input type="text" name="new_script_name" style="width:100px;"/><br/>
 		<select name="script_name" size="10" style="width:100px;">
 		</select><br/>
@@ -145,7 +140,7 @@
 	<div id="docs" style="width:550px;height:250px;right:60px;top:200px;position:absolute">
 		<ul></ul>
 	</div>
-	
+
 	<div id="mpa" style="width:550px;height:250px;right:60px;top:300px;position:absolute">
 		<ul>
 			<li><a href="#tab-mpa-rubriken">Rubriken</a></li>
@@ -172,5 +167,6 @@
 			<pre style="overflow-x:none;overflow-y:auto" id="mpa_artikel_text"></pre>
 	    </div>
 	</div>
+</div>
 </body>
 </html>
