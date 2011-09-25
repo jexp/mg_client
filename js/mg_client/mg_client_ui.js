@@ -1,13 +1,13 @@
 function addTab(id, name, tab) {
 	$("#"+id).tabs("add","#"+name,tab["title"]);
 	if (tab["trigger"]) {
-		var fun = tab["fun"] || function(text) {setTabText(name,text)};
-		addTrigger(name,grab_single(tab["trigger"], fun));
+		var action = tab["action"] || function(text) {setTabText(name,text)};
+		addTrigger(name,grab_single({trigger:tab["trigger"], action: action}));
 	}
 	if (tab["start"]) {
 		var end = tab["end"] ? tab["end"] : /^\S*>\s*$/;
-		var fun = tab["fun"] || function(text) {setTabText(name,text)};
-		addTrigger(name,collect({start:tab["start"],addStart:tab["addStart"],end:end, fun:fun}));
+		var action = tab["fun"] || function(text) {setTabText(name,text)};
+		addTrigger(name,collect({start:tab["start"],addStart:tab["addStart"],end:end, action:action}));
 	}
 	$("#"+name).css("max-height",300) // css("overflow-y","auto").css("overflow-x","auto")
 }
@@ -109,7 +109,7 @@ function showText(text) {
 	    if (result!=null) {
 		  $('#out').append(result+"\n");
 		}
-	};
+	}
 	scrollBottom("mgbox");
 }
 
@@ -158,12 +158,13 @@ function toggleInputPassword() {
 	$('#input').focus().val("");
 }
 
-function handlePassword(line) {
-	if (!password && line.match(/asswor/) || password) {
+function handlePassword(result) {
+	if (!password && result.line.match(/asswor/) || password) {
 		toggleInputPassword();
 		password = !password;
 	}
-	return password;
+    result.password = password;
+	return result;
 }
 
 function send(str) {

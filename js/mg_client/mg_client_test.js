@@ -26,7 +26,7 @@ var tests_triggers={
    }
    , _highlight_style : function() {
 		addTrigger('test', highlight({ trigger: /b(.)b/, style: {color:"red"}}));
-		assertEquals("b<span style='color:red'>a</span>b",runTriggers('bab'));
+		assertEquals("b<span style='color:red'>a</span>b",runTriggers({line:'bab'}).line);
    }
 }
 function runTestSuite() {

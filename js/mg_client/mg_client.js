@@ -36,31 +36,38 @@ function extractMarkup(line) {
 	return { line : line, markup : [], original : line }
 }
 function enrich(line) {
-    line = extractIAC(line);
-	var result = extractMarkup(line);
-	
-	line = escapeHTML(line);
+	var result={ history: [], line:line, styles:[]};
 
-	if (handlePassword(line)) {
-		return line;
+    result = extractIAC(result);
+	result = split_ansi(result);
+	/*
+    if (result.history.length) {
+		console.log(JSON.stringify(result));
 	}
+	*/
+	result = escapeHTML(result);
 
-	beforeLine();
+	result = handlePassword(result);
 
-	grab_battle(line);
+    if (result.password) return result.line; // TODO
+    
+	beforeLine(result);
 
-	line = runTriggers(line);
+	result = grab_battle(result);
+
+	result = runTriggers(result);
 	
-	line = color_escapes(line);
+	// line = color_escapes(line);
 
-	line = line.replace(/\b(norden|nordosten|osten|suedosten|sueden|suedwesten|westen|nordwesten|oben|unten|raus)\b/g,"<span style='color:red'>$1</span>");
+	result.line = result.line.replace(/\b(norden|nordosten|osten|suedosten|sueden|suedwesten|westen|nordwesten|oben|unten|raus)\b/g,"<span style='color:red'>$1</span>");
 
-	line = line.replace(/([A-Z][a-z]{2,})/g,"<span>$1</span>");
+	result.line = result.line.replace(/([A-Z][a-z]{2,})/g,"<span>$1</span>");
 	
-	grab_source(line);
+	result = grab_source(result);
 	
-	afterLine();
-	return line;
+	afterLine(result);
+	if (result.gag) return null;
+	return result.line;
 }
 
 
@@ -91,8 +98,8 @@ function startUp(){
 		showPlayer();
 		addWindow("Kommunikation", {
 			teilemit : { title : "Mitteilungen", trigger : /^(Du teilst .+ mit|.+ teilt Dir mit|Du fluesterst .+ zu|.+ fluestert Dir zu):/ , 
-			fun : function (text) { appendTabText("teilemit",text); } },
-			ebenen :   { title : "Ebenen", trigger : /^\[[A-Z]\w+/, fun : function (text) { appendTabText("ebenen",text); }}
+			action : function (text) { appendTabText("teilemit",text); } },
+			ebenen :   { title : "Ebenen", trigger : /^\[[A-Z]\w+/, action : function (text) { appendTabText("ebenen",text); }}
 		})		
 		addWindow("Spieler",
 				{ p_info: { 
@@ -100,7 +107,7 @@ function startUp(){
 				end: /----------------------------------------------------------------------/ },
 				  p_inventory : { title: "Inventory", start : /^(inv|inventory|i)\s*$/ },
 				  p_ausruestung : { title: "Ausr&uuml;stung", start : /^(ar|ausruestung)\s*$/ ,
-					fun : function(text) { setTabText("p_ausruestung",color_escapes(escapeHTML(text))) }
+					action : function(text) { setTabText("p_ausruestung",color_escapes(escapeHTML(text))) }
 				 }
 				});
 		addWindow("Mud", {

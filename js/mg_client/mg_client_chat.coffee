@@ -86,8 +86,8 @@ window.showOnline = () ->
   
 add_chat_triggers = (player) ->
     addTrigger "teile_mit", 
-               (line) -> 
-                 if match = line.match(/^(?:Du teilst (\w+)|(\w+) teilt Dir) mit: (.+)/)
+               (result) ->
+                 if match = result.line.match(/^(?:Du teilst (\w+)|(\w+) teilt Dir) mit: (.+)/)
                    prefix = if match[1] then "->" else "<-"
                    other = match[1] || match[2]
                    text = match[3]
@@ -96,10 +96,10 @@ add_chat_triggers = (player) ->
                    online[id].text = [] if (!online[id].text)
                    online[id].text.push(prefix+" "+text)
                    chatTab(other)
-                 line
+                 result
     addTrigger "chat_kkwer", 
-               collect({start:/kkwer/, 
-               fun : (text,lines) ->
+               collect({gag: true, start:/kkwer/,
+               action : (text,lines) ->
                   for line in lines
                     if match = line.match(/[,.]$/)
                       names = line.split /[,.]\s*/
@@ -109,8 +109,8 @@ add_chat_triggers = (player) ->
                   console.log(online)
                })
     addTrigger "chat_kwer", 
-               collect({start:/\ +Liste\ der\ Mitspieler\ vom\ .+/, 
-               fun : (text,lines) ->
+               collect({gag: true, start:/\ +Liste\ der\ Mitspieler\ vom\ .+/,
+               action : (text,lines) ->
                   re = /^(\w+)\.+([.iIjJ])([.w])(.)/
                   for line in lines
                     if line.match(re)

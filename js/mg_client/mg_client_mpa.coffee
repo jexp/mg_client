@@ -36,6 +36,8 @@ showRubriken = ->
   table = $('#mpa_rubriken').dataTable()
   table.fnClearTable()
   table.fnAddData(rows)
+  console.log "table heihgt "+table.height()
+  $('#tab-mpa-rubriken').height(table.height())
   showTab("tab-mpa-rubriken")
 
 showRubrik = (name) ->
@@ -44,6 +46,7 @@ showRubrik = (name) ->
   table = $('#mpa_rubrik').dataTable()
   table.fnClearTable()
   table.fnAddData(rows)
+  $('#tab-mpa-rubrik').height(table.height())
   showTab("tab-mpa-rubrik")
 
 window.liesArtikel = (rubrik,artikel) ->
@@ -86,15 +89,15 @@ window.submitArticle = (rubrik,id) ->
 add_mpa_triggers = 
   (player) -> 
     addTrigger "rubrik_wechsel", 
-               (line) -> 
-                 if match = line.match(/Ok, Du hast die Rubrik (.+) mit \d+ Artikeln? aufgeschlagen. /)
+               (result) -> 
+                 if match = result.line.match(/Ok, Du hast die Rubrik (.+) mit \d+ Artikeln? aufgeschlagen. /)
                    akt_rubrik = match[1]
 #                  send("inhalt "+akt_rubrik)   
-                 line
+                 result
     addTrigger "mpa_rubriken", 
-               collect({start:/Es gibt zur Zeit \d+ Rubriken./, 
+               collect({gag: true, start:/Es gibt zur Zeit \d+ Rubriken./,
                addStart:true,
-               fun : (text,lines) ->
+               action : (text,lines) ->
                   for line in lines
                     if match = line.match(/[> ]([*x -]) +(\d+)\. (.+?) +: +(- leer -|(\d+) Artikel \( ?(\d+\. \w{3} \d{2})\))/)
                       name = match[3];
@@ -107,9 +110,9 @@ add_mpa_triggers =
                   showRubriken()
                })
     addTrigger "mpa_rubrik", 
-               collect({start:/Inhalt der Rubrik (.+):/, 
+               collect({gag: true, start:/Inhalt der Rubrik (.+):/,
                addStart:true,
-               fun : (text,lines) ->
+               action : (text,lines) ->
                   match = lines[0].match(/Inhalt der Rubrik (.+):/) 
                   name = match[1]
                   mpa[name] = { title: name } if !mpa[name]
@@ -124,14 +127,14 @@ add_mpa_triggers =
     addTrigger "mpa_artikel", 
                collect({start:/(.+?) +\((\w+), +(\d+\. \w{3} \d{4}), (\d{1,2}:\d{2}:\d{2})\):/, 
                addStart:true,
-               fun : (text,lines) ->
+               action : (text,lines) ->
                   match = lines[0].match(/(.+?) +\((\w+), +(\d+\. \w{3} \d{4}), (\d{1,2}:\d{2}:\d{2})\)/) 
                   artikel = { titel : match[1], autor: match[2], date:match[3], time:match[4], text : text, rubrik: akt_rubrik }
                   console.log(artikel)
                   showArtikel(artikel)
                })
 #    send("rubriken")
-    return player
+    player
 
 addHook "connect", "add_mpa_triggers", add_mpa_triggers
 

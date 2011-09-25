@@ -18,50 +18,50 @@ Projekt: git clone https://github.com/jexp/TinyMacros.git
 
 */
 var Player = {
-	name : "Unbekannt",
-	id : "unbekannt",
-	lp : 100,
-	max_lp : 100,
-	kp : 100,
-	max_kp : 100,
-	vorsicht : 0,
-	flucht : null,
-	poison : 0,
-	xp : 0,
-	ap : 0,
-	max_ap : 0,
-	size : 0,
-	weight : 0,
-	sec : "maennlich",
-	level : 0,
-	max_level : 0,
-	align : "neutral",
-	guild_level : 0,
-	subguild : null,
+    name : "Unbekannt",
+    id : "unbekannt",
+    lp : 100,
+    max_lp : 100,
+    kp : 100,
+    max_kp : 100,
+    vorsicht : 0,
+    flucht : null,
+    poison : 0,
+    xp : 0,
+    ap : 0,
+    max_ap : 0,
+    size : 0,
+    weight : 0,
+    sec : "maennlich",
+    level : 0,
+    max_level : 0,
+    align : "neutral",
+    guild_level : 0,
+    subguild : null,
 
-	intellect : 0,
-	strength : 0,
-	dexterity : 0,
-	constitution : 0,
+    intellect : 0,
+    strength : 0,
+    dexterity : 0,
+    constitution : 0,
     intellect_mod : 0,
     strength_mod : 0,
     dexterity_mod : 0,
     constitution_mod : 0,
-	deaths : 0,
-	death_marks : 0,
-	age : null,
-	guild : null,
-	race : null,
-	avatar : "img/drache.gif",
-	full_name : "Unbekannt",
-	from : null,
-	via : null,
-	logged_in_since: null,
-	first_login : null,
-	married_to : null,
-	project : null,
-	second : false
-}
+    deaths : 0,
+    death_marks : 0,
+    age : null,
+    guild : null,
+    race : null,
+    avatar : "img/drache.gif",
+    full_name : "Unbekannt",
+    from : null,
+    via : null,
+    logged_in_since: null,
+    first_login : null,
+    married_to : null,
+    project : null,
+    second : false
+};
 
 function showPoints(suffix, val, max) {
 	$("#p_max_"+suffix).text(max);
@@ -69,7 +69,7 @@ function showPoints(suffix, val, max) {
 	var value = 100.0*parseInt(val)/parseInt(max);
 	$("#p_bar_"+suffix).progressbar({ value: value});
 
-	var bar=$("#p_bar_"+suffix+" > .ui-progressbar-value")
+	var bar = $("#p_bar_" + suffix + " > .ui-progressbar-value");
 	bar.removeClass("bg_red bg_yellow bg_green");
 	if (value > 75) { bar.addClass("bg_green") }
 	if (value <= 75 && value >= 30) { bar.addClass("bg_yellow") }
@@ -82,18 +82,18 @@ function playerBox(id) {
 		return box;
 	}
 	
-   	var html = "<div id='status_"+id+"' style='width:200;padding:3px;'> \
+   	var html = "<div id='status_" + id + "' style='width:200;padding:3px;'> \
 		<div style='float:left'> \
-			<img id='avatar_"+id+"' src='img/drache.gif' width='64'/> \
+			<img id='avatar_" + id + "' src='img/drache.gif' width='64'/> \
 		</div> \
 		<div style='margin-left:40%'> \
-		<div id='p_bar_lp_"+id+"' style='height:1.5em;margin:3px;'><span style='position: absolute; width: 50%; text-align: center;'>LP: <span id='p_lp_"+id+"'>58</span>/<span id='p_max_lp_"+id+"'>58</span></span></div> \
-		<div id='p_bar_kp_"+id+"' style='height:1.5em;margin:3px;'><span style='position: absolute; width: 50%; text-align: center;'>KP: <span id='p_kp_"+id+"'>58</span>/<span id='p_max_kp_"+id+"'>58</span></span></div> \
-		<div id='data_'"+id+"'> \
-		<div>V: <span id='p_vorsicht_"+id+"'></span> FR: <span id='p_flucht_"+id+"'></span> Gift: <span id='p_poison_"+id+"'></span> </div> \
+		<div id='p_bar_lp_" + id + "' style='height:1.5em;margin:3px;'><span style='position: absolute; width: 50%; text-align: center;'>LP: <span id='p_lp_" + id + "'>58</span>/<span id='p_max_lp_" + id + "'>58</span></span></div> \
+		<div id='p_bar_kp_" + id + "' style='height:1.5em;margin:3px;'><span style='position: absolute; width: 50%; text-align: center;'>KP: <span id='p_kp_" + id + "'>58</span>/<span id='p_max_kp_" + id + "'>58</span></span></div> \
+		<div id='data_'" + id + "'> \
+		<div>V: <span id='p_vorsicht_" + id + "'></span> FR: <span id='p_flucht_" + id + "'></span> Gift: <span id='p_poison_" + id + "'></span> </div> \
 		</div></div> \
 		<div style='clear:both'></div> \
-	</div>"
+	</div>";
 	box = $(html).dialog();
 	box.dialog("option","width",150).dialog("option","minHeight",80).dialog("option","height",100);
 	addToPeople(box);
@@ -103,25 +103,25 @@ function playerBox(id) {
 function connectPlayer(name) {
 	Player.name = name; 
 	Player.id = name.toLowerCase();
-	var id=Player.id
+	var id = Player.id;
 	runScript("connect",id);
 	var box = playerBox(id); // .dialog(){ position : [850,80], width : 300 });
 	addToPeople(box);
-	loadData("player_"+id, function(data) {
-		console.log("player "+name +" typ "+typeof(data) + " content "+data);
-		if (data) {
-			try {
-				Player = JSON.parse(data);
-				runScript(Player.race)
-				runScript(Player.guild)
-				runScript(Player.subguild)
-				runScript(id)
-				showPlayer(Player)
-			} catch(e) {
-				console.log(e)
-			}
-		}
-	})
+	loadData("player_" + id, function(data) {
+        console.log("player " + name + " typ " + typeof(data) + " content " + data);
+        if (data) {
+            try {
+                Player = JSON.parse(data);
+                runScript(Player.race)
+                runScript(Player.guild)
+                runScript(Player.subguild)
+                runScript(id)
+                showPlayer(Player)
+            } catch(e) {
+                console.log(e)
+            }
+        }
+    });
 
 	add_player_triggers();
 //	add_mpa_triggers(name)
@@ -131,15 +131,15 @@ function connectPlayer(name) {
 function showPlayer(player) {
 	player = player || Player;
 	var id = "_"+player.id;
-	showPoints("kp"+id,player.kp,player.max_kp)
-	showPoints("lp"+id,player.lp,player.max_lp)
+	showPoints("kp" + id, player.kp, player.max_kp);
+	showPoints("lp" + id, player.lp, player.max_lp);
 	if ($("#avatar"+id).attr("src") != player.avatar) {
 		$("#avatar"+id).attr("src",player.avatar);
 	}
-	$("#p_vorsicht"+id).text(player.vorsicht)
-	$("#p_flucht"+id).text(player.flucht)
+	$("#p_vorsicht" + id).text(player.vorsicht);
+	$("#p_flucht" + id).text(player.flucht);
 	$('#status'+id).dialog("option", "title", player.name );
-	$("#p_poison"+id).text(player.poison)
+	$("#p_poison" + id).text(player.poison);
 	if (player.lead) {
 		$("#status"+id).addClass("teamlead");
 	} else {
@@ -167,22 +167,27 @@ function showTeam() {
 	var teamInfo = $('#team');
 	for (var i=0;i<team.length;i++) {
 		var member=team[i];
-		var box = showOtherPlayer(member.name,member)
+		var box = showOtherPlayer(member.name, member);
 		// box.dialog("option","position",[850+(200*member.column),120*member.row])
 	}
 }
-var grab_battle = grab_single(/(^  [^' ].+|.+ faellt tot zu Boden.$)/, function(text) { appendTo("p_fight",text); })
-var grab_source = grab_single(/.*/, function(text) { appendTo("source",text); })
+var grab_battle = grab_single({trigger: /(^  [^' ].+|.+ faellt tot zu Boden.$)/, action: function(text) {
+    appendTo("p_fight", text);
+}});
+
+var grab_source = grab_single({trigger: /.*/, action : function(text) {
+    appendTo("source", text);
+}});
 
 function add_player_connect_triggers() {
 	addTrigger("connect_gast",
-	trigger_update(/^Du bist jetzt (.+?) /,function(name) { 
+	trigger_update({trigger:/^Du bist jetzt (.+?) /,action:function(name) {
 		connectPlayer(name);
-	}));
+	}}));
 	addTrigger("connect_player",
-	trigger_update(/^Schoen, dass Du wieder da bist, (.+?)!/,function(name) { 
+	trigger_update({trigger:/^Schoen, dass Du wieder da bist, (.+?)!/,action:function(name) {
 		connectPlayer(name)
-	}));
+	}}));
 }
 
 var players = {};
@@ -198,14 +203,16 @@ function withPlayer(fun, player) {
 
 function property_update(trigger,props) {
 	var properties = Array.prototype.slice.call(arguments);
-	return function(player, line) {
+	return function(player, param) {
 		var match;
+        var line;
+        if (typeof(param)=="string") line=param; else line=param.line;
 	  	if (match=line.match(trigger)) {
 	  		for (var i=1;i<match.length && i<properties.length; i++) {
 				var value=match[i];
 				if (value) {
 					var prop = properties[i];
-	  				var prop = prop.indexOf(",")==-1 ? [prop] : prop.split(/, */);
+	  				prop = prop.indexOf(",")==-1 ? [prop] : prop.split(/, */);
 					for (var j=0;j<prop.length;j++) {
 //					   console.log("updating "+prop[j]+" to "+value);
 		  			   player[prop[j]]=value;
@@ -213,7 +220,7 @@ function property_update(trigger,props) {
 				}
 	  		}
 	  	}
-		return line;
+		return param;
 	};
 }
 
@@ -228,21 +235,21 @@ function lookup_player(name) {
 	return players[id];
 }
 
-var team = []
+var team = [];
 
 function add_player_triggers() {
-	console.log("add_player_triggers")
+	console.log("add_player_triggers");
 
 	addTrigger("teddy",
-	trigger_update(/^Du hast jetzt (\d+) Lebenspunkte und (\d+) Konzentrationspunkte.$/,function(lp,kp) { 
+	trigger_update({trigger:/^Du hast jetzt (\d+) Lebenspunkte und (\d+) Konzentrationspunkte.$/,action:function(lp,kp) {
 		Player.lp = lp;
 		Player.kp = kp;
-	}));
+	}}));
 
 	addTrigger("avatar_neu",
-	trigger_update(/^Aktuelle Avatar-URI: (.+)$/,function(uri) { 
+	trigger_update({trigger:/^Aktuelle Avatar-URI: (.+)$/,action:function(uri) {
 		Player.avatar = uri;
-	}));
+	}}));
 	/*
 	und zwar von: Daemonendimension (ueber Berlin).
 	Eingeloggt seit: Son, 11. Sep 2011, 10:23:45
@@ -272,7 +279,7 @@ function add_player_triggers() {
 	];
 	
 	addTrigger("finger",
-	   collect({addStart:true, start:/^.+ ist anwesend,$/, fun:function(text,lines) {
+	   collect({addStart:true, start:/^.+ ist anwesend,$/, action:function(text,lines) {
 		var player,match;
 		if (match = text.match(/^(.+) ist anwesend,\n/)) {
 		   var name = match[1];
@@ -319,7 +326,7 @@ Alter:	1 Stunde 10 Minuten 36 Sekunden.
 	];
 
 	addTrigger("info",
-	   collect({start:/- .+ -{3,}$/, end: /----------------------------------------------------------------------/, fun : function(text,lines) {
+	   collect({start:/- .+ -{3,}$/, end: /----------------------------------------------------------------------/, action : function(text,lines) {
 		var player = Player;
 		for (var i=0;i<info_checks.length;i++) {
 			for (var j=0;j<lines.length;j++) {
@@ -369,7 +376,7 @@ Alter:	1 Stunde 10 Minuten 36 Sekunden.
 		  return line;
 	   },
 	   collect({start:/  Name        Gilde           LV GLV  LP \(MLP\)  KP \(MKP\) Vors. GR AR TR FR A V/, 
-				fun: function(text,lines) {
+				action: function(text,lines) {
 			team = [];
 			var cols = [0,0,0,0,0];
 			for (var j=0;j<lines.length;j++) {
@@ -413,16 +420,16 @@ Alter:	1 Stunde 10 Minuten 36 Sekunden.
 	]);
 	
 	addTriggers("vorsicht",[
-  	trigger_update(/^Vorsicht: (.+). Fluchtrichtung: (.+)$/,function(vorsicht,flucht) { 
+  	trigger_update({trigger:/^Vorsicht: (.+). Fluchtrichtung: (.+)$/,action:function(vorsicht,flucht) {
   		Player.vorsicht = vorsicht;
   		Player.flucht = flucht;
-  	}),
-  	trigger_update(/^Vorsicht-Modus \((.+)\)$/,function(vorsicht) { 
+  	}}),
+  	trigger_update({trigger:/^Vorsicht-Modus \((.+)\)$/,action:function(vorsicht) {
   		Player.vorsicht = vorsicht;
-  	}),
-  	trigger_update(/^Prinz Eisenherz-Modus.$/,function() { 
+  	}}),
+  	trigger_update({trigger:/^Prinz Eisenherz-Modus.$/,action:function() {
   		Player.vorsicht = 0;
-  	})	
+  	}})
  	]);
 
 //	addTrigger("kurzinfo_kp",
