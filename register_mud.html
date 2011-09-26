@@ -1,0 +1,45 @@
+<form id="f_register_mud"  onsubmit="registerMud();return false;">
+    <h3>Charaktereigenschaften</h3>
+
+    <p>Wenn Du ein absoluter Neuling in diesem Spiel bist moechten wir Dir mit
+    einigen Tips zu Beginn beiseite stehen.</p>
+
+    <p>Hast Du schon einmal in einem MUD gespielt?(ja,nein): <input type="checkbox" name="mudder"/></p>
+
+    <p>Eine kleine Einfuehrung in das MorgenGrauen bekommst Du im
+    <a href="http://mg.mud.de/newweb/hilfe/tutorial/inhalt.shtml" target="_blank">Neuspieler Tutorial</a>.</p>
+
+    <p>Du musst Dich jetzt entscheiden, welcher Rasse Du in dieser Welt angehoeren
+    moechtest. Alle Rassen haben verschiedene Vor- und Nachteile, insgesamt aber
+    gleich gute Chancen. Auch das Startgebiet haengt von der ausgewaehlten Rasse
+    ab. Im Normalfall kann die Rasse nicht mehr gewechselt werden, nachdem sie
+    einmal ausgewaehlt wurde. Ueberlege Dir Deine Entscheidung also gut.</p>
+
+    <p>Derzeit stehen folgende Rassen zur Auswahl:
+    <select name="race">
+        <option value="1">Mensch</option>
+        <option value="3">Zwerg</option>
+        <option value="4">Elf</option>
+        <option value="5">Feline</option>
+        <option value="6">Goblin</option>
+        <option value="7">Hobbit</option>
+        <option value="2">Dunkelelf</option>
+    </select>
+    <br/>
+
+    <em>Als Neuling solltest Du Dich NICHT fuer die Dunkelelfen entscheiden. Diese
+        Rasse hat einige Probleme im Umgang mit den anderen Rassen und mit dem
+        Sonnenlicht.</em></p>
+
+    <p>Bist Du maennlich oder weiblich: <select name="gender">
+      <option value="m">maennlich</option>
+      <option value="w">weiblich</option>
+    </select>
+    </p>
+    <!--button class="ui-button ui-button-text-only ui-widget ui-state-default ui-corner-all">
+        <span class="ui-button-text">Zurück</span>
+    </button-->
+    <button class="ui-button ui-button-text-only ui-widget ui-state-default ui-corner-all">
+        <span class="ui-button-text">Weiter</span>
+    </button>
+</form>

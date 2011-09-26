@@ -20,13 +20,21 @@
 	</style>
 
 	<style type="text/css">
-	.bg_green { background-color : green;}
-	.bg_yellow {  background-color : yellow;}
-	.bg_red { background-color : red;}
+	.bg_green { background-color : #90ee90;}
+	.bg_yellow {  background-color : #fafad2;}
+	.bg_red { background-color : #f08080;}
+	.gilde_abenteurer { background-color : #deb887;}
+	.gilde_klerus { background-color : #fafad2;}
+	.gilde_katzenkrieger { background-color : #90ee90;}
+	.gilde_kaempfer { background-color : #b0c4de;}
+	.gilde_karate { background-color : #ee82ee;}
+	.gilde_chaos { background-color : orange;}
+	.gilde_zauberer { background-color : red;}
 	.teamlead { border : 2px solid green;}
 	.table_bottom div { display: inline;}
 	.table_top div { display: inline;}
 	.table_toolbar { display: inline;}
+
 	</style>
 
 	<script type="text/javascript">
@@ -54,6 +62,7 @@
 	<script type="text/javascript" src="js/mg_client/mg_client_io.js"></script>
 	<script type="text/javascript" src="js/mg_client/mg_client_player.js"></script>
 	<script type="text/javascript" src="js/mg_client/mg_client_history.js"></script>
+	<script type="text/coffeescript" src="js/mg_client/mg_client_neu.coffee"></script>
 	<script type="text/coffeescript" src="js/mg_client/mg_client_mpa.coffee"></script>
 	<script type="text/coffeescript" src="js/mg_client/mg_client_chat.coffee"></script>
 	<script type="text/javascript" src="js/mg_client/mg_client_config.js"></script>
@@ -101,7 +110,7 @@
 	</form>
     </div>
 	</div>
-	<div id="windows" style="height:40px;margin-left:680px;margin-top:-40px;">
+	<div id="windows" style="height:40px;margin-left:650px;margin-top:-40px;">
 		<button icon="ui-icon-comment" onclick="$('#Chat').toggle(); return false;">Chat</button>
 		<button icon="ui-icon-info" onclick="$('#mpa').toggle(); return false;">MPA</button>
 		<button icon="ui-icon-copy">Fenster</button>
@@ -129,7 +138,8 @@
 		  	<li><a href="#"  onclick="toggleDialog('debug_trigger'); return false;">Debug Trigger</a></li>
 		  	<li><a href="#"  onclick="runTestSuite(); return false;">Run Tests</a></li>
 		</ul>
-	</div>	
+        <button id="b_login" icon="ui-icon-power" class="ui-priority-primary" onclick="showLoginDialog(); return false;">Anmelden</button>
+	</div>
 	<div class="ie-hack2">&nbsp;</div>
 	</div>
 <div style="height:0px">

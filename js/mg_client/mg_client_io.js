@@ -35,7 +35,7 @@ function char2hex(d) {
 }
 var TELNET_RE = new RegExp("(?:(["+IAC.WILL+IAC.WONT+IAC.DO+IAC.DONT+"]+)("+".)|"+IAC.SB+"+(.)(.+?)"+IAC.SE+"+)","g")
 function extractIAC(result) {
-	if (!result.line.match(TELNET_RE)) return result;
+	if (!result.line.match(TELNET_RE)) return false;
 	result.history.push(result.line);
 	result.telnegs=[];
 	var match, found, line=result.line;
@@ -45,5 +45,5 @@ function extractIAC(result) {
 		console.log("OP: "+char2hex(match[1])+" VALUE: "+char2hex(match[2])+" SB OP: "+char2hex(match[3])+" VALUE: "+match[4]);
 	}
 	result.line=line.replace(TELNET_RE,"");
-	return result;
+	return true;
 }

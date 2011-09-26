@@ -4,22 +4,22 @@ var tests_triggers={
 		triggers = {};
 	}
     , run_trigger : function() {
-		addTrigger('test',function(line) { return "bbb"} );
+		addTrigger('test',{fun: function(line) { return "bbb"}} );
 		assertEquals("bbb",runTriggers('aaa'));
     }
     , trigger_line : function() {
-		addTrigger('test',function(line) { if (line.match(/aaa/)) return "bbb"; else return line; } );
+		addTrigger('test',{fun:function(line) { if (line.match(/aaa/)) return "bbb"; else return line; }} );
 		assertEquals("bbb",runTriggers('aaa'));
     }
     , property_update : function() {
 	    var player = {};
-		addTrigger('test', withPlayer(property_update(/b(.)b/,'test'),player));
+		addTrigger('test', {fun : withPlayer(property_update(/b(.)b/,'test'),player)});
 		assertEquals("bab",runTriggers('bab'));
 		assertEquals("a",player.test);
    }
    , property_update_multipe : function() {
 	    var player = {};
-		addTrigger('test', withPlayer(property_update(/b(.)b/,'test,test1'),player));
+		addTrigger('test', {fun:withPlayer(property_update(/b(.)b/,'test,test1'),player)});
 		assertEquals("bab",runTriggers('bab'));
 		assertEquals("a",player.test);
 		assertEquals("a",player.test1);

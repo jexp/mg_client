@@ -3,16 +3,35 @@ var triggers = {};
 // { id , trigger, prio, fallthrough, count, cond }	
 function addTrigger(id, trigger) {
 	trigger.name = id;
+    if (!trigger.fun) {
+        throw "Trigger "+id+" misses function ";
+    }
     triggers[id] = trigger;
 }
-function addTriggers(id, actions) {
-	addTrigger(id, function(result) {
-		for (var i=0;i<actions.length;i++) {
-			result = actions[i](result);
-			if (result.stop) break;
+function removeTrigger(id,prefix) {
+    if (!prefix) {
+        delete triggers[id];
+    } else {
+        id = id + "_";
+        var len = id.length;
+        for (p in triggers) {
+            if (p.substr(0, len) == id) {
+                delete triggers[id];
+            }
+        }
+    }
+}
+
+function addTriggers(id, trigger, actions) { // todo ist ein trigger mit mehreren function -> addTriggers(id,trigger, actions)
+    trigger.fun = function(result) {
+		var hit=false;
+        for (var i=0;i<actions.length;i++) {
+			hit |= actions[i](result);
+			if (hit && trigger.stop) break;
 		}
-		return result;
-	});
+		return hit;
+	};
+    addTrigger(id,trigger);
 }
 
 // todo besseres handling, trigger auf uspruengliche zeile und delta's verwalten (aenderungen an zeile)
@@ -23,46 +42,51 @@ function runTriggers(result) {
         console.log(JSON.stringify(result));
     }
 //	console.log("triggering: #"+line+"#"+line.charCodeAt(0)+".."+line.charCodeAt(line.length-1));
-	for (name in triggers) {
+	var hit=false;
+    for (name in triggers) {
 		var trigger=triggers[name];
         try {
-            result = trigger(result);
+            if (trigger.disabled) continue; // todo other conditions
+            if (!trigger.fun(result)) continue;
+            hit = true;
+            if (trigger.count) {
+                trigger.count -= 1;
+                if (trigger.count == 0) {
+                    delete triggers[name];
+                }
+            }
+            if (trigger.gag) result.gag = true;
+            if (trigger.stop) break;
         } catch (e) {
             console.log("exception line trigger "+name+" "+e);
             console.log(JSON.stringify(result));
+            trigger.disabled=true;
         }
 //		console.log("triggering: #"+line+"# with "+name);
         if (result.line==undefined) {
             console.log("UNDEF line trigger "+name);
             console.log(JSON.stringify(result));
         }
-        if (result.stop) break;
 	}
-	return result;
+	return hit;
 }
 
 function trigger_update(trigger) {
-	return function(result) {
+	trigger.fun = function(result) {
 	    var match=result.line.match(trigger.trigger);
-	    if (match) {
-		  match.shift(); // remove first match
-		  trigger.action.apply(this,match);
-	    }
-	    return applyTriggerFlags(trigger,result);
-	}
-}
-
-function applyTriggerFlags(trigger,result) {
-    if (trigger.gag) result.gag=true;
-    if (trigger.stop) result.stop = true;
-    return result;
+	    if (!match) return false;
+		match.shift(); // remove first match
+		trigger.action.apply(this,match);
+        return true;
+	};
+    return trigger;
 }
 
 PROMPT = /^\S*>\s*$/
 function collect(trigger) { // todo objekt, mit start/end ausschluss, gag
 	var collected = null;
 	trigger.end = trigger.end || PROMPT;
-	return function(result) {
+    trigger.fun = function(result) {
         var line=result.line;
         var matched=false;
 		if (line.match(trigger.start)) {
@@ -85,26 +109,24 @@ function collect(trigger) { // todo objekt, mit start/end ausschluss, gag
             matched=true;
 			collected.push(line);
 		}
-        if (matched) {
-            return applyTriggerFlags(trigger,result);
-        } else {
-            return result;
-        }
-	}
+        return matched;
+	};
+    return trigger;
 }
 
 function grab_single(trigger) { // todo highlight whole line
-	return function(result) {
+	trigger.fun = function(result) {
 		if (result.line==undefined) {
             console.log(JSON.stringify(trigger));
             console.log(JSON.stringify(result));
         }
         if (result.line.match(trigger.trigger)) {
 			trigger.action(result.line + "\n");
-            applyTriggerFlags(trigger,result);
+            return true;
 		}
-		return result;
-	}
+		return false;
+	};
+    return trigger;
 }
 
 function run(action,line, match,trigger) {
@@ -144,18 +166,38 @@ function replaceWithSpan(result,trigger) {
         return span.wrap("<div>").parent().html();
     });
     result.line = line;
+}
+/*
+function replaceWithSpan(result,trigger) {
+    var line = result.line;
+    result.history.push(line);
+    line = line.replace(trigger.trigger, function () {
+        matches = stripReplaceArguments(arguments);
+        for (var i=0;i<matches.length;i++) {
+            var span = $("<span>");
+            var text = matches[i];
+            if (trigger.style) { span.css(trigger.style); }
+            if (trigger.click) { span.click(trigger.click(text)); }
+            if (trigger.dblclick) { span.dblclick(trigger.dblclick(text));}
+            span.text(text);
+        }
+        return span.wrap("<div>").parent().html();
+    });
+    result.line = line;
     return result;
 }
+ */
 
 function highlight(trigger) {
-	return function(result) {
+	trigger.fun = function(result) {
         var line = result.line;
 		var match=line.match(trigger.trigger);
-		if (!match) return result;
+		if (!match) return false;
 		if (trigger.action) {  run(trigger.action, line, match, trigger); }
-        result = applyTriggerFlags(trigger,result);
-		if (!(trigger.style || trigger.click || trigger.dblclick)) return result;
-        result = replaceWithSpan(result, trigger);
-        return result;
-	}
+		if (trigger.style || trigger.click || trigger.dblclick) {
+            replaceWithSpan(result, trigger);
+        }
+        return true;
+	};
+    return trigger;
 }

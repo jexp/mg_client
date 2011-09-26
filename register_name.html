@@ -1,0 +1,43 @@
+<h3>Denk Dir jetzt bitte einen Namen fuer Deinen neuen Charakter aus.</h3>
+
+<form id="f_register_name" onsubmit="registerName();return false;">
+<p>Der Name sollte mindestens drei und hoechstens elf Buchstaben lang sein
+und keine Sonderzeichen enthalten. Es waere schoen, wenn der Name zu einem
+Fantasy-MUD passen wuerde, aber das ist keine Bedingung.</p>
+
+<p>Doch ueberlege Dir Deine Wahl gut - Dein Name ist das Erste, was andere
+Spieler von Dir sehen und er beeinflusst ihre Meinung von Dir, noch bevor
+Du das erste Wort gesagt hast.</p>
+
+<p>Beachte bei Deiner Namenswahl: Wenn Du einen Namen waehlst, der zu
+Verwechslungen mit Monstern oder Gegenstaenden im Spiel fuehrt, kannst
+Du in Probleme und heikle Situationen gelangen. Wenn Du Dir nicht sicher
+bist, dann logg Dich doch kurz als Gast ein und befrage einen anwesenden
+Magier nach Deinem Namenswunsch.</p>
+
+<p><strong>Bedenke: Nachtraeglich kann Dein Name nicht mehr geaendert werden!</strong></p>
+
+<p>Damit alle Seiten den Spass an diesem Spiel behalten, behaelt sich diesem
+MUD-Leitung vor, allzu provozierende, beleidigende oder anstoessige Namen
+auch noch nachtraeglich zu loeschen und zu sperren.</p>
+<p><strong id="register_login_error" style="color:red"></strong><br/>
+Genug der Regeln - wie moechtest Du in diesem Spiel heissen?
+<input name="login" type="text" required="required" pattern="[a-zA-Z]{3,}" placeholder="name"/></p>
+
+<p><strong id="register_password_error" style="color:red"></strong><br/>
+Waehle ein Passwort: <input name="password" type="password" pattern=".{6,}" required="required"/></p>
+
+<p><strong>Zur Erinnerung: Es ist  v e r b o t e n, andere Spieler anzugreifen!
+Das gilt auch fuer Froesche, bei denen "Ein Frosch namens XXXXX" steht.</strong></p>
+
+<p>Passwort bitte nochmal eingeben: <input name="password2" type="password" pattern=".{6,}" required="required"/></p>
+
+<p>Eine gueltige EMail-Adresse erleichtert es erheblich, Dir ein neues Passwort
+setzen zu lassen, falls Du einmal Dein Passwort vergisst.</p>
+
+<p>Gib bitte Deine EMail-Adresse an: <input type="email" name="email" required="required"/></p>
+
+<button class="ui-button ui-button-text-only ui-widget ui-state-default ui-corner-all">
+   <span class="ui-button-text">Weiter</span>
+</button>
+</form>

@@ -70,7 +70,7 @@ function showPoints(suffix, val, max) {
 	$("#p_bar_"+suffix).progressbar({ value: value});
 
 	var bar = $("#p_bar_" + suffix + " > .ui-progressbar-value");
-	bar.removeClass("bg_red bg_yellow bg_green");
+	bar.removeClass("bg_red bg_yellow bg_green ui-widget-header");
 	if (value > 75) { bar.addClass("bg_green") }
 	if (value <= 75 && value >= 30) { bar.addClass("bg_yellow") }
 	if (value < 30) { bar.addClass("bg_red") }
@@ -140,11 +140,17 @@ function showPlayer(player) {
 	$("#p_flucht" + id).text(player.flucht);
 	$('#status'+id).dialog("option", "title", player.name );
 	$("#p_poison" + id).text(player.poison);
-	if (player.lead) {
-		$("#status"+id).addClass("teamlead");
+	var title=$("#status_"+"dumpf").parent().children(".ui-dialog-titlebar").removeClass("ui-widget-header");
+    if (player.lead) {
+		title.addClass("teamlead");
 	} else {
-		$("#status"+id).removeClass("teamlead");
+		title.removeClass("teamlead");
 	}
+    if (player.guild) {
+        title.addClass("gilde_"+player.guild.toLowerCase())
+    } else {
+        title.addClass("ui-widget-header")
+    }
 }
 
 function addToPeople(box) {
@@ -355,25 +361,30 @@ Alter:	1 Stunde 10 Minuten 36 Sekunden.
 	
 	
 
-	addTriggers("teaminfo",[
-	   function(line) {
+	addTriggers("teaminfo",{gag:true,stop:true}, [
+	   function(result) {
+          var line=result.line;
 		  if (team && team.length && line.match(/^[A-Z].+ (KP|LP) *$/)) {
-			 var infos=line.split(", ");
+			 var found=false;
+             var infos=line.split(", ");
 			 for (var i=0;i<infos.length;i++) {
 				var match=infos[i].match(/^(\w+): (\d+) (LP|KP)(?: \/ (\d+) KP)? *$/);
 				var id=match[1].toLowerCase();
 				for (var j=0;j<team.length;j++) {
 					if (team[j].id == id) {
+                        found=true;
 						if (match[3]=="LP") team[j].lp=match[2];
 						else team[j].kp=match[2];
 						if (match[4]) team[j].kp=match[4];
 					}
 				}
 			}
-			showTeam();
-			return null;
+			if (found) {
+                showTeam();
+                return true;
+            }
 		  }
-		  return line;
+		  return false;
 	   },
 	   collect({start:/  Name        Gilde           LV GLV  LP \(MLP\)  KP \(MKP\) Vors. GR AR TR FR A V/, 
 				action: function(text,lines) {
@@ -401,13 +412,13 @@ Alter:	1 Stunde 10 Minuten 36 Sekunden.
 }
 	}})]);
 
-    addTriggers("gift",[
+    addTriggers("gift",{},[
 		highlight({trigger:/Du hast eine leichte Vergiftung./, style: {color:"yellow"}, action : function() { Player.poison = 1 }}),
 		highlight({trigger:/Du hast eine schwere Vergiftung./, style: {color:"red"},  action : { poison : 2 }}),
 		highlight({trigger:/Du hast eine gefaehrliche Vergiftung./, style: {color:"red", "font-weight" :"bold"}, action : "Player.poison = 3 "})
 	]);
 
-	addTriggers("kurzinfo",[
+	addTriggers("kurzinfo",{gag:true},[
 //                                   Konzentration: 0 |###################################  .  | 179 (202)
 		withPlayer(property_update(/^Konzentration: 0 \|.+\| +(\d+)(?: \((\d+)\))?$/,"kp,max_kp","max_kp")),
 		withPlayer(property_update(/^Gesundheit:    0 \|.+\| +(\d+)(?: \((\d+)\))?$/,"lp,max_lp","max_lp"))
@@ -419,7 +430,7 @@ Alter:	1 Stunde 10 Minuten 36 Sekunden.
 */
 	]);
 	
-	addTriggers("vorsicht",[
+	addTriggers("vorsicht",{},[
   	trigger_update({trigger:/^Vorsicht: (.+). Fluchtrichtung: (.+)$/,action:function(vorsicht,flucht) {
   		Player.vorsicht = vorsicht;
   		Player.flucht = flucht;

@@ -64,7 +64,7 @@
 
 	function split_ansi(result) {
 		if (!result.line.match(ANSI_RE)) {
-			return result;
+			return false;
 		}
 		var line = result.line;
 		result.history.push(result.line);
@@ -99,7 +99,7 @@
 				result.line += parts[i];
 			}
 		}
-		return result;
+		return true;
 	}
 	
 	function strip_esc_colors(text) {
@@ -147,7 +147,8 @@
         if (text!=result.line) {
             result.history.push(result.line);
             result.line = text;
+            return true;
         }
-        return result;
+        return false;
 	}
 	

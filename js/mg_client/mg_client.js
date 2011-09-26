@@ -38,24 +38,22 @@ function extractMarkup(line) {
 function enrich(line) {
 	var result={ history: [], line:line, styles:[]};
 
-    result = extractIAC(result);
-	result = split_ansi(result);
+    extractIAC(result);
+	split_ansi(result);
 	/*
     if (result.history.length) {
 		console.log(JSON.stringify(result));
 	}
 	*/
-	result = escapeHTML(result);
+	escapeHTML(result);
 
-	result = handlePassword(result);
-
-    if (result.password) return result.line; // TODO
+    handlePassword(result);
     
 	beforeLine(result);
 
-	result = grab_battle(result);
+	grab_battle.fun(result);
 
-	result = runTriggers(result);
+	runTriggers(result);
 	
 	// line = color_escapes(line);
 
@@ -63,7 +61,7 @@ function enrich(line) {
 
 	result.line = result.line.replace(/([A-Z][a-z]{2,})/g,"<span>$1</span>");
 	
-	result = grab_source(result);
+	grab_source.fun(result);
 	
 	afterLine(result);
 	if (result.gag) return null;
@@ -71,7 +69,7 @@ function enrich(line) {
 }
 
 
-function startUp(){
+function startUp() {
 //		try {
 		loadAllScripts();
 		addScript("skript",function(name,commands){ 
@@ -91,7 +89,7 @@ function startUp(){
 
 		add_buttons("toolbar",[{label:"info"},{label:"ausruestung"},{label:"inv"},
 		                       {label:"Kurz", action:"kurz"},{label:"Lang", action:"lang"},{label:"nn"},
-							   {label:"Anwesende",action:"kwer"},{label:"Abmelden",action:"schlafe ein"}]);
+							   {label:"Anwesende",action:"kwer"}]);
 
 		addCompass();
 		
@@ -106,10 +104,8 @@ function startUp(){
 				title: "Info", start:/- .+ -{3,}$/, addStart:true, 
 				end: /----------------------------------------------------------------------/ },
 				  p_inventory : { title: "Inventory", start : /^(inv|inventory|i)\s*$/ },
-				  p_ausruestung : { title: "Ausr&uuml;stung", start : /^(ar|ausruestung)\s*$/ ,
-					action : function(text) { setTabText("p_ausruestung",color_escapes(escapeHTML(text))) }
-				 }
-				});
+				  p_ausruestung : { title: "Ausr&uuml;stung", start : /^(ar|ausruestung)\s*$/
+				}});
 		addWindow("Mud", {
 			p_ort : { title: "Ort", 	start : /^(schaue?|l|look|norden|nordosten|osten|suedosten|sueden|suedwesten|westen|nordwesten|oben|unten|raus|n|nw|no|o|s|w|sw|so|ob|u)\s*$/},
 			p_finger : { title: "Finger", start : /^.+ ist anwesend,$/ , addStart:true},
@@ -134,8 +130,10 @@ function startUp(){
 		});
 		$("#script_editor").dialog({autoOpen : false ,width : $("#script_editor").width() });
 			
-		runScript("startup");
-		runHooks("startup");
+		setTimeout(function() {
+            runScript("startup");
+            runHooks("startup");
+        }, 500);
 		
 		$('#mpa_rubriken').dataTable( { bJQueryUI: true, // aaData: [["1","allgemeines"]],  
 		sDom: '<"table_top"f<"table_toolbar">>rt<"table_bottom"ipl><"clear">',

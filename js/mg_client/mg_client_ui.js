@@ -164,7 +164,7 @@ function handlePassword(result) {
 		password = !password;
 	}
     result.password = password;
-	return result;
+	return password;
 }
 
 function send(str) {
@@ -242,7 +242,7 @@ function add_button(button, target) {
 }
 
 function window_top_offset() {
-	return ($('.ui-tabs:visible').length + $('body > .ui-dialog:visible').length) * 85+50;
+	return ($('.ui-tabs:visible').length + $('body > .ui-dialog:visible').length) * 85+70;
 // 	return $("#nav_mud").children().size() * 85;
 }
 

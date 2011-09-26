@@ -80,7 +80,10 @@ window.showOnline = () ->
   table = $('#online_table').dataTable()
   table.fnClearTable()
   table.fnAddData(rows)
-  onlineBox().show().empty().append(("""<option onClick="playerPopup(window.event,'#{name}');return false;">#{name}</option>""" for name in (data.name for name, data of online).sort((a,b)-> if a<b then -1 else 1)).join())
+  names = (data.name for name, data of online).sort((a,b)-> if a<b then -1 else 1)
+  html = ($("<option/>").text(name).click((evt)-> playerPopup(evt,name).html()) for name in names).join()
+  console.log(html)
+  onlineBox().show().empty().append(html)
   showTab("chat_online")
 
   
@@ -96,7 +99,8 @@ add_chat_triggers = (player) ->
                    online[id].text = [] if (!online[id].text)
                    online[id].text.push(prefix+" "+text)
                    chatTab(other)
-                 result
+                   return true
+                 false
     addTrigger "chat_kkwer", 
                collect({gag: true, start:/kkwer/,
                action : (text,lines) ->
