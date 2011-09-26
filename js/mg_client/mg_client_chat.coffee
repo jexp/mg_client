@@ -81,15 +81,14 @@ window.showOnline = () ->
   table.fnClearTable()
   table.fnAddData(rows)
   names = (data.name for name, data of online).sort((a,b)-> if a<b then -1 else 1)
-  html = ($("<option/>").text(name).click((evt)-> playerPopup(evt,name).html()) for name in names).join()
-  console.log(html)
-  onlineBox().show().empty().append(html)
+  box = onlineBox().show().empty()
+  box.append($("<option>").text(name).click((evt)-> playerPopup(evt,name))) for name in names
   showTab("chat_online")
 
   
 add_chat_triggers = (player) ->
-    addTrigger "teile_mit", 
-               (result) ->
+    addTrigger "teile_mit",
+               { fun : (result) ->
                  if match = result.line.match(/^(?:Du teilst (\w+)|(\w+) teilt Dir) mit: (.+)/)
                    prefix = if match[1] then "->" else "<-"
                    other = match[1] || match[2]
@@ -101,6 +100,7 @@ add_chat_triggers = (player) ->
                    chatTab(other)
                    return true
                  false
+               }
     addTrigger "chat_kkwer", 
                collect({gag: true, start:/kkwer/,
                action : (text,lines) ->

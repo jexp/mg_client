@@ -88,13 +88,14 @@ window.submitArticle = (rubrik,id) ->
     
 add_mpa_triggers = 
   (player) -> 
-    addTrigger "rubrik_wechsel", 
-               (result) -> 
+    addTrigger "rubrik_wechsel",
+               { fun : (result) ->
                  if match = result.line.match(/Ok, Du hast die Rubrik (.+) mit \d+ Artikeln? aufgeschlagen. /)
                    akt_rubrik = match[1]
 #                  send("inhalt "+akt_rubrik)
                    return true
                  false
+               }
     addTrigger "mpa_rubriken", 
                collect({gag: true, start:/Es gibt zur Zeit \d+ Rubriken./,
                addStart:true,
