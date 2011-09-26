@@ -22,11 +22,16 @@ function removeTrigger(id,prefix) {
     }
 }
 
-function addTriggers(id, trigger, actions) { // todo ist ein trigger mit mehreren function -> addTriggers(id,trigger, actions)
+function addTriggers(id, trigger, actions) {
     trigger.fun = function(result) {
 		var hit=false;
         for (var i=0;i<actions.length;i++) {
-			hit |= actions[i](result);
+			var action=actions[i];
+            if (typeof(action)=="function") {
+                hit |= action(result);
+            } else { // ist selbst ein trigger
+                hit |= action.fun(result);
+            }
 			if (hit && trigger.stop) break;
 		}
 		return hit;

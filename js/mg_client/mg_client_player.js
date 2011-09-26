@@ -361,7 +361,7 @@ Alter:	1 Stunde 10 Minuten 36 Sekunden.
 	
 	
 
-	addTriggers("teaminfo",{gag:true,stop:true}, [
+	addTriggers("teaminfo",{gag:true}, [
 	   function(result) {
           var line=result.line;
 		  if (team && team.length && line.match(/^[A-Z].+ (KP|LP) *$/)) {
@@ -369,7 +369,8 @@ Alter:	1 Stunde 10 Minuten 36 Sekunden.
              var infos=line.split(", ");
 			 for (var i=0;i<infos.length;i++) {
 				var match=infos[i].match(/^(\w+): (\d+) (LP|KP)(?: \/ (\d+) KP)? *$/);
-				var id=match[1].toLowerCase();
+				if (!match) continue;
+                var id=match[1].toLowerCase();
 				for (var j=0;j<team.length;j++) {
 					if (team[j].id == id) {
                         found=true;
