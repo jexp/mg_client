@@ -94,7 +94,7 @@ function playerBox(id) {
 		</div></div> \
 		<div style='clear:both'></div> \
 	</div>";
-	box = $(html).dialog();
+	box = $(html).dialog({autoFocus: false});
 	box.dialog("option","width",150).dialog("option","minHeight",80).dialog("option","height",100);
 	addToPeople(box);
 	return box;

@@ -264,7 +264,7 @@ function submitEnter(field,e) {
 function addBox(id,title,autoOpen,target) {
 	var box=$('<pre>');
 	box.appendTo("body").attr("id",id).css("overflow-x","hidden").css("overflow-y", "auto")
-	.dialog({ title: title, position : ["right",window_top_offset()], width : 500, height : 200, autoOpen: autoOpen==null ? false : autoOpen });
+	.dialog({ title: title, position : ["right",window_top_offset()], width : 500, height : 200, autoOpen: autoOpen==null ? false : autoOpen , autoFocus: false});
 
 	addToMenue(title,function() { toggleDialog(id); return false; }, target);
 	return box;
