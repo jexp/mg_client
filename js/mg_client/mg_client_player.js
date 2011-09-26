@@ -415,11 +415,11 @@ Alter:	1 Stunde 10 Minuten 36 Sekunden.
 	}})]);
 
     addTriggers("gift",{},[
-		highlight({trigger:/Du hast eine leichte Vergiftung./, style: {color:"yellow"}, action : function() { Player.poison = 1 }}),
-		highlight({trigger:/Du hast eine schwere Vergiftung./, style: {color:"red"},  action : { poison : 2 }}),
-		highlight({trigger:/Du hast eine sehr ernste Vergiftung./, style: {color:"red"},  action : { poison : 2 }}),
 		highlight({trigger:/Du hast keine Vergiftung./, style: {color:"green"},  action : { poison : 0 }}),
-		highlight({trigger:/Du hast eine gefaehrliche Vergiftung./, style: {color:"red", "font-weight" :"bold"}, action : "Player.poison = 3 "})
+		highlight({trigger:/Du hast eine leichte Vergiftung./, style: {color:"yellow"}, action : { poison : 1 }}),
+		highlight({trigger:/Du hast eine schwere Vergiftung./, style: {color:"red"},  action : { poison : 2 }}),
+		highlight({trigger:/Du hast eine gefaehrliche Vergiftung./, style: {color:"red" }, action : {poison : 2 }})
+		highlight({trigger:/Du hast eine sehr ernste Vergiftung./, style: {color:"red", "font-weight" :"bold"}},  action : { poison : 3 }}),
 	]);
     /*
     report alle | ein | aus | kp | lp | gift | vorsicht
