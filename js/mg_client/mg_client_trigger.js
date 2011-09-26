@@ -60,7 +60,10 @@ function runTriggers(result) {
                     delete triggers[name];
                 }
             }
-            if (trigger.gag) result.gag = true;
+            if (trigger.gag) {
+                console.log("Gag after "+trigger.name);
+                result.gag = true;
+            }
             if (trigger.stop) break;
         } catch (e) {
             console.log("exception line trigger "+name+" "+e);

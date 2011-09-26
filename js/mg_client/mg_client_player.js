@@ -225,8 +225,9 @@ function property_update(trigger,props) {
 					}
 				}
 	  		}
+            return true;
 	  	}
-		return param;
+		return false;
 	};
 }
 
