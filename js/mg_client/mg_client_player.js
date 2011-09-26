@@ -185,13 +185,13 @@ var grab_source = grab_single({trigger: /.*/, action : function(text) {
     appendTo("source", text);
 }});
 
-function add_player_connect_triggers() {
-	addTrigger("connect_gast",
-	trigger_update({trigger:/^Du bist jetzt (.+?) /,action:function(name) {
+function add_player_connect_triggers() { // Du bist jetzt Lubb 0 (Stufe 1).
+    addTrigger("connect_new_player",
+	trigger_update({count:1, trigger:/^Du bist jetzt (\w+|Gast\d+) .+ \(Stufe \d+\)\.$/,action:function(name) {
 		connectPlayer(name);
 	}}));
 	addTrigger("connect_player",
-	trigger_update({trigger:/^Schoen, dass Du wieder da bist, (.+?)!/,action:function(name) {
+	trigger_update({count:1, trigger:/^Schoen, dass Du wieder da bist, (.+?)!/,action:function(name) {
 		connectPlayer(name)
 	}}));
 }
@@ -416,13 +416,33 @@ Alter:	1 Stunde 10 Minuten 36 Sekunden.
     addTriggers("gift",{},[
 		highlight({trigger:/Du hast eine leichte Vergiftung./, style: {color:"yellow"}, action : function() { Player.poison = 1 }}),
 		highlight({trigger:/Du hast eine schwere Vergiftung./, style: {color:"red"},  action : { poison : 2 }}),
+		highlight({trigger:/Du hast eine sehr ernste Vergiftung./, style: {color:"red"},  action : { poison : 2 }}),
+		highlight({trigger:/Du hast keine Vergiftung./, style: {color:"green"},  action : { poison : 0 }}),
 		highlight({trigger:/Du hast eine gefaehrliche Vergiftung./, style: {color:"red", "font-weight" :"bold"}, action : "Player.poison = 3 "})
 	]);
+    /*
+    report alle | ein | aus | kp | lp | gift | vorsicht
 
-	addTriggers("kurzinfo",{gag:true},[
+Die Meldungen sind dann wie folgt:
+Du hast jetzt 200 Lebenspunkte.
+Du hast jetzt 206 Konzentrationspunkte.
+Du hast eine sehr ernste Vergiftung.
+Du hast eine gefaehrliche Vergiftung.
+Du hast eine leichte Vergiftung.
+Du hast keine Vergiftung.
+Vorsicht: 1
+Vorsicht: 1, Fluchtrichtung: osten
+     */
+
+	addTriggers("status_info",{gag:true},[
 //                                   Konzentration: 0 |###################################  .  | 179 (202)
+		withPlayer(property_update(/^Du hast jetzt (\d+) Lebenspunkte\.$/,"lp")),
+		withPlayer(property_update(/^Du hast jetzt (\d+) Konzentrationspunkte\.$/,"kp")),
 		withPlayer(property_update(/^Konzentration: 0 \|.+\| +(\d+)(?: \((\d+)\))?$/,"kp,max_kp","max_kp")),
-		withPlayer(property_update(/^Gesundheit:    0 \|.+\| +(\d+)(?: \((\d+)\))?$/,"lp,max_lp","max_lp"))
+		withPlayer(property_update(/^Gesundheit:    0 \|.+\| +(\d+)(?: \((\d+)\))?$/,"lp,max_lp","max_lp")),
+
+        withPlayer(property_update(/^Vorsicht: (\d+)$/,"vorsicht")),
+        withPlayer(property_update(/^Vorsicht: (\d+), Fluchtrichtung: (.+)$/,"vorsicht","flucht"))
 /*
 		highlight({ trigger: , action : function(args) { 
 			console.log("updating kp to "+args.groups[0]+" max_kp to "+args.groups[1]);

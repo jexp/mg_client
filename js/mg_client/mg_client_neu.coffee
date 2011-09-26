@@ -1,3 +1,8 @@
+window.loginGuest = ->
+  $("#d_login").dialog("destroy")
+  send("gast")
+  send("m")
+
 window.showNewPlayerDialog = ->
   $("#d_login").dialog("destroy")
   try
@@ -133,6 +138,9 @@ window.showLoginDialog = ->
          Passwort: <input type="password" name="password" required="required" pattern=".{6,}"/><br/>
          <button class="ui-button ui-button-text-only ui-widget ui-state-default ui-corner-all">
             <span class="ui-button-text">Anmelden</span>
+         </button>
+         <button onClick="loginGuest();return false;" class="ui-button ui-button-text-only ui-widget ui-state-default ui-corner-all">
+            <span class="ui-button-text">Gastzugang</span>
          </button>
          <button onClick="showNewPlayerDialog();return false;" class="ui-button ui-button-text-only ui-widget ui-state-default ui-corner-all">
             <span class="ui-button-text">Neuspieler</span>

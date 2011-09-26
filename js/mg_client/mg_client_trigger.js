@@ -28,9 +28,9 @@ function addTriggers(id, trigger, actions) {
         for (var i=0;i<actions.length;i++) {
 			var action=actions[i];
             if (typeof(action)=="function") {
-                hit |= action(result);
+                hit = action(result) || hit;
             } else { // ist selbst ein trigger
-                hit |= action.fun(result);
+                hit = action.fun(result) || hit;
             }
 			if (hit && trigger.stop) break;
 		}
