@@ -61,8 +61,8 @@ window.showArtikel = (artikel) ->
   showTab("tab-mpa-artikel")
 
 window.writeArticle = (rubrik,id = 0) ->
-    rubriken = if rubrik then [rubrik] else (name for name of mpa)
-    rubriken = ("""<option value="#{name}">#{name}</option>""" for name in rubriken).join("\n")
+    rubriken = (name for name of mpa).sort (a,b) -> a < b ? -1 : 1
+    rubriken = ("""<option value="#{name}" #{"selected='selected'" if name==rubrik}>#{name}</option>""" for name in rubriken).join("\n")
     $("""<div id="mpa_edit_article">
     Rubrik: <select id="mpa_edit_article_rubrik">#{rubriken}</select> 
     <input type="submit" value="Veröffentlichen" onclick="submitArticle($('#mpa_edit_article_rubrik').val(),#{id})"/><br/>

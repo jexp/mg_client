@@ -82,7 +82,7 @@ window.showOnline = () ->
   table.fnAddData(rows)
   names = (data.name for name, data of online).sort((a,b)-> if a<b then -1 else 1)
   box = onlineBox().show().empty()
-  box.append($("<option>").text(name).click((evt)-> playerPopup(evt,name))) for name in names
+  box.append($("<option>").text(name).click((evt)-> playerPopup(evt,$(this).text()))) for name in names
   showTab("chat_online")
 
   
