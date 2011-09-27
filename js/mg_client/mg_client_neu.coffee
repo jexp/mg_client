@@ -133,7 +133,7 @@ window.doLogin = (d) ->
 window.showLoginDialog = ->
   html = """
     <div id="d_login">
-      <form onSubmit="doLogin(this);return false;">
+      <form onSubmit="doLogin(this);return false;" action="#" method="post">
          Login: <input type="text" name="login" required="required" placeholder="name" pattern="[A-Za-z]{3,}"/><br/>
          Passwort: <input type="password" name="password" required="required" pattern=".{6,}"/><br/>
          <button class="ui-button ui-button-text-only ui-widget ui-state-default ui-corner-all">
