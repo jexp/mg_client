@@ -103,12 +103,12 @@ function collect(trigger) { // todo objekt, mit start/end ausschluss, gag
 			if (trigger.addStart) {
 				collected.push(line);
 			}
-		} else if (line.match(trigger.end)) {
+		} else if (collected && line.match(trigger.end)) {
             matched=true;
 				if (trigger.addEnd) {
 					collected.push(line);
 				}
-				if (collected && collected.length > 0) {
+				if (collected.length > 0) {
 //					console.log("collect "+trigger.fun.toString()+" "+collected);
 					trigger.action(collected.join("\n"),collected);
 				}
