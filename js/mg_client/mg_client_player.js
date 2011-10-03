@@ -79,7 +79,9 @@ function showPoints(suffix, val, max) {
 function playerBox(id) {
 	var box=$("#status_"+id);
 	if (box.length) {
-		return box;
+        box.dialog("open");
+        addToPeople(box);
+        return box;
 	}
 	
    	var html = "<div id='status_" + id + "' style='width:200;padding:3px;'> \
@@ -94,7 +96,7 @@ function playerBox(id) {
 		</div></div> \
 		<div style='clear:both'></div> \
 	</div>";
-	box = $(html).dialog({autoFocus: false});
+	box = $(html).dialog({autoFocus: false, close: function(event, ui) { onlineBox(); }}); // todo reposition the other boxes
 	box.dialog("option","width",150).dialog("option","minHeight",80).dialog("option","height",100);
 	addToPeople(box);
 	return box;
@@ -106,7 +108,6 @@ function connectPlayer(name) {
 	var id = Player.id;
 	runScript("connect",id);
 	var box = playerBox(id); // .dialog(){ position : [850,80], width : 300 });
-	addToPeople(box);
 	loadData("player_" + id, function(data) {
         console.log("player " + name + " typ " + typeof(data) + " content " + data);
         if (data) {
@@ -155,8 +156,13 @@ function showPlayer(player) {
 
 function addToPeople(box) {
 	var people=$('#people');
-	var offset=(people.children().length-1)*100; // box.parent().height()
-	box.parent().css({position:"static",left:0,top:0}).appendTo(people);
+	// var offset=(people.children().length-1)*100; // box.parent().height()
+	box.parent().css({position:"static",left:0,top:0})
+    if (box.attr("id")=="status_"+Player.id) {
+        box.parent().prependTo(people);
+    } else {
+        box.parent().appendTo(people);
+    }
 	onlineBox();
 	return box;
 }
