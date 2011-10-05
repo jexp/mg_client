@@ -21,14 +21,31 @@ function addToMenue(id, fun,target) {
 					$(this).hide();
 				}}).popup();
 }
+
+function restoreLastTab(id,currentIdx) {
+    var d = $("#" + id);
+    var length = d.tabs("length");
+    if (currentIdx == length - 1) {
+        d.tabs("select", parseInt(d.attr("last-tab")));
+    } else {
+        d.attr("last-tab", currentIdx);
+    }
+}
 function addWindow(id,w,target) {
 	var div = $("<div></div>").attr("id",id).append("<ul>").appendTo("body").css("width","580px")
 	.css("right","60px").css("top",window_top_offset() + "px").css("position","absolute")
-	div.tabs({ panelTemplate : "<pre style='overflow-x:hidden;overflow-y:auto;'></pre>" });
-	
+	div.tabs({ panelTemplate : "<pre style='overflow-x:hidden;overflow-y:auto;'></pre>",
+        show: function(event, ui) { // console.log("tabs show "); console.log(event);
+            var span = $(ui.tab).children("span");
+            span.attr("badge", null);
+            restoreLastTab(id,ui.index);
+        }
+    });
+    div.attr("selected",0);
 	for (name in w) {
 		var tab=w[name];
-        addTab(id, name, tab)
+        addTab(id, name, tab);
+        highlightTab(name,0);
 	}
 	makeTabWindow(div);
 	addToMenue(id,function() { $('#'+id).toggle(); return false; }, target);
@@ -39,15 +56,30 @@ function showTab(id) {
 	$("#"+id).parent().tabs("select","#"+id);
 }
 
+function tabTab(id) {
+    return $("#"+id).parent().find("ul li a[href=#"+id+"] span");
+}
+function highlightTab(id, count) {
+    var selected = $("#"+id).parent().tabs("option", "selected");
+    var tab = tabTab(id);
+    var indexOfTab = $("#"+id).parent().find("ul li a[href] span").index(tab);
+    if (count && selected != indexOfTab) {
+        tab.attr("badge",count);
+    } else {
+        tab.attr("badge",null);
+    }
+}
+
 function setTabText(id, text, append) {
 	if (text==null) return;
-	var tab = $("#"+id)
+	var tab = $("#"+id);
 	if (append) {
 		appendTo(id,text);
 	} else {
 		tab.empty().append(text); 
 	}
-	showTab(id);
+    highlightTab(id,(parseInt(tabTab(id).attr("badge"))||0)+1);
+	// showTab(id);
 }
 
 function appendTabText(id, text) {
@@ -69,7 +101,10 @@ function add_close_button(d) {
 	var id="#"+d.attr("id") + "_close";
 	d.tabs("add",id,"X");
 	var tab=d.find("ul li a[href="+id+"]");
-	tab.click(function() { d.toggle() });
+	tab.click(function() {
+        d.toggle();
+        d.tabs("select",d.attr("selected")); // selecting the previous tab
+    });
 	tab.parent().removeClass("ui-state-default ui-corner-top");
 }
 
