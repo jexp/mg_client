@@ -1,6 +1,9 @@
-window.loginGuest = ->
+window.loginConnect = ->
   $("#d_login").dialog("destroy")
   send("");
+
+window.loginGuest = ->
+  loginConnect()
   send("gast")
   send("m")
 
@@ -127,8 +130,7 @@ window.registerInfo = ->
 window.doLogin = (d) ->
   name = $(d).children("input[name=login]").val()
   password = $(d).children("input[name=password]").val()
-  $("#d_login").dialog("destroy")
-  send("")
+  loginConnect()
   send(name)
   send(password)
 
@@ -147,6 +149,9 @@ window.showLoginDialog = ->
          <button onClick="showNewPlayerDialog();return false;" class="ui-button ui-button-text-only ui-widget ui-state-default ui-corner-all">
             <span class="ui-button-text">Neuspieler</span>
          </button>
+         <button onClick="loginConnect();return false;" class="ui-button ui-button-text-only ui-widget ui-state-default ui-corner-all">
+            <span class="ui-button-text">Nur Verbinden</span>
+         </button>
       </form>
     </div>
   """
@@ -162,6 +167,7 @@ window.loginButton = (player) ->
 addHook "connect","logoutButton", logoutButton
 addHook "disconnect","refreshButton", -> $('#b_login').attr("onclick",null).click( -> window.location.reload( false )).children("span").text("Neuladen")
 
+showLoginDialog()
 ###
 Denk Dir jetzt bitte einen Namen fuer Deinen neuen Charakter aus.
 
