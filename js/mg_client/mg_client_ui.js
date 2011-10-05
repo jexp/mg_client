@@ -33,15 +33,9 @@ function restoreLastTab(id,currentIdx) {
 }
 function addWindow(id,w,target) {
 	var div = $("<div></div>").attr("id",id).append("<ul>").appendTo("body").css("width","580px")
-	.css("right","60px").css("top",window_top_offset() + "px").css("position","absolute")
-	div.tabs({ panelTemplate : "<pre style='overflow-x:hidden;overflow-y:auto;'></pre>",
-        show: function(event, ui) { // console.log("tabs show "); console.log(event);
-            var span = $(ui.tab).children("span");
-            span.attr("badge", null);
-            restoreLastTab(id,ui.index);
-        }
-    });
-    div.attr("selected",0);
+	.css("right","60px").css("top",window_top_offset() + "px").css("position","absolute");
+	div.tabs({ panelTemplate : "<pre style='overflow-x:hidden;overflow-y:auto;'></pre>"});
+    div.attr("last-tab",0);
 	for (name in w) {
 		var tab=w[name];
         addTab(id, name, tab);
@@ -92,9 +86,21 @@ function appendTo(id, text) {
 	target.append(text);
 	target.prop("scrollTop", target.prop("scrollHeight") - target.height() );
 }
+function topmost(id) {
+    $(".topmost").removeClass("topmost");
+    $("#" + id).addClass("topmost");
+}
 function makeTabWindow(d) {
 	d.resizable().draggable({handle:'ul', scroll:false });
 	add_close_button(d);
+    var id=d.attr("id");
+    d.bind("tabsselect", function(event, ui) { // console.log("tabs show "); console.log(event);
+            var span = $(ui.tab).children("span");
+            span.attr("badge", null);
+            restoreLastTab(id,ui.index);
+            topmost(id);
+        });
+    d.bind("dragstart",function(event,ui) {topmost(id);});
 }
 
 function add_close_button(d) {
@@ -302,10 +308,17 @@ function addBox(id,title,autoOpen,target) {
 	.dialog({ title: title, position : ["right",window_top_offset()], width : 500, height : 200, autoOpen: autoOpen==null ? false : autoOpen , autoFocus: false});
 
 	addToMenue(title,function() { toggleDialog(id); return false; }, target);
+    box.bind("dialogfocus", function(event, ui) {
+        topmost(id);
+    });
 	return box;
 }
 
 function toggleDialog(id) {
 	var d =$('#'+id)
-	d.dialog(d.is(":visible") ? 'close' : 'open'); 
+    if (d.is(":visible")) {
+        d.dialog('close');
+    } else {
+        d.dialog('open');
+    }
 }
