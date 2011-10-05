@@ -46,11 +46,12 @@ function hookScript(input) {
 }
 
 function runHooks(type, data) {
-	var h=hooks[type];
+	console.log("running hooks: "+type);
+    var h=hooks[type];
 	if (!h) return data;
 	for (name in h) {
 		if (h[name]) {
-//			console.log("running hook "+name+" with "+data+" result: "+data);
+			console.log("running hook "+name+" with "+data+" result: "+data);
 			data = h[name](data)
 			if (data==null) return null; // todo handle fallthrough etc
 		}

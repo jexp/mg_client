@@ -94,7 +94,11 @@ function startUp() {
 		addCompass();
 		
 		showPlayer();
-		addWindow("Kommunikation", {
+		addTrigger("timeout",
+	        trigger_update({count:1, trigger:/^Time out!$/,action:function(name) {
+		        runHooks("disconnect",Player);
+	    }}));
+        addWindow("Kommunikation", {
 			teilemit : { title : "Mitteilungen", trigger : /^(Du teilst .+ mit|.+ teilt Dir mit|Du fluesterst .+ zu|.+ fluestert Dir zu):/ , 
 			action : function (text) { appendTabText("teilemit",text); } },
 			ebenen :   { title : "Ebenen", trigger : /^\[[A-Z]\w+[: ].+[^>]$/, action : function (text) { appendTabText("ebenen",text); }}

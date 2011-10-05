@@ -1,5 +1,6 @@
 window.loginGuest = ->
   $("#d_login").dialog("destroy")
+  send("");
   send("gast")
   send("m")
 
@@ -72,7 +73,7 @@ window.registerName = ->
   try
     window.Player = {} unless window.Player
     unless Player.send
-      Player.send = -> send("neu")
+      Player.send = -> send("");send("neu")
     Player.name = $('#f_register_name input[name=login]').val()
     Player.id = Player.name.toLowerCase()
     Player.password = $('#f_register_name input[name=password]').val()
@@ -127,6 +128,7 @@ window.doLogin = (d) ->
   name = $(d).children("input[name=login]").val()
   password = $(d).children("input[name=password]").val()
   $("#d_login").dialog("destroy")
+  send("")
   send(name)
   send(password)
 
@@ -151,14 +153,14 @@ window.showLoginDialog = ->
   $(html).appendTo($('body')).dialog()
 
 window.logoutButton = (player) ->
-  $('#b_login').attr("onclick",null).click( -> send("schlafe ein")).children("span").text(player.name+" abmelden")
+  $('#b_login').attr("onclick",null).click( -> send("schlafe ein");runHooks("disconnect",player)).children("span").text(player.name+" abmelden")
 
 window.loginButton = (player) ->
-  $('#b_login').attr("onclick",null).click( -> showLoginDialog()).children("span").text("Anmelden")
+  $('#b_login').attr("onclick",null).click( -> showLoginDialog();player).children("span").text("Anmelden")
 
 #addHook "startup","login", loginButton
 addHook "connect","logoutButton", logoutButton
-addHook "disconnect","loginButton", loginButton
+addHook "disconnect","refreshButton", -> $('#b_login').attr("onclick",null).click( -> window.location.reload( false )).children("span").text("Neuladen")
 
 ###
 Denk Dir jetzt bitte einen Namen fuer Deinen neuen Charakter aus.

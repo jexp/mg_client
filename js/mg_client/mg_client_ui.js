@@ -140,7 +140,7 @@ function showText(text) {
 		lines[0] = lastLine + lines[0];
 		lastLine = null;
 	}
-	if (!lines[lines.length-1].match(/([\r>:?]\W*)$/)) {
+	if (!lines[lines.length-1].match(/([\r>!:?]\W*)$/)) {
         lastLine = lines.pop();
 	}
 //	console.log("lastLine: "+lastLine);
@@ -206,13 +206,6 @@ function handlePassword(result) {
 	}
     result.password = password;
 	return password;
-}
-
-function send(str) {
-	if (str!=null) {
-		console.log("send: "+str);
-		server.send(str + "\n");
-	}
 }
 
 function sendInput() {

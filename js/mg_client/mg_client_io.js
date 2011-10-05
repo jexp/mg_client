@@ -7,7 +7,9 @@
 		    socket.on('message', function (msg) {
 		      receive(msg)
 		    });
-			socket.on('disconnect', function(x) { console.log("disconnect "+x); });
+			socket.on('disconnect', function(x) {
+                console.log("disconnect "+x);
+            });
 			socket.on('reconnect', function(x) { console.log("reconnect "+x); })
 		  });
 		return socket;
@@ -46,4 +48,14 @@ function extractIAC(result) {
 	}
 	result.line=line.replace(TELNET_RE,"");
 	return true;
+}
+var server;
+function send(str) {
+    if (str==null) return;
+    if (!server) {
+        server = connect(showText);
+        if (!str) return;
+    }
+    console.log("send: "+str);
+    server.send(str + "\n");
 }
