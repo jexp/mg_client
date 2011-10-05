@@ -140,7 +140,7 @@ function showText(text) {
 		lines[0] = lastLine + lines[0];
 		lastLine = null;
 	}
-	if (!lines[lines.length-1].match(/([\r>!:?]\W*)$/)) {
+	if (!lines[lines.length-1].match(/(([\r>!:?]\W*)$|^--mehr--)/)) {
         lastLine = lines.pop();
 	}
 //	console.log("lastLine: "+lastLine);
