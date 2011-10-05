@@ -84,7 +84,7 @@ function playerBox(id) {
         return box;
 	}
 	
-   	var html = "<div id='status_" + id + "' style='width:200;padding:3px;'> \
+   	var html = "<div id='status_" + id + "' style='width:200;padding:3px;overflow:hidden;' > \
 		<div style='float:left'> \
 			<img id='avatar_" + id + "' src='img/drache.gif' width='64'/> \
 		</div> \

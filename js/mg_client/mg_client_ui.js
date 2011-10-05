@@ -32,9 +32,9 @@ function restoreLastTab(id,currentIdx) {
     }
 }
 function addWindow(id,w,target) {
-	var div = $("<div></div>").attr("id",id).append("<ul>").appendTo("body").css("width","580px")
+	var div = $("<div></div>").attr("id",id).append("<ul>").appendTo("body").css("width","580px").css("overflow","hidden")
 	.css("right","60px").css("top",window_top_offset() + "px").css("position","absolute");
-	div.tabs({ panelTemplate : "<pre style='overflow-x:hidden;overflow-y:auto;'></pre>"});
+	div.tabs({ panelTemplate : "<pre style='overflow:auto;overflow-y: hidden;'></pre>"});
     div.attr("last-tab",0);
 	for (name in w) {
 		var tab=w[name];
